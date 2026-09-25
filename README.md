@@ -18,7 +18,36 @@ escrow-held payments, and Socket.IO push for the "finding an artisan"
 radar screen, live job status, and chat — instead of client-side
 `setTimeout` simulations that stopped the moment a tab closed.
 
-## Setup
+## Deploying (go live)
+
+This repo includes a `render.yaml` Blueprint that provisions both the web
+service and a free Postgres database in one go:
+
+1. Push this repo to GitHub (already done if you're reading this on
+   GitHub).
+2. On [Render](https://dashboard.render.com), click **New → Blueprint**
+   and connect the `fixmi-backend` repo. Render reads `render.yaml` and
+   sets up the web service + database + JWT secrets automatically.
+3. Before the first deploy finishes, add your Paystack keys (the
+   Blueprint leaves `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` blank on
+   purpose) — test keys from
+   [dashboard.paystack.com](https://dashboard.paystack.com/#/settings/developers)
+   are fine to start with.
+4. Once deployed, open the **Shell** tab on the web service and run
+   `npm run seed` once to load demo data.
+5. Your live app is at `https://<your-service-name>.onrender.com/app`.
+
+Render's free tier sleeps the web service after ~15 min idle (next
+request takes ~30-50s to wake it) and the free Postgres database expires
+30 days after creation — upgrade it from the Render dashboard before then
+to keep your data. See `handa-backend`'s README for more on these
+free-tier specifics, since this follows the same setup.
+
+Prefer a different host (Railway, Fly.io, etc.)? `render.yaml` is
+Render-specific, but the app itself is a standard Node/Express app with a
+Postgres dependency — the manual setup below works anywhere.
+
+## Local development
 
 ```bash
 npm install
