@@ -1,0 +1,9 @@
+{
+  "appId": "com.fixme.app",
+  "appName": "FixMe",
+  "webDir": "www",
+  "server": {
+    "url": "https://YOUR-DEPLOYED-BACKEND.example.com/app",
+    "cleartext": false
+  }
+}
