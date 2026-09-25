@@ -1,0 +1,10 @@
+node_modules/
+.env
+uploads/*
+!uploads/.gitkeep
+*.log
+backups/
+android/
+ios/
+desktop/dist/
+desktop/node_modules/

@@ -1,0 +1,377 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ARTISAN
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String?       @unique
+  phone        String?       @unique
+  passwordHash String?
+  isGuest      Boolean       @default(false)
+  role         Role          @default(CUSTOMER)
+  status       AccountStatus @default(ACTIVE)
+  avatarUrl    String?
+  address      String?
+  state        String?
+  lga          String?
+
+  bankName          String?
+  bankAccountNumber String?
+  bankAccountName   String?
+
+  isSuperAdmin Boolean @default(false)
+
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  artisanProfile   ArtisanProfile?
+  wallet           Wallet?
+  notificationPref NotificationPreference?
+
+  refreshTokens  RefreshToken[]
+  bookingsAsCust Booking[]                @relation("CustomerBookings")
+  notifications  Notification[]
+  ratingsGiven   Rating[]                 @relation("RatingsGiven")
+  supportTickets SupportTicket[]
+  chatParticipants ChatParticipant[]
+
+  @@index([role])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// One row per artisan account. `category` is free text (Electrician,
+// Plumber, AC Tech, ... — the frontend's service grid is open-ended, not a
+// fixed enum) so new trades never need a migration.
+model ArtisanProfile {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    String
+  bizName     String?
+  bio         String?
+  yearsExp    Int?
+  idType      String?
+  idNumber    String?
+  kycStatus   KycStatus @default(PENDING)
+  kycNote     String?
+  isVerified  Boolean   @default(false)
+  isAvailable Boolean   @default(false)
+  lat         Float?
+  lng         Float?
+  ratingAvg   Float     @default(0)
+  ratingCount Int       @default(0)
+  jobsDone    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  bookings      Booking[]
+  commissionPeriods CommissionPeriod[]
+
+  @@index([category])
+  @@index([kycStatus])
+}
+
+enum BookingStatus {
+  REQUESTED // customer submitted, broadcast to nearby available artisans
+  ACCEPTED // an artisan accepted, awaiting payment
+  PAID // customer paid into escrow, artisan can start
+  IN_PROGRESS
+  COMPLETED // artisan marked done, awaiting customer confirm
+  CONFIRMED // customer confirmed, escrow released
+  DECLINED
+  CANCELLED
+  DISPUTED
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  customerId  String
+  customer    User          @relation("CustomerBookings", fields: [customerId], references: [id])
+  artisanId   String?
+  artisan     ArtisanProfile? @relation(fields: [artisanId], references: [id])
+
+  category    String
+  issue       String
+  address     String
+  lat         Float?
+  lng         Float?
+
+  priceKobo   Int
+  status      BookingStatus @default(REQUESTED)
+
+  scheduledAt DateTime?
+  acceptedAt  DateTime?
+  paidAt      DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  confirmedAt DateTime?
+  cancelledAt DateTime?
+  cancelReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  escrowHolds EscrowHold[]
+  chatThread  ChatThread?
+  ratings     Rating[]
+
+  @@index([customerId])
+  @@index([artisanId])
+  @@index([status])
+}
+
+model Wallet {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balanceKobo Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[]
+  withdrawals  Withdrawal[]
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  ESCROW_HOLD
+  ESCROW_RELEASE
+  ESCROW_REFUND
+  PAYOUT
+  COMMISSION_PAYMENT
+  ADJUSTMENT
+}
+
+model Transaction {
+  id               String          @id @default(uuid())
+  walletId         String
+  wallet           Wallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type             TransactionType
+  amountKobo       Int
+  balanceAfterKobo Int
+  bookingId        String?
+  reference        String?
+  description      String?
+  createdAt        DateTime        @default(now())
+
+  @@index([walletId])
+  @@index([bookingId])
+}
+
+enum EscrowStatus {
+  HELD
+  RELEASED
+  REFUNDED
+}
+
+model EscrowHold {
+  id         String       @id @default(uuid())
+  bookingId  String
+  booking    Booking      @relation(fields: [bookingId], references: [id])
+  payerId    String
+  payeeId    String? // ArtisanProfile.userId; null = platform commission cut
+  amountKobo Int
+  status     EscrowStatus @default(HELD)
+
+  autoReleaseAt DateTime?
+  releasedAt    DateTime?
+  refundedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([status])
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+}
+
+model Withdrawal {
+  id            String           @id @default(uuid())
+  userId        String
+  walletId      String
+  wallet        Wallet           @relation(fields: [walletId], references: [id])
+  amountKobo    Int
+  status        WithdrawalStatus @default(PENDING)
+  paystackRef   String?
+  createdAt     DateTime         @default(now())
+  processedAt   DateTime?
+
+  @@index([userId])
+}
+
+// Weekly platform commission owed by an artisan on completed jobs — mirrors
+// the "Pay Commission" screen in the prototype.
+model CommissionPeriod {
+  id            String   @id @default(uuid())
+  artisanId     String
+  artisan       ArtisanProfile @relation(fields: [artisanId], references: [id])
+  periodStart   DateTime
+  periodEnd     DateTime
+  jobsCompleted Int      @default(0)
+  grossKobo     Int      @default(0)
+  commissionKobo Int     @default(0)
+  paid          Boolean  @default(false)
+  paidAt        DateTime?
+
+  @@index([artisanId])
+}
+
+// Records every processed Paystack webhook event by its transaction
+// reference so a retried delivery (Paystack retries on any non-2xx) can
+// never credit a wallet twice.
+model PaymentWebhookEvent {
+  id        String   @id @default(uuid())
+  eventRef  String   @unique
+  payload   Json
+  createdAt DateTime @default(now())
+}
+
+enum RateeRole {
+  ARTISAN
+  CUSTOMER
+}
+
+// Two rows per booking are expected — the customer rates the artisan and
+// the artisan rates the customer, independently.
+model Rating {
+  id          String    @id @default(uuid())
+  bookingId   String
+  booking     Booking   @relation(fields: [bookingId], references: [id])
+  raterId     String
+  rater       User      @relation("RatingsGiven", fields: [raterId], references: [id])
+  rateeRole   RateeRole
+  rateeUserId String
+  stars       Int
+  comment     String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([bookingId, raterId])
+}
+
+enum TicketStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+}
+
+model SupportTicket {
+  id        String       @id @default(uuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  subject   String
+  message   String
+  bookingId String?
+  status    TicketStatus @default(OPEN)
+  createdAt DateTime     @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum NotificationType {
+  BOOKING
+  PAYMENT
+  CHAT
+  ADMIN
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+}
+
+model NotificationPreference {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pushEnabled   Boolean @default(true)
+  emailEnabled  Boolean @default(true)
+}
+
+model ChatThread {
+  id        String   @id @default(uuid())
+  bookingId String?  @unique
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+  createdAt DateTime @default(now())
+
+  participants ChatParticipant[]
+  messages     ChatMessage[]
+}
+
+model ChatParticipant {
+  id       String     @id @default(uuid())
+  threadId String
+  thread   ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([threadId, userId])
+}
+
+model ChatMessage {
+  id        String     @id @default(uuid())
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId  String
+  body      String
+  readAt    DateTime?
+  createdAt DateTime   @default(now())
+
+  @@index([threadId])
+}
+
+model AppSetting {
+  key   String @id
+  value Json
+}
