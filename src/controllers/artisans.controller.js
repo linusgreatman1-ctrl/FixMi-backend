@@ -30,12 +30,19 @@ function distanceKm(lat1, lng1, lat2, lng2) {
 
 async function listArtisans(req, res, next) {
   try {
-    const { category, lat, lng, onlyAvailable } = req.query;
+    const { category, lat, lng, onlyAvailable, featured } = req.query;
     const where = { kycStatus: "APPROVED", isVerified: true, user: { status: "ACTIVE" } };
     if (category) where.category = category;
     if (onlyAvailable === "true") where.isAvailable = true;
+    // Homepage list: only artisans with a paid, unexpired promotion.
+    if (featured === "true") where.featuredUntil = { gt: new Date() };
 
-    const artisans = await prisma.artisanProfile.findMany({ where, select: PUBLIC_SELECT, orderBy: { ratingAvg: "desc" } });
+    const artisans = await prisma.artisanProfile.findMany({
+      where,
+      select: PUBLIC_SELECT,
+      orderBy: { ratingAvg: "desc" },
+      ...(featured === "true" ? { take: 10 } : {}),
+    });
 
     const withDistance = artisans.map((a) => ({
       ...a,

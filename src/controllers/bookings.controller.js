@@ -17,9 +17,26 @@ function io(req) {
 // assigned and is broadcast to every available, verified artisan in that
 // category — matches the frontend's "radar" finding-artisan screen, which
 // is really just waiting for the first accept to land.
+//
+// Passing artisanId instead books that one artisan directly (e.g. from the
+// homepage "Featured" list): the booking is pre-assigned to them, still
+// REQUESTED, and only they are notified and allowed to accept it.
 async function createBooking(req, res, next) {
   try {
-    const { category, issue, address, lat, lng, priceKobo, scheduledAt } = req.body;
+    const { issue, address, lat, lng, priceKobo, scheduledAt, artisanId } = req.body;
+    let { category } = req.body;
+
+    let direct = null;
+    if (artisanId) {
+      direct = await prisma.artisanProfile.findFirst({
+        where: { id: artisanId, isVerified: true, kycStatus: "APPROVED", user: { status: "ACTIVE" } },
+        select: { id: true, userId: true, category: true },
+      });
+      if (!direct) return res.status(404).json({ error: "That artisan isn't available for booking." });
+      if (direct.userId === req.user.id) return res.status(400).json({ error: "You can't book yourself." });
+      category = direct.category;
+    }
+
     if (!category || !issue || !address || !priceKobo) {
       return res.status(400).json({ error: "category, issue, address, and priceKobo are required." });
     }
@@ -35,14 +52,17 @@ async function createBooking(req, res, next) {
         lng: lng !== undefined ? Number(lng) : null,
         priceKobo: Number(priceKobo),
         scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+        artisanId: direct ? direct.id : null,
       },
       include: CUSTOMER_INCLUDE,
     });
 
-    const candidates = await prisma.artisanProfile.findMany({
-      where: { category, isAvailable: true, isVerified: true, kycStatus: "APPROVED" },
-      select: { userId: true },
-    });
+    const candidates = direct
+      ? [{ userId: direct.userId }]
+      : await prisma.artisanProfile.findMany({
+          where: { category, isAvailable: true, isVerified: true, kycStatus: "APPROVED" },
+          select: { userId: true },
+        });
     for (const c of candidates) {
       io(req)?.to(`user:${c.userId}`).emit("booking:new", booking);
       notify(io(req), c.userId, "BOOKING", "New job nearby", `${category}: ${issue}`, { bookingId: booking.id }).catch(() => {});
@@ -73,7 +93,12 @@ async function listOpenBookings(req, res, next) {
   try {
     if (!req.user.artisanProfile) return res.status(403).json({ error: "No artisan profile found." });
     const bookings = await prisma.booking.findMany({
-      where: { status: "REQUESTED", category: req.user.artisanProfile.category },
+      where: {
+        status: "REQUESTED",
+        category: req.user.artisanProfile.category,
+        // Open broadcasts, plus direct bookings made for this artisan.
+        OR: [{ artisanId: null }, { artisanId: req.user.artisanProfile.id }],
+      },
       include: CUSTOMER_INCLUDE,
       orderBy: { createdAt: "desc" },
     });
@@ -109,6 +134,9 @@ async function acceptBooking(req, res, next) {
       if (!current) throw Object.assign(new Error("Booking not found."), { status: 404 });
       if (current.status !== "REQUESTED") {
         throw Object.assign(new Error("This job has already been taken or is no longer available."), { status: 409 });
+      }
+      if (current.artisanId && current.artisanId !== req.user.artisanProfile.id) {
+        throw Object.assign(new Error("This job was booked with another artisan."), { status: 403 });
       }
       return tx.booking.update({
         where: { id: req.params.id },

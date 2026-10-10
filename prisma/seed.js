@@ -1,5 +1,5 @@
 // Minimal demo dataset so the API has something to browse immediately
-// after `npm run seed` — one admin, a handful of verified artisans across
+// after `npm run seed` — a handful of verified, featured artisans across
 // different categories, and a customer. Not exhaustive fixture data, just
 // enough to click through every screen.
 const { PrismaClient } = require("@prisma/client");
@@ -66,6 +66,9 @@ async function makeArtisan({ name, email, phone, category, bizName, yearsExp, la
           ratingAvg: 4.5 + Math.random() * 0.5,
           ratingCount: Math.floor(10 + Math.random() * 40),
           jobsDone: Math.floor(10 + Math.random() * 40),
+          // Demo artisans count as paid-up promotions so the homepage
+          // "Featured" list has something to show during testing.
+          featuredUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         },
       },
     },
@@ -74,14 +77,6 @@ async function makeArtisan({ name, email, phone, category, bizName, yearsExp, la
 
 async function main() {
   console.log("Seeding FixMi demo data...");
-
-  await makeUser({
-    name: "FixMi Admin",
-    email: "linusgreatman1@gmail.com",
-    phone: "+2348010000000",
-    role: "ADMIN",
-    extra: { isSuperAdmin: true },
-  });
 
   const customer = await makeUser({ name: "Ada Customer", email: "ada@example.com", phone: "+2348010000001", role: "CUSTOMER" });
 
@@ -97,7 +92,7 @@ async function main() {
   // something to approve/reject out of the box.
   const pending = await makeArtisan({ name: "Musa Danjuma", email: "musa@example.com", phone: "+2348010000007", category: "Welder", bizName: "Danjuma Welding", yearsExp: 3, lat: 6.42, lng: 3.41 });
   if (pending) {
-    await prisma.artisanProfile.update({ where: { userId: pending.id }, data: { kycStatus: "PENDING", isVerified: false } });
+    await prisma.artisanProfile.update({ where: { userId: pending.id }, data: { kycStatus: "PENDING", isVerified: false, featuredUntil: null } });
   }
 
   console.log(`Seeded: customer ${customer ? "created" : "already present"}, ${artisans.filter(Boolean).length} verified artisans, pending artisan ${pending ? "created" : "already present"}.`);

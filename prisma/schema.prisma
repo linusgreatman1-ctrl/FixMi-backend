@@ -97,6 +97,9 @@ model ArtisanProfile {
   ratingAvg   Float     @default(0)
   ratingCount Int       @default(0)
   jobsDone    Int       @default(0)
+  // Set when the artisan pays to promote their page; they appear in the
+  // homepage "Featured" list until this date passes.
+  featuredUntil DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -105,6 +108,7 @@ model ArtisanProfile {
 
   @@index([category])
   @@index([kycStatus])
+  @@index([featuredUntil])
 }
 
 enum BookingStatus {

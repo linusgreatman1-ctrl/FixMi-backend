@@ -16,6 +16,10 @@ function refreshCookieOptions() {
   };
 }
 
+function autoApproveArtisans() {
+  return process.env.AUTO_APPROVE_ARTISANS === "true";
+}
+
 function publicUser(user) {
   const { passwordHash, ...rest } = user;
   return rest;
@@ -126,7 +130,10 @@ async function register(req, res, next) {
           yearsExp: yearsExp ? Number(yearsExp) : null,
           idType,
           idNumber: String(idNumber).trim(),
-          kycStatus: "PENDING",
+          // Testing period: with AUTO_APPROVE_ARTISANS=true new artisans are
+          // verified on sign-up instead of waiting for an admin review.
+          // Unset it before launch to bring back manual KYC approval.
+          ...(autoApproveArtisans() ? { kycStatus: "APPROVED", isVerified: true } : { kycStatus: "PENDING" }),
         },
       };
     }
@@ -136,7 +143,7 @@ async function register(req, res, next) {
       include: { artisanProfile: true, wallet: true },
     });
 
-    if (role === "ARTISAN") {
+    if (role === "ARTISAN" && !autoApproveArtisans()) {
       notifyAllAdmins(req.app.get("io"), "🪪 New artisan sign-up", `${user.name} (${category}) is awaiting verification.`, { userId: user.id }).catch(() => {});
     }
 
