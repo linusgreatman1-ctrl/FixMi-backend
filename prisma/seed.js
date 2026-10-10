@@ -11,7 +11,18 @@ async function hash(pw) {
   return bcrypt.hash(pw, 10);
 }
 
+// Safe to re-run against a live database: a demo user whose phone already
+// exists is skipped, and one whose email belongs to a real account is
+// created without an email (the demo buttons sign in by phone).
 async function makeUser({ name, email, phone, role, extra = {} }) {
+  const taken = await prisma.user.findFirst({ where: { OR: [{ email }, { phone }] } });
+  if (taken) {
+    if (taken.phone === phone) {
+      console.log(`Skipping ${name}: ${phone} already exists.`);
+      return null;
+    }
+    email = undefined;
+  }
   return prisma.user.create({
     data: {
       name,
@@ -84,11 +95,12 @@ async function main() {
 
   // A pending sign-up so the admin's "pending artisans" screen has
   // something to approve/reject out of the box.
-  await makeArtisan({ name: "Musa Danjuma", email: "musa@example.com", phone: "+2348010000007", category: "Welder", bizName: "Danjuma Welding", yearsExp: 3, lat: 6.42, lng: 3.41 }).then((u) =>
-    prisma.artisanProfile.update({ where: { userId: u.id }, data: { kycStatus: "PENDING", isVerified: false } })
-  );
+  const pending = await makeArtisan({ name: "Musa Danjuma", email: "musa@example.com", phone: "+2348010000007", category: "Welder", bizName: "Danjuma Welding", yearsExp: 3, lat: 6.42, lng: 3.41 });
+  if (pending) {
+    await prisma.artisanProfile.update({ where: { userId: pending.id }, data: { kycStatus: "PENDING", isVerified: false } });
+  }
 
-  console.log(`Seeded: 1 admin, 1 customer (${customer.email}), ${artisans.length} verified artisans, 1 pending artisan.`);
+  console.log(`Seeded: customer ${customer ? "created" : "already present"}, ${artisans.filter(Boolean).length} verified artisans, pending artisan ${pending ? "created" : "already present"}.`);
   console.log(`All demo accounts use password "password123".`);
 }
 
