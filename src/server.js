@@ -101,7 +101,7 @@ app.set("io", io);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-  console.log(`FixMe backend listening on port ${PORT}`);
+  console.log(`FixMi backend listening on port ${PORT}`);
 });
 
 module.exports = { app, server };

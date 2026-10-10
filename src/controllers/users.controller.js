@@ -1,5 +1,7 @@
 const prisma = require("../config/db");
 const paystack = require("../services/paystack.service");
+const wallet = require("../services/wallet.service");
+const { generateReference } = require("../utils/reference");
 
 function publicUser(user) {
   const { passwordHash, ...rest } = user;
@@ -104,4 +106,37 @@ async function listBanks(req, res, next) {
   }
 }
 
-module.exports = { updateMe, updateArtisanProfile, setAvailability, uploadAvatar, linkBankAccount, listBanks };
+// "Promote My Page" packages. Paying puts the artisan in the homepage
+// "Featured" list until featuredUntil; buying again while still featured
+// extends from the current end date rather than from today.
+const PROMOTION_PLANS = {
+  basic: { label: "Basic Boost", days: 7, priceKobo: 150000 },
+  standard: { label: "Standard Boost", days: 30, priceKobo: 450000 },
+  vip: { label: "VIP Annual", days: 365, priceKobo: 4000000 },
+};
+
+async function promoteMe(req, res, next) {
+  try {
+    if (!req.user.artisanProfile) return res.status(403).json({ error: "No artisan profile found." });
+    const plan = PROMOTION_PLANS[req.body?.plan];
+    if (!plan) return res.status(400).json({ error: "Choose a promotion plan: basic, standard or vip." });
+
+    const profile = await prisma.$transaction(async (tx) => {
+      await wallet.debitWallet(req.user.id, plan.priceKobo, "ADJUSTMENT", {
+        reference: generateReference("PRM"),
+        description: `Promotion: ${plan.label} (${plan.days} days)`,
+      }, tx);
+      const current = await tx.artisanProfile.findUnique({ where: { id: req.user.artisanProfile.id }, select: { featuredUntil: true } });
+      const start = current.featuredUntil && current.featuredUntil > new Date() ? current.featuredUntil : new Date();
+      return tx.artisanProfile.update({
+        where: { id: req.user.artisanProfile.id },
+        data: { featuredUntil: new Date(start.getTime() + plan.days * 24 * 60 * 60 * 1000) },
+      });
+    });
+    res.json({ artisanProfile: profile, plan: plan.label });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { updateMe, updateArtisanProfile, setAvailability, promoteMe, uploadAvatar, linkBankAccount, listBanks };

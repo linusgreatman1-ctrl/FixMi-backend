@@ -39,6 +39,7 @@ radar screen, live job status, and chat — instead of client-side
    | `ESCROW_AUTO_RELEASE_HOURS` | `24` |
    | `PLATFORM_COMMISSION_PERCENT` | `10` |
    | `DEV_BYPASS_PAYMENTS` | `true` (turn off once this is real) |
+   | `AUTO_APPROVE_ARTISANS` | `true` during testing — new artisans are verified on sign-up; remove before launch |
    | `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` | from [dashboard.paystack.com](https://dashboard.paystack.com/#/settings/developers) — test keys are fine to start |
 5. **Settings → Networking → Generate Domain** to get a public URL.
 6. Deploy runs `npx prisma migrate deploy` automatically (see `npm start`
@@ -73,14 +74,19 @@ npm run dev
 
 Server listens on `PORT` (default 4000). `GET /health` for a liveness
 check. Demo logins (see `prisma/seed.js`), all using password
-`password123`:
+`password123`. Sign in with the phone number or the email; there is no
+OTP step during testing.
 
-- Admin: `linusgreatman1@gmail.com`
-- Customer: `ada@example.com`
-- Artisans: `emeka@example.com` (Electrician), `taiwo@example.com`
-  (Plumber), `ibrahim@example.com` (AC Tech), `yusuf@example.com`
-  (Carpenter), `chidinma@example.com` (Cleaner) — all pre-verified.
+- Customer: `ada@example.com` / `+2348010000001`
+- Artisans: `emeka@example.com` / `+2348010000002` (Electrician),
+  `taiwo@example.com` (Plumber), `ibrahim@example.com` (AC Tech),
+  `yusuf@example.com` (Carpenter), `chidinma@example.com` (Cleaner) — all
+  pre-verified and featured on the homepage.
 - Pending artisan awaiting approval: `musa@example.com` (Welder).
+
+Ada and Emeka keep the app's sample activity (history, notifications,
+earnings) on screen for testing; every other account starts empty. There
+is no admin sign-in in the app.
 
 ### Required env vars (see `.env.example`)
 

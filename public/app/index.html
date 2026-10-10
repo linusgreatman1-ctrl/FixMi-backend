@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FixMi - Trusted Artisans Near You</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300C65E'/%3E%3Cpath d='M22 14h24v8H31v7h13v8H31v13h-9z' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" defer></script>
 
 <style>
@@ -60,7 +61,7 @@ body{display:flex;justify-content:center;align-items:center}
 .s.flex-screen{display:none;flex-direction:column;align-items:center;}
 .s.flex-screen.on{display:flex;}
 
-#toast{position:absolute;bottom:84px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--navy);color:#fff;border-radius:30px;padding:10px 22px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .28s;z-index:100;white-space:nowrap;}
+#toast{position:absolute;bottom:84px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--navy);color:#fff;border-radius:30px;padding:10px 22px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .28s;z-index:100;width:max-content;max-width:calc(100% - 32px);text-align:center;line-height:1.4;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .btn{display:block;width:100%;padding:16px;border:none;border-radius:15px;font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:.18s;text-align:center}
@@ -163,6 +164,28 @@ textarea.input{min-height:88px;resize:none}
 .hero-name{font-family:'AppFont',sans-serif;color:#fff;font-size:22px;font-weight:800;margin-bottom:16px}
 .search-bar{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.14);border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:9px;cursor:pointer}
 .search-bar span{color:rgba(255,255,255,.42);font-size:14px;flex:1}
+.search-bar{cursor:text}
+.search-bar input{flex:1;min-width:0;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit}
+.search-bar input::placeholder{color:rgba(255,255,255,.42)}
+.search-bar input::-webkit-search-cancel-button{filter:invert(1);opacity:.6}
+.search-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.search-chips:empty{display:none}
+.search-chip{background:var(--gray);border:none;border-radius:20px;padding:8px 13px;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;font-family:inherit}
+.feat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.feat-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:0}
+.feat-ava{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;position:relative;margin-bottom:6px}
+.feat-name{font-weight:700;font-size:13px;color:var(--navy);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feat-role{font-size:11px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feat-meta{font-size:11px;font-weight:700;color:var(--yellow);margin:2px 0 8px}
+.feat-book{width:100%;background:var(--g);color:#fff;border:none;border-radius:9px;padding:8px 6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feat-grid > .empty-note{grid-column:1/-1}
+.empty-note{text-align:center;color:var(--muted);font-size:13px;padding:16px}
+.empty-state{text-align:center;color:var(--muted);font-size:14px;padding:40px 24px;line-height:1.6}
+.empty-state b{display:block;color:var(--navy);font-size:15px;margin-bottom:4px}
+/* Demo accounts (Ada, Emeka) keep the sample activity; every other account
+   starts clean, so sample-only blocks hide and empty states show. */
+body.fresh-acct [data-demo]{display:none !important}
+body:not(.fresh-acct) [data-fresh]{display:none !important}
 .strip{display:flex;background:var(--navy2)}
 .strip-item{flex:1;padding:13px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.07)}
 .strip-item:last-child{border:none}
@@ -341,6 +364,7 @@ body{background:#fff}
   .auth-hero{padding-top:28px;padding-bottom:40px}
   .match-card{max-width:560px !important}
   .svc-grid{grid-template-columns:repeat(6,1fr);gap:16px}
+  .feat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .earn-grid{grid-template-columns:repeat(4,1fr)}
   .earn-card.full{grid-column:span 2}
   .admin-grid{grid-template-columns:repeat(6,1fr)}
@@ -369,6 +393,7 @@ body{background:#fff}
   .s > .bnav .bn-dot{top:14px;right:14px;border-color:var(--navy)}
   .s:has(> .bnav) > div[style="height:78px"]{display:none}
   .svc-grid{grid-template-columns:repeat(8,1fr)}
+  .feat-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
   .card:hover{box-shadow:0 6px 24px rgba(11,26,46,.12)}
   .btn,.qd-btn{max-width:520px;margin-left:auto;margin-right:auto}
   .auth-body .btn,.auth-body .qd-btn{max-width:none}
@@ -430,9 +455,6 @@ body{background:#fff}
     <div class="r-arr">›</div>
   </div>
   <button class="btn btn-ghost" style="margin-top:auto;margin-bottom:14px" onclick="go('splash')">← Back</button>
-  <div style="text-align:center">
-    <span onclick="go('admin')" style="color:rgba(255,255,255,.3);font-size:12px;cursor:pointer;text-decoration:underline">Admin / Operations</span>
-  </div>
 </div>
 
 <!-- ████████████████████ SIGN IN ████████████████████ -->
@@ -446,50 +468,12 @@ body{background:#fff}
     <div class="auth-sub">Sign in to your FixMi account</div>
   </div>
   <div class="auth-body">
-    <div class="fg"><label class="label">Phone Number</label><input class="input" type="tel" id="login-phone" placeholder="+234 800 000 0000"></div>
-    <div class="fg"><label class="label">Password</label><input class="input" type="password" id="login-password" placeholder="Your password"></div>
-    <div class="fg">
-      <label class="label">Sign in as</label>
-      <select class="input" id="login-role">
-        <option value="customer">🏠 Customer — I need a service</option>
-        <option value="artisan">🔧 Artisan — I provide services</option>
-        <option value="admin">🛡️ Admin / Operations</option>
-      </select>
-    </div>
-    <button class="btn btn-g" onclick="stashLoginAndProceed()">Send OTP →</button>
-    <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:14px">New to FixMi? <span style="color:var(--g);font-weight:600;cursor:pointer" onclick="go('role-screen')">Create Account</span></p>
-
-    <div class="quick-demo">
-      <div class="qd-title">⚡ Quick Demo Access</div>
-      <button class="qd-btn qd-c" onclick="quickLogin('customer')">🏠 Enter as Customer</button>
-      <button class="qd-btn qd-a" onclick="quickLogin('artisan')">🔧 Enter as Artisan</button>
-      <button class="qd-btn qd-ad" onclick="quickLogin('admin')">🛡️ Enter as Admin</button>
-    </div>
-  </div>
-</div>
-
-<!-- ████████████████████ OTP (LOGIN) ████████████████████ -->
-<div class="s" id="otp-login">
-  <div class="auth-hero">
-    <div style="display:flex;justify-content:flex-start;margin-bottom:20px">
-      <button class="back w" onclick="go('login-screen')">←</button>
-    </div>
-    <div class="auth-ico" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">📱</div>
-    <div class="auth-title">Enter OTP</div>
-    <div class="auth-sub">We sent a 6-digit code to<br><b style="color:#fff">+234 812 345 6789</b></div>
-  </div>
-  <div class="auth-body">
-    <div class="otp-row">
-      <input class="otp-box" maxlength="1" value="4">
-      <input class="otp-box" maxlength="1" value="8">
-      <input class="otp-box" maxlength="1" value="2">
-      <input class="otp-box" maxlength="1" value="1">
-      <input class="otp-box" maxlength="1" value="">
-      <input class="otp-box" maxlength="1" value="">
-    </div>
-    <div class="resend">Didn't get it? <span onclick="toast('📨 OTP resent!')">Resend OTP</span></div>
-    <button class="btn btn-g" onclick="realLoginSubmit()">✅ Verify & Sign In</button>
-    <div class="demo-note">Demo mode: tap <b>Verify & Sign In</b> — any code works</div>
+    <form id="login-form" onsubmit="event.preventDefault();realLoginSubmit()">
+      <div class="fg"><label class="label" for="login-id">Phone number or email</label><input class="input" id="login-id" autocomplete="username" placeholder="+234 800 000 0000 or you@email.com"></div>
+      <div class="fg"><label class="label" for="login-password">Password</label><input class="input" type="password" id="login-password" autocomplete="current-password" placeholder="Your password"></div>
+      <button class="btn btn-g" type="submit" id="login-btn">Sign In</button>
+    </form>
+    <p style="text-align:center;color:var(--muted);font-size:14px;margin-top:18px">New to FixMi? <span style="color:var(--g);font-weight:600;cursor:pointer" onclick="go('role-screen')">Create an account</span></p>
   </div>
 </div>
 
@@ -501,31 +485,15 @@ body{background:#fff}
     <div class="tb-space"></div>
   </div>
   <div style="padding:20px">
-    <div class="info blue"><span>ℹ️</span><span>Fill in your details. You'll verify your phone in the next step.</span></div>
+    <div class="info blue"><span>ℹ️</span><span>Fill in your details. You can sign in with your phone number or email.</span></div>
     <div class="fg"><label class="label">Full Name</label><input class="input" id="reg-c-name" placeholder="e.g. Chukwuemeka Obi"></div>
     <div class="fg"><label class="label">Phone Number</label><input class="input" type="tel" id="reg-c-phone" placeholder="+234 800 000 0000"></div>
     <div class="fg"><label class="label">Email (optional)</label><input class="input" type="email" id="reg-c-email" placeholder="you@email.com"></div>
     <div class="fg"><label class="label">Password</label><input class="input" type="password" id="reg-c-password" placeholder="At least 6 characters"></div>
     <div class="fg"><label class="label">Your Location</label><input class="input" id="reg-c-location" value="📍 Ikeja, Lagos"></div>
     <div class="fg"><label class="label">Account Type</label><select class="input"><option>Homeowner</option><option>Renter</option><option>Business Owner</option><option>School / Institution</option></select></div>
-    <button class="btn btn-g" onclick="go('otp-c')">Continue — Verify Phone →</button>
+    <button class="btn btn-g" onclick="realRegisterCustomer()">Create Account →</button>
     <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:13px;line-height:1.6">By continuing you agree to our <span style="color:var(--g);cursor:pointer">Terms</span> and <span style="color:var(--g);cursor:pointer">Privacy Policy</span></p>
-  </div>
-</div>
-
-<!-- OTP CUSTOMER -->
-<div class="s" id="otp-c">
-  <div class="auth-hero">
-    <div style="display:flex;justify-content:flex-start;margin-bottom:20px"><button class="back w" onclick="go('reg-c')">←</button></div>
-    <div class="auth-ico" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">📱</div>
-    <div class="auth-title">Verify Your Phone</div>
-    <div class="auth-sub">We sent a 6-digit code to your number</div>
-  </div>
-  <div class="auth-body">
-    <div class="otp-row"><input class="otp-box" maxlength="1"><input class="otp-box" maxlength="1"><input class="otp-box" maxlength="1"><input class="otp-box" maxlength="1"><input class="otp-box" maxlength="1"><input class="otp-box" maxlength="1"></div>
-    <div class="resend">Didn't get it? <span onclick="toast('📨 OTP resent!')">Resend OTP</span></div>
-    <button class="btn btn-g" onclick="realRegisterCustomer()">🎉 Verify & Enter App</button>
-    <div class="demo-note">Demo mode: tap button above — any code works</div>
   </div>
 </div>
 
@@ -596,7 +564,7 @@ body{background:#fff}
   <div class="topbar">
     <div class="tb-logo">Fix<span>Mi</span></div>
     <div style="display:flex;gap:9px">
-      <div class="tb-ico" onclick="go('artisan-notifications')">🔔<div class="badge-dot"></div></div>
+      <div class="tb-ico" onclick="go('notifications')">🔔<div class="badge-dot" data-demo></div></div>
       <div class="tb-ico" onclick="go('profile')">👤</div>
     </div>
   </div>
@@ -604,7 +572,7 @@ body{background:#fff}
   <div class="hero-band">
     <div class="greeting">Good morning,</div>
     <div class="hero-name" id="home-user-name">Chukwuemeka 👋</div>
-    <div class="search-bar" onclick="go('search')"><span>🔍</span><span>Search for a service or artisan...</span></div>
+    <label class="search-bar" for="home-search"><span>🔍</span><input id="home-search" type="search" autocomplete="off" placeholder="Search for a service or artisan..." oninput="homeSearch(this.value)"></label>
     <div class="loc">📍 <b>Ikeja, Lagos</b> &nbsp;·&nbsp; <span id="home-online-count">14</span> artisans online now</div>
   </div>
 
@@ -612,6 +580,12 @@ body{background:#fff}
     <div class="strip-item"><div class="strip-num">389</div><div class="strip-lbl">Artisans</div></div>
     <div class="strip-item"><div class="strip-num">4.8★</div><div class="strip-lbl">Avg Rating</div></div>
     <div class="strip-item"><div class="strip-num">8 min</div><div class="strip-lbl">Avg Arrival</div></div>
+  </div>
+
+  <div class="sec" id="home-search-results" hidden>
+    <div class="sec-hdr"><div class="sec-title" id="home-search-title">Results</div><div class="see-all" onclick="clearHomeSearch()">Clear</div></div>
+    <div id="home-search-services" class="search-chips"></div>
+    <div id="home-search-artisans" class="feat-grid"></div>
   </div>
 
   <div class="sec">
@@ -649,10 +623,10 @@ body{background:#fff}
     </div>
   </div>
 
-    <div class="sec">
-    <div class="sec-hdr"><div class="sec-title">⚡ Nearby &amp; Online</div><div class="see-all" onclick="go('all-artisans')">See all</div></div>
-    <div id="nearby-artisans-list">
-      <div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Loading nearby artisans…</div>
+  <div class="sec">
+    <div class="sec-hdr"><div class="sec-title">⭐ Featured Artisans</div></div>
+    <div id="nearby-artisans-list" class="feat-grid">
+      <div class="empty-note">Loading featured artisans…</div>
     </div>
   </div>
 
@@ -660,8 +634,9 @@ body{background:#fff}
     <div class="bnav">
     <div class="bn on"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div>
-    <div class="bn-dot"></div></div>
+    <div class="bn-dot" data-demo></div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1283,6 +1258,7 @@ body{background:#fff}
     <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn on"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1309,7 +1285,8 @@ body{background:#fff}
     <button class="chip" onclick="toast('🔍 Filtering...')">Pending</button>
     <button class="chip" onclick="toast('🔍 Filtering...')">Cancelled</button>
   </div>
-  <div style="padding:8px 16px">
+  <div data-fresh id="history-real" style="padding:8px 16px"></div>
+  <div data-demo style="padding:8px 16px">
     <div class="card" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Electrical Repair','⚡','Emeka Okafor','24 Feb 2026','₦5,500','✓ Completed','Lights tripping, bedroom switch not working')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Electrical Repair</div><div style="font-size:12px;color:var(--muted)">Emeka Okafor · 24 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 5.0</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Lights tripping, bedroom switch not working"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦5,500</span></div></div>
     <div class="card" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Pipe Repair','🔩','Taiwo Adeleke','18 Feb 2026','₦7,000','✓ Completed','Leaking pipe under kitchen sink')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">🔩</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Pipe Repair</div><div style="font-size:12px;color:var(--muted)">Taiwo Adeleke · 18 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 4.8</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Leaking pipe under kitchen sink"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦7,000</span></div></div>
     <div class="card" style="margin-bottom:11px"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#F0F9FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">❄️</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">AC Service</div><div style="font-size:12px;color:var(--muted)">Ibrahim Musa · 10 Feb 2026</div></div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"AC not cooling, needs servicing"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:#FFF3ED;color:var(--orange);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">⏳ Payment Pending</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦12,000</span></div></div>
@@ -1318,8 +1295,9 @@ body{background:#fff}
     <div class="bnav">
     <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div>
-    <div class="bn-dot"></div></div>
+    <div class="bn-dot" data-demo></div></div>
     <div class="bn on"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1327,10 +1305,11 @@ body{background:#fff}
 <!-- ████ NOTIFICATIONS ████ -->
 <div class="s" id="notifications">
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Notifications</div><span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="toast('✓ All marked read')">Mark all read</span></div>
-  <div style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('match')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔧</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Artisan is on the way!</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Emeka Okafor accepted your job and is 12 minutes away.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 minutes ago</div></div></div>
-  <div style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('chat')"><div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New message from Emeka</div><div style="font-size:13px;color:var(--muted);line-height:1.4">"I'm 5 minutes away, please open the gate"</div><div style="font-size:11px;color:var(--muted);margin-top:3px">5 minutes ago</div></div></div>
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('✅ Job receipt opened')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✅</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Job Completed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Pipe repair with Taiwo Adeleke is complete. Tap to pay.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Yesterday</div></div></div>
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('💰 Payment confirmed')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Confirmed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">₦7,000 payment for pipe repair was successful.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 days ago</div></div></div>
+  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('match')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔧</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Artisan is on the way!</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Emeka Okafor accepted your job and is 12 minutes away.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 minutes ago</div></div></div>
+  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('chat')"><div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New message from Emeka</div><div style="font-size:13px;color:var(--muted);line-height:1.4">"I'm 5 minutes away, please open the gate"</div><div style="font-size:11px;color:var(--muted);margin-top:3px">5 minutes ago</div></div></div>
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('✅ Job receipt opened')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✅</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Job Completed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Pipe repair with Taiwo Adeleke is complete. Tap to pay.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Yesterday</div></div></div>
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('💰 Payment confirmed')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Confirmed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">₦7,000 payment for pipe repair was successful.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 days ago</div></div></div>
+  <div data-fresh class="empty-state"><b>No notifications yet</b>Updates about your bookings will show up here.</div>
 </div>
 
 <!-- ████ PROFILE ████ -->
@@ -1340,33 +1319,34 @@ body{background:#fff}
       <div class="prof-ava" id="user-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div>
       <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-size:12px">📷</div>
     </div>
-    <div class="prof-name">Chukwuemeka Obi</div>
-    <div class="prof-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caa9a2bfa1bdbf8aafa7aba3a6e4a9a5a7">[email&#160;protected]</a> · +234 812 345 6789</div>
+    <div class="prof-name" id="cust-prof-name">Chukwuemeka Obi</div>
+    <div class="prof-email" id="cust-prof-contact"></div>
     <div class="prof-stats">
-      <div class="ps"><div class="ps-n">12</div><div class="ps-l">Jobs Booked</div></div>
-      <div class="ps"><div class="ps-n">₦52K</div><div class="ps-l">Total Spent</div></div>
-      <div class="ps"><div class="ps-n">4.9★</div><div class="ps-l">Avg Rating</div></div>
+      <div class="ps"><div class="ps-n" id="cust-stat-jobs">12</div><div class="ps-l">Jobs Booked</div></div>
+      <div class="ps"><div class="ps-n" id="cust-stat-spent">₦52K</div><div class="ps-l">Total Spent</div></div>
+      <div class="ps"><div class="ps-n" id="cust-stat-rating">4.9★</div><div class="ps-l">Avg Rating</div></div>
     </div>
   </div>
   <div class="menu">
     <div class="mi" onclick="go('edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('saved-addresses')"><div class="mi-ico">📍</div><div class="mi-txt">Saved Addresses</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('payment-methods')"><div class="mi-ico">💳</div><div class="mi-txt">Payment Methods</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="goTo('corp-dash')"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="go('corp-plan')"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('history')"><div class="mi-ico">📋</div><div class="mi-txt">Job History</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge">3</div></div>
+    <div class="mi" onclick="go('notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge" data-demo>3</div></div>
     <div class="menu-div"></div>
     <div class="mi" onclick="go('help')"><div class="mi-ico">🤝</div><div class="mi-txt">Help & Support</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('user-safety')"><div class="mi-ico">🛡️</div><div class="mi-txt">Safety &amp; Trust</div><div class="mi-arr">›</div></div>
     <div class="menu-div"></div>
-    <div class="mi" onclick="go('splash')"><div class="mi-ico">🚪</div><div class="mi-txt" style="color:var(--red)">Sign Out</div><div class="mi-arr" style="color:var(--red)">›</div></div>
+    <div class="mi" onclick="signOut()"><div class="mi-ico">🚪</div><div class="mi-txt" style="color:var(--red)">Sign Out</div><div class="mi-arr" style="color:var(--red)">›</div></div>
   </div>
   <div style="height:78px"></div>
     <div class="bnav">
     <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div>
-    <div class="bn-dot"></div></div>
+    <div class="bn-dot" data-demo></div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn on"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1564,11 +1544,11 @@ body{background:#fff}
   <div style="padding:18px">
     <div style="background:var(--navy);border-radius:14px;padding:18px;margin-bottom:16px;text-align:center">
       <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:4px">Available Balance</div>
-      <div style="font-family:'AppFont',sans-serif;font-size:36px;font-weight:800;color:var(--g);margin-bottom:4px">₦127,450</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.4)">Access Bank · 0987654321</div>
+      <div id="wd-balance" style="font-family:'AppFont',sans-serif;font-size:36px;font-weight:800;color:var(--g);margin-bottom:4px">₦127,450</div>
+      <div id="wd-bank" style="font-size:12px;color:rgba(255,255,255,.4)">Access Bank · 0987654321</div>
     </div>
-    <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px">Choose Withdrawal Period</div>
-    <div style="display:flex;gap:7px;margin-bottom:16px">
+    <div data-demo style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px">Choose Withdrawal Period</div>
+    <div data-demo style="display:flex;gap:7px;margin-bottom:16px">
       <button id="wdp-daily" onclick="pickWdPeriod('daily',this)" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:10px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Daily<br><span style="font-size:11px;font-weight:400">₦4,250</span></button>
       <button id="wdp-weekly" onclick="pickWdPeriod('weekly',this)" style="flex:1;background:var(--gray);color:var(--muted);border:none;border-radius:9px;padding:10px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Weekly<br><span style="font-size:11px;font-weight:400">₦18,200</span></button>
       <button id="wdp-monthly" onclick="pickWdPeriod('monthly',this)" style="flex:1;background:var(--gray);color:var(--muted);border:none;border-radius:9px;padding:10px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Monthly<br><span style="font-size:11px;font-weight:400">₦68,900</span></button>
@@ -1687,7 +1667,7 @@ body{background:#fff}
   <div class="topbar">
     <div class="tb-logo">Fix<span>Mi</span></div>
     <div style="display:flex;gap:9px">
-      <div class="tb-ico" onclick="go('artisan-notifications')">🔔<div class="badge-dot"></div></div>
+      <div class="tb-ico" onclick="go('artisan-notifications')">🔔<div class="badge-dot" data-demo></div></div>
       <div class="tb-ico" onclick="go('artisan-profile-self')">👷</div>
     </div>
   </div>
@@ -1708,8 +1688,8 @@ body{background:#fff}
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap">
       <span style="background:rgba(0,198,94,.2);color:var(--g);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700">✓ ID Verified</span>
-      <span style="background:rgba(255,107,43,.15);color:var(--orange);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700">🔥 Top Rated</span>
-      <span style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700">🌟 Premium</span>
+      <span data-demo style="background:rgba(255,107,43,.15);color:var(--orange);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700">🔥 Top Rated</span>
+      <span data-demo style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700">🌟 Premium</span>
     </div>
   </div>
 
@@ -1740,7 +1720,7 @@ body{background:#fff}
   </div>
 
   <!-- COMMISSION WARNING -->
-  <div style="margin:0 16px 12px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:14px;padding:14px">
+  <div data-demo style="margin:0 16px 12px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:14px;padding:14px">
     <div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;color:#DC2626;margin-bottom:5px">⚠️ Commission Remittance Due</div>
     <div style="font-size:13px;color:#991B1B;line-height:1.6;margin-bottom:10px">You have <b>₦950 commission</b> unpaid on cash job #FM-2841. <b>Accounts with commission unpaid for more than 7 days will be suspended.</b></div>
     <button onclick="artisanPayCommission()" style="background:#DC2626;border:none;border-radius:9px;padding:9px 18px;font-family:'AppFont',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer">Pay Now ₦950</button>
@@ -1783,7 +1763,7 @@ body{background:#fff}
     <span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="toast('✓ All marked read')">Mark all read</span>
   </div>
   <!-- New job request -->
-  <div style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-job-request')">
+  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-job-request')">
     <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔔</div>
     <div>
       <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New Job Request</div>
@@ -1792,7 +1772,7 @@ body{background:#fff}
     </div>
   </div>
   <!-- Payment received -->
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-payment-received')">
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-payment-received')">
     <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div>
     <div>
       <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Received</div>
@@ -1801,7 +1781,7 @@ body{background:#fff}
     </div>
   </div>
   <!-- New message -->
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-new-message')">
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-new-message')">
     <div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div>
     <div>
       <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New Message</div>
@@ -1810,7 +1790,7 @@ body{background:#fff}
     </div>
   </div>
   <!-- Commission due -->
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-commission-due')">
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-commission-due')">
     <div style="width:42px;height:42px;background:#FFF3ED;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚠️</div>
     <div>
       <div style="font-weight:600;font-size:14px;color:var(--orange);margin-bottom:2px">Commission Due</div>
@@ -1819,7 +1799,7 @@ body{background:#fff}
     </div>
   </div>
   <!-- Rating received -->
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-rating-received')">
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-rating-received')">
     <div style="width:42px;height:42px;background:#FFFBEB;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⭐</div>
     <div>
       <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New Rating Received</div>
@@ -1828,7 +1808,7 @@ body{background:#fff}
     </div>
   </div>
   <!-- Promote reminder -->
-  <div style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('artisan-promote')">
+  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('artisan-promote')">
     <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🚀</div>
     <div>
       <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Boost Your Profile</div>
@@ -1836,7 +1816,8 @@ body{background:#fff}
       <div style="font-size:11px;color:var(--muted);margin-top:3px">3 days ago</div>
     </div>
   </div>
-  <div style="height:78px"></div>
+    <div data-fresh class="empty-state"><b>No notifications yet</b>New job requests and payments will show up here.</div>
+<div style="height:78px"></div>
   <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn" onclick="go('artisan-messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
@@ -2057,7 +2038,8 @@ body{background:#fff}
     <button class="chip" onclick="toast('Filtering...')">Commission Due</button>
     <button class="chip" onclick="toast('Filtering...')">Cancelled</button>
   </div>
-  <div style="padding:8px 16px">
+  <div data-fresh id="artisan-history-real" style="padding:8px 16px"></div>
+  <div data-demo style="padding:8px 16px">
     <div class="card" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Fan Installation','⚡','Blessing O.','Yesterday','+₦4,250','✓ Completed','Install ceiling fan in master bedroom')">
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
         <div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
@@ -2165,12 +2147,12 @@ body{background:#fff}
       <div class="prof-ava" id="artisan-ava" style="background:#FEF9C3">⚡</div>
       <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-size:12px">📷</div>
     </div>
-    <div class="prof-name">Emeka Okafor</div>
-    <div class="prof-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8beee6eee0eacbede2f3e6eea5e5ec">[email&#160;protected]</a> · +234 803 456 7890</div>
+    <div class="prof-name" id="art-prof-name">Emeka Okafor</div>
+    <div class="prof-email" id="art-prof-contact"></div>
     <div class="prof-stats">
-      <div class="ps"><div class="ps-n">47</div><div class="ps-l">Jobs Done</div></div>
-      <div class="ps"><div class="ps-n">4.9★</div><div class="ps-l">Rating</div></div>
-      <div class="ps"><div class="ps-n">₦127K</div><div class="ps-l">Earned</div></div>
+      <div class="ps"><div class="ps-n" id="art-stat-jobs">47</div><div class="ps-l">Jobs Done</div></div>
+      <div class="ps"><div class="ps-n" id="art-stat-rating">4.9★</div><div class="ps-l">Rating</div></div>
+      <div class="ps"><div class="ps-n" id="art-stat-money">₦127K</div><div class="ps-l" id="art-stat-money-lbl">Earned</div></div>
     </div>
   </div>
   <div class="menu">
@@ -2179,7 +2161,7 @@ body{background:#fff}
     <div class="mi" onclick="go('artisan-availability')"><div class="mi-ico">🕐</div><div class="mi-txt">Availability Schedule</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-portfolio')"><div class="mi-ico">📸</div><div class="mi-txt">My Portfolio</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-history')"><div class="mi-ico">📋</div><div class="mi-txt">Job History</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('artisan-notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge">2</div></div>
+    <div class="mi" onclick="go('artisan-notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge" data-demo>2</div></div>
     <div class="menu-div"></div>
     <div class="mi" onclick="go('artisan-promote')"><div class="mi-ico">🚀</div><div class="mi-txt">Promote My Page</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-settings')"><div class="mi-ico">⚙️</div><div class="mi-txt">Settings</div><div class="mi-arr">›</div></div>
@@ -2188,7 +2170,7 @@ body{background:#fff}
     <div class="menu-div"></div>
     <div class="mi" onclick="go('artisan-safety')"><div class="mi-ico">🛡️</div><div class="mi-txt">Safety &amp; Trust</div><div class="mi-arr">›</div></div>
     <div class="menu-div"></div>
-    <div class="mi" onclick="go('splash')"><div class="mi-ico">🚪</div><div class="mi-txt" style="color:var(--red)">Sign Out</div><div class="mi-arr" style="color:var(--red)">›</div></div>
+    <div class="mi" onclick="signOut()"><div class="mi-ico">🚪</div><div class="mi-txt" style="color:var(--red)">Sign Out</div><div class="mi-arr" style="color:var(--red)">›</div></div>
   </div>
   <div style="height:78px"></div>
     <div class="bnav">
@@ -2366,7 +2348,8 @@ body{background:#fff}
 <div class="s" id="artisan-messages">
   <div class="topbar"><button class="back" onclick="go('artisan-dash')">←</button><div class="tb-title">Messages</div><div class="tb-space"></div></div>
   <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">🔒</span><span>All chats happen here on FixMi only. Calls are disabled for your safety.</span></div>
-  <div class="chat-list">
+  <div class="chat-list" data-fresh id="artisan-chat-thread-list"></div>
+  <div class="chat-list" data-demo>
     <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div><div style="flex:1;min-width:0"><div class="chat-name">Chukwuemeka Obi</div><div class="chat-prev">I'm near your location now</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0"><div style="font-size:11px;color:var(--muted)">5m ago</div><div class="unread">1</div></div></div>
     <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,var(--g2),#00E875)">🛡️</div><div style="flex:1;min-width:0"><div class="chat-name">FixMi Support</div><div class="chat-prev">Your account has been verified.</div></div><div style="font-size:11px;color:var(--muted);flex-shrink:0">Mon</div></div>
   </div>
@@ -2410,7 +2393,7 @@ body{background:#fff}
 <div class="s" id="saved-addresses">
   <div class="topbar"><button class="back" onclick="go('profile')">←</button><div class="tb-title">Saved Addresses</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div class="card" style="margin-bottom:11px;cursor:pointer">
+    <div data-demo class="card" style="margin-bottom:11px;cursor:pointer">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:40px;height:40px;background:var(--g3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏠</div>
         <div style="flex:1">
@@ -2420,7 +2403,7 @@ body{background:#fff}
         <button onclick="toast('✏️ Edit address')" style="background:var(--gray);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--navy)">Edit</button>
       </div>
     </div>
-    <div class="card" style="margin-bottom:11px;cursor:pointer">
+    <div data-demo class="card" style="margin-bottom:11px;cursor:pointer">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:40px;height:40px;background:#EFF6FF;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏢</div>
         <div style="flex:1">
@@ -2430,6 +2413,7 @@ body{background:#fff}
         <button onclick="toast('✏️ Edit address')" style="background:var(--gray);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--navy)">Edit</button>
       </div>
     </div>
+    <div data-fresh class="empty-state"><b>No saved addresses yet</b>Add your home or office to book faster.</div>
     <button class="btn" style="background:var(--gray);color:var(--navy)" onclick="go('add-address')">+ Add New Address</button>
     <div style="height:20px"></div>
   </div>
@@ -2440,7 +2424,7 @@ body{background:#fff}
   <div class="topbar"><button class="back" onclick="go('profile')">←</button><div class="tb-title">Payment Methods</div><div class="tb-space"></div></div>
   <div style="padding:16px">
     <div class="info blue" style="margin-bottom:16px"><span>🔒</span><span>Your payment details are encrypted and never shared. FixMi holds funds in escrow until you confirm jobs are complete.</span></div>
-    <div class="card" style="margin-bottom:11px">
+    <div data-demo class="card" style="margin-bottom:11px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:44px;height:44px;background:#EFF6FF;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏦</div>
         <div style="flex:1">
@@ -2450,7 +2434,7 @@ body{background:#fff}
         <button onclick="toast('✓ Already primary')" style="background:var(--g3);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--g2)">Primary</button>
       </div>
     </div>
-    <div class="card" style="margin-bottom:11px">
+    <div data-demo class="card" style="margin-bottom:11px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:44px;height:44px;background:#F0F9FF;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">💳</div>
         <div style="flex:1">
@@ -2460,7 +2444,8 @@ body{background:#fff}
         <button onclick="toast('Set as primary?')" style="background:var(--gray);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--navy)">Set Primary</button>
       </div>
     </div>
-    <button class="btn btn-n" onclick="go('add-payment-method')">+ Add Bank Account or Card</button>
+    <div data-fresh class="empty-state"><b>No payment methods yet</b>Add a bank account or card to pay for jobs.</div>
+    <button class="btn btn-g" onclick="go('add-payment-method')">+ Add Bank Account or Card</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2476,7 +2461,7 @@ body{background:#fff}
       </div>
     </div>
     <div class="fg"><label class="label">Full Name</label><input class="input" value="Emeka Okafor" id="aep-name"></div>
-    <div class="fg"><label class="label">Phone Number</label><input class="input" value="+234 803 456 7890" type="tel"></div>
+    <div class="fg"><label class="label">Phone Number</label><input class="input" value="+234 803 456 7890" id="aep-phone" type="tel"></div>
     <div class="fg"><label class="label">Primary Skill</label>
       <select class="input"><option>Electrician</option><option>Plumber</option><option>AC Technician</option><option>Mechanic</option><option>Carpenter</option><option>Painter</option></select>
     </div>
@@ -2497,7 +2482,7 @@ body{background:#fff}
   <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">Bank Account</div><div class="tb-space"></div></div>
   <div style="padding:16px">
     <div class="info green" style="margin-bottom:16px"><span>💰</span><span>Your earnings are paid directly to your bank account after each completed job (app payments). Commission from cash jobs must be remitted within 7 days.</span></div>
-    <div class="card" style="margin-bottom:14px">
+    <div data-demo class="card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
         <div style="width:44px;height:44px;background:var(--g3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏦</div>
         <div>
@@ -2555,7 +2540,8 @@ body{background:#fff}
         <span style="font-size:26px">🖼️</span><span style="font-size:9px;color:var(--muted)">Gallery</span>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px" id="portfolio-grid">
+    <div data-fresh class="empty-state"><b>No photos yet</b>Add photos of your best work with the buttons above.</div>
+    <div data-demo style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px" id="portfolio-grid">
       <div style="aspect-ratio:1;background:var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
       <div style="aspect-ratio:1;background:var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">⚙️</div>
       <div style="aspect-ratio:1;background:var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">🔧</div>
@@ -2712,49 +2698,11 @@ body{background:#fff}
 </div>
 
 
-<div class="s" id="admin">
-  <div style="background:var(--navy);padding:22px 18px 18px"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-family:'AppFont',sans-serif;color:#fff;font-size:21px;font-weight:800">🛡️ Admin Panel</div><div style="color:rgba(255,255,255,.4);font-size:13px;margin-top:4px">FixMi Operations · Feb 2026</div></div><button class="back w" onclick="go('role-screen')">←</button></div></div>
-  <div class="admin-grid" id="admin-stats-grid">
-    <div class="as"><div class="as-n" id="as-users">–</div><div class="as-l">Customers</div></div>
-    <div class="as"><div class="as-n" id="as-artisans">–</div><div class="as-l">Artisans</div></div>
-    <div class="as"><div class="as-n" style="color:var(--orange)" id="as-pending">–</div><div class="as-l">Pending</div></div>
-    <div class="as"><div class="as-n" id="as-jobs">–</div><div class="as-l">Total Jobs</div></div>
-    <div class="as"><div class="as-n" style="color:var(--g2)" id="as-active">–</div><div class="as-l">Active Jobs</div></div>
-    <div class="as"><div class="as-n" style="color:var(--g2)" id="as-tickets">–</div><div class="as-l">Open Tickets</div></div>
-  </div>
-
-  <div style="padding:4px 16px 16px">
-    <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px" id="admin-pending-title">⏳ Pending Verifications</div>
-    <div id="admin-pending-list">
-      <div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Loading…</div>
-    </div>
-
-    <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px;margin-top:4px">🚨 Active Complaints (5)</div>
-    <div class="comp-card"><div style="font-size:26px">⚠️</div><div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#DC2626">Complaint #2041</div><div style="font-size:12px;color:var(--muted)">Late arrival · Job #8821 · 1hr ago</div></div><button class="view-btn" onclick="toast('📋 Complaint opened')">View</button></div>
-    <div class="comp-card"><div style="font-size:26px">⚠️</div><div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#DC2626">Complaint #2039</div><div style="font-size:12px;color:var(--muted)">Poor workmanship · Job #8801 · 3hrs ago</div></div><button class="view-btn" onclick="toast('📋 Complaint opened')">View</button></div>
-
-    <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin:4px 0 11px">🔧 Quick Actions</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="card" style="cursor:pointer;text-align:center" onclick="toast('👥 All users list opened')"><div style="font-size:24px;margin-bottom:7px">👥</div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)">Manage Users</div></div>
-      <div class="card" style="cursor:pointer;text-align:center" onclick="toast('🔧 All artisans opened')"><div style="font-size:24px;margin-bottom:7px">🔧</div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)">Manage Artisans</div></div>
-      <div class="card" style="cursor:pointer;text-align:center" onclick="toast('💰 Commission settings')"><div style="font-size:24px;margin-bottom:7px">💰</div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)">Commission</div></div>
-      <div class="card" style="cursor:pointer;text-align:center" onclick="toast('📊 Analytics dashboard')"><div style="font-size:24px;margin-bottom:7px">📊</div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)">Analytics</div></div>
-    </div>
-  </div>
-  <div style="height:20px"></div>
-</div>
-
-
-
-
-
-
 <!-- ████ CORPORATE PLAN FLOW ████ -->
 <div class="s" id="corp-plan" style="background:#fff">
 
   <!-- Header -->
   <div style="background:#0B1A2E;padding:24px 18px 28px;text-align:center">
-    <button class="back w" style="display:block;margin-bottom:14px" onclick="go('home')">←</button>
     <div style="font-size:40px;margin-bottom:10px">🏢</div>
     <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:6px">Corporate Service Plans</div>
     <div style="font-size:13px;color:rgba(255,255,255,.45);line-height:1.5">Dedicated verified artisans for your office or business</div>
@@ -2837,6 +2785,14 @@ body{background:#fff}
       <button onclick="choosePlan('VIP Annual','750000','year','999')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose VIP Annual — Fund Escrow →</button>
     </div>
 
+  </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn on" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
 
@@ -5005,55 +4961,99 @@ function initSocket() {
 }
 
 /* ---------------- Auth ---------------- */
+// Ada (customer) and Emeka (artisan) are the shared test accounts and keep
+// the sample activity on screen; every other account starts from zero.
+var DEMO_ACCOUNTS = ['+2348010000001', '+2348010000002', 'ada@example.com', 'emeka@example.com'];
+function isDemoAccount(user) {
+  return !!user && (DEMO_ACCOUNTS.indexOf(user.phone) !== -1 || DEMO_ACCOUNTS.indexOf(user.email) !== -1);
+}
+
+function setText(id, text) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function setValue(id, value) {
+  var el = document.getElementById(id);
+  if (el) el.value = value || '';
+}
+
+function applyAccountMode(user) {
+  var fresh = !isDemoAccount(user);
+  document.body.classList.toggle('fresh-acct', fresh);
+  var contact = [user.email, user.phone].filter(Boolean).join(' · ');
+  setText('cust-prof-name', user.name);
+  setText('cust-prof-contact', contact);
+  setText('art-prof-name', user.name);
+  setText('art-prof-contact', contact);
+  setValue('ep-name', user.name);
+  setValue('ep-phone', user.phone);
+  setValue('ep-email', user.email);
+  setValue('aep-name', user.name);
+  setValue('aep-phone', user.phone);
+  if (fresh) {
+    setText('cust-stat-jobs', '0');
+    setText('cust-stat-spent', '₦0');
+    setText('cust-stat-rating', '–');
+    setText('art-stat-jobs', '0');
+    setText('art-stat-rating', '–');
+    setText('art-stat-money', '₦0');
+    setText('art-stat-money-lbl', 'Balance');
+    setText('wd-balance', '₦0');
+    setText('wd-display', '₦0');
+    setText('wd-amount', '₦0');
+    setText('wd-bank', user.bankName ? user.bankName + ' · ' + (user.bankAccountNumber || '') : 'No bank account linked yet');
+  }
+}
+
 async function afterAuthSuccess(user) {
+  if (user.role === 'ADMIN') {
+    clearSession();
+    toast('Admin accounts can’t sign in to the FixMi app.');
+    go('login-screen');
+    return;
+  }
   window.currentUser = user;
+  applyAccountMode(user);
   initSocket();
   if (user.role === 'ARTISAN') {
     go('artisan-dash');
     loadArtisanDash();
-  } else if (user.role === 'ADMIN') {
-    go('admin');
-    loadAdminDash();
   } else {
     go('home');
     loadHomeFeed();
   }
 }
 
-async function quickLogin(role) {
-  var creds = {
-    customer: { phone: '+2348010000001', password: 'password123' },
-    artisan: { phone: '+2348010000002', password: 'password123' },
-    admin: { phone: '+2348010000000', password: 'password123' },
-  }[role];
-  try {
-    var data = await apiFetch('/auth/login', { method: 'POST', body: creds });
-    setSession(data.accessToken, data.refreshToken, data.user);
-    toast('✅ Welcome, ' + data.user.name + '!');
-    afterAuthSuccess(data.user);
-  } catch (e) {
-    toast('❌ ' + e.message + ' (run npm run seed on the backend first)');
-  }
-}
-
-function stashLoginAndProceed() {
-  var phone = (document.getElementById('login-phone') || {}).value || '';
-  var password = (document.getElementById('login-password') || {}).value || '';
-  window._pendingLogin = { phone: phone.trim(), password: password };
-  go('otp-login');
-}
-
+// Testing period: sign in with any registered phone number or email and
+// its password — no OTP step.
 async function realLoginSubmit() {
-  var p = window._pendingLogin || {};
-  if (!p.phone || !p.password) { toast('Enter your phone and password'); go('login-screen'); return; }
+  var id = ((document.getElementById('login-id') || {}).value || '').trim();
+  var password = (document.getElementById('login-password') || {}).value || '';
+  if (!id || !password) { toast('Enter your phone number or email and your password'); return; }
+  var btn = document.getElementById('login-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
   try {
-    var data = await apiFetch('/auth/login', { method: 'POST', body: { phone: p.phone, password: p.password } });
+    var body = id.indexOf('@') !== -1 ? { email: id.toLowerCase(), password: password } : { phone: id.replace(/\s+/g, ''), password: password };
+    var data = await apiFetch('/auth/login', { method: 'POST', body: body });
     setSession(data.accessToken, data.refreshToken, data.user);
-    toast('✅ Signed in!');
+    document.getElementById('login-password').value = '';
+    if (data.user.role !== 'ADMIN') toast('✅ Welcome back, ' + data.user.name.split(' ')[0] + '!');
     afterAuthSuccess(data.user);
   } catch (e) {
     toast('❌ ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
   }
+}
+
+async function signOut() {
+  try { await apiFetch('/auth/logout', { method: 'POST', body: { refreshToken: getRefresh() } }); } catch (e) {}
+  if (_socket) { try { _socket.disconnect(); } catch (e) {} _socket = null; }
+  clearSession();
+  document.body.classList.remove('fresh-acct');
+  stack = ['splash'];
+  go('splash');
+  toast('Signed out');
 }
 
 async function realRegisterCustomer() {
@@ -5113,7 +5113,8 @@ async function realRegisterArtisan() {
       },
     });
     setSession(data.accessToken, data.refreshToken, data.user);
-    toast('🎉 Registered! Awaiting admin verification before you can go online.');
+    var approved = data.user.artisanProfile && data.user.artisanProfile.isVerified;
+    toast(approved ? '🎉 Registered! Switch Online to start getting jobs.' : '🎉 Registered! Awaiting verification before you can go online.');
     afterAuthSuccess(data.user);
   } catch (e) {
     toast('❌ ' + e.message);
@@ -5122,43 +5123,91 @@ async function realRegisterArtisan() {
 }
 
 /* ---------------- Customer: Home feed ---------------- */
+var CATEGORY_LOOK = {
+  'Electrician': ['⚡', '#FEF9C3'], 'Plumber': ['🔩', '#EFF6FF'], 'AC Tech': ['❄️', '#F0F9FF'], 'AC Technician': ['❄️', '#F0F9FF'],
+  'Mechanic': ['🚘', '#FFF7ED'], 'Painter': ['🖌️', '#FDF4FF'], 'Carpenter': ['🪚', '#FFF8ED'], 'Cleaner': ['🧹', '#F0FDF4'],
+  'Barber': ['✂️', '#FFF1F2'], 'Hairdresser': ['💇', '#FDF4FF'], 'Phone Repair': ['📱', '#EFF6FF'], 'Phone Repairer': ['📱', '#EFF6FF'],
+  'Generator': ['⚙️', '#FEF9C3'], 'Tiler': ['🟫', '#FFF7ED'], 'CCTV': ['📹', '#EFF6FF'], 'Bricklayer': ['🧱', '#FFF7ED'],
+  'Welder': ['🔥', '#FEF9C3'], 'Laundry': ['👔', '#F0F9FF']
+};
+function categoryLook(cat) { return CATEGORY_LOOK[cat] || ['🔧', '#EFF6FF']; }
+function firstName(name) { return String(name || '').trim().split(/\s+/)[0] || 'artisan'; }
+
 async function loadHomeFeed() {
   var nameEl = document.getElementById('home-user-name');
-  if (nameEl && window.currentUser) nameEl.textContent = window.currentUser.name.split(' ')[0] + ' 👋';
+  if (nameEl && window.currentUser) nameEl.textContent = firstName(window.currentUser.name) + ' 👋';
   var list = document.getElementById('nearby-artisans-list');
   if (!list) return;
   try {
-    var data = await apiFetch('/artisans?onlyAvailable=true');
-    renderNearbyArtisans(data.artisans || []);
-    var countEl = document.getElementById('home-online-count');
-    if (countEl) countEl.textContent = (data.artisans || []).length;
+    var data = await apiFetch('/artisans?featured=true');
+    renderArtisanCards(list, data.artisans || [], 'No featured artisans right now. Use the search bar or a service above to find one.');
   } catch (e) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Could not load artisans (' + escapeHtml(e.message) + ')</div>';
+    list.innerHTML = '<div class="empty-note">Could not load artisans (' + escapeHtml(e.message) + ')</div>';
   }
 }
 
-function renderNearbyArtisans(artisans) {
-  var list = document.getElementById('nearby-artisans-list');
-  if (!list) return;
+// Compact artisan cards shared by the Featured list and search results.
+function renderArtisanCards(container, artisans, emptyText) {
   if (!artisans.length) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">No artisans online right now. Try browsing all artisans, or check back soon.</div>';
+    container.innerHTML = '<div class="empty-note">' + escapeHtml(emptyText) + '</div>';
     return;
   }
-  list.innerHTML = artisans.slice(0, 6).map(function (a) {
-    var name = escapeHtml(a.user.name);
-    var cat = escapeHtml(a.category);
-    var dist = a.distanceKm != null ? a.distanceKm.toFixed(1) + ' km' : '';
+  container.innerHTML = artisans.map(function (a) {
+    var look = categoryLook(a.category);
+    var rating = a.ratingCount ? '⭐ ' + a.ratingAvg.toFixed(1) : '⭐ New';
     return (
-      '<div class="card" style="margin-bottom:11px">' +
-      '<div style="display:flex;align-items:center;gap:13px;margin-bottom:11px">' +
-      '<div class="ava" style="width:52px;height:52px;background:#EFF6FF;font-size:24px">🔧' + (a.isAvailable ? '<div class="online"></div>' : '') + '</div>' +
-      '<div style="flex:1;min-width:0"><div class="art-name">' + name + '</div><div class="art-role">' + cat + (a.yearsExp ? ' · ' + a.yearsExp + ' yrs exp' : '') + '</div>' +
-      '<div class="meta"><span class="star">⭐ ' + (a.ratingCount ? a.ratingAvg.toFixed(1) : 'New') + '</span>' + (dist ? '<span class="pill pill-gray">' + dist + '</span>' : '') + '<span class="pill pill-g">✓ Verified</span></div></div>' +
-      '</div>' +
-      '<div style="display:flex;justify-content:flex-end;margin-top:8px"><button onclick="bookSvc(' + attrJson(a.category) + ',\'🔧\',\'#EFF6FF\')" style="background:var(--g);border:none;border-radius:9px;padding:8px 16px;font-family:\'AppFont\',sans-serif;font-weight:700;font-size:12px;color:#fff;cursor:pointer">Book ' + cat + ' →</button></div>' +
+      '<div class="feat-card">' +
+      '<div class="feat-ava" style="background:' + look[1] + '">' + look[0] + (a.isAvailable ? '<div class="online"></div>' : '') + '</div>' +
+      '<div class="feat-name">' + escapeHtml(a.user.name) + '</div>' +
+      '<div class="feat-role">' + escapeHtml(a.category) + '</div>' +
+      '<div class="feat-meta">' + rating + '</div>' +
+      '<button class="feat-book" onclick="bookDirectArtisan(' + attrJson(a.id) + ',' + attrJson(a.user.name) + ',' + attrJson(a.category) + ')">Book ' + escapeHtml(firstName(a.user.name)) + '</button>' +
       '</div>'
     );
   }).join('');
+}
+
+/* ---------------- Customer: home search ---------------- */
+var _searchTimer = null, _searchSeq = 0;
+function serviceNames() {
+  var seen = {}, out = [];
+  document.querySelectorAll('#all-services .svc-item').forEach(function (el) {
+    var m = (el.getAttribute('onclick') || '').match(/bookSvc\('([^']+)','([^']+)','([^']+)'\)/);
+    if (m && !seen[m[1]]) { seen[m[1]] = 1; out.push({ name: m[1], ico: m[2], bg: m[3] }); }
+  });
+  return out;
+}
+function homeSearch(q) {
+  clearTimeout(_searchTimer);
+  q = String(q || '').trim();
+  var box = document.getElementById('home-search-results');
+  if (!q) { box.hidden = true; return; }
+  _searchTimer = setTimeout(function () { runHomeSearch(q); }, 250);
+}
+async function runHomeSearch(q) {
+  var seq = ++_searchSeq;
+  var box = document.getElementById('home-search-results');
+  var chips = document.getElementById('home-search-services');
+  var grid = document.getElementById('home-search-artisans');
+  box.hidden = false;
+  document.getElementById('home-search-title').textContent = 'Results for “' + q + '”';
+  var lower = q.toLowerCase();
+  chips.innerHTML = serviceNames().filter(function (s) { return s.name.toLowerCase().indexOf(lower) !== -1; }).slice(0, 8).map(function (s) {
+    return '<button class="search-chip" onclick="bookSvc(' + attrJson(s.name) + ',' + attrJson(s.ico) + ',' + attrJson(s.bg) + ')">' + s.ico + ' ' + escapeHtml(s.name) + '</button>';
+  }).join('');
+  grid.innerHTML = '<div class="empty-note">Searching…</div>';
+  try {
+    var data = await apiFetch('/search?q=' + encodeURIComponent(q));
+    if (seq !== _searchSeq) return;
+    renderArtisanCards(grid, data.artisans || [], chips.innerHTML ? 'No artisans by that name yet. Tap a service above to book one.' : 'Nothing matched “' + q + '”. Try a service like plumber or electrician.');
+  } catch (e) {
+    if (seq === _searchSeq) grid.innerHTML = '<div class="empty-note">' + escapeHtml(e.message) + '</div>';
+  }
+}
+function clearHomeSearch() {
+  var inp = document.getElementById('home-search');
+  if (inp) inp.value = '';
+  document.getElementById('home-search-results').hidden = true;
 }
 
 /* ---------------- Customer: booking creation ---------------- */
@@ -5170,35 +5219,52 @@ function bookSvc(name, ico, bg) {
   var rb = document.getElementById('req-artisan-banner');
   var btn = document.getElementById('req-find-btn');
   if (rt) rt.textContent = 'Book ' + name;
-  if (rp) rp.innerHTML = ico + ' ' + name;
+  if (rp) rp.innerHTML = ico + ' ' + escapeHtml(name);
   if (rb) rb.style.display = 'none';
-  if (btn) btn.textContent = 'Find Nearby Artisans';
+  if (btn) btn.textContent = '🔍 Find Nearby Artisans';
+  go('request');
+}
+
+// Booking a specific artisan (from Featured or search): the request goes
+// straight to them instead of being broadcast.
+function bookDirectArtisan(artisanId, name, category) {
+  var look = categoryLook(category);
+  directArtisan = { id: artisanId, name: name, svc: category, ico: look[0], bg: look[1] };
+  window._pendingCategory = category;
+  var rt = document.getElementById('req-title');
+  var rp = document.getElementById('req-pill');
+  var rb = document.getElementById('req-artisan-banner');
+  var btn = document.getElementById('req-find-btn');
+  if (rt) rt.textContent = 'Book ' + firstName(name);
+  if (rp) rp.innerHTML = look[0] + ' ' + escapeHtml(category);
+  if (rb) rb.style.display = 'flex';
+  setText('req-artisan-ico', look[0]);
+  setText('req-artisan-name', name);
+  if (btn) btn.textContent = 'Book ' + firstName(name);
   go('request');
 }
 
 async function startFindingOrDirect() {
   if (!requireLogin()) return;
-  if (directArtisan) {
-    // Direct-to-artisan booking stays a visual demo for this first pass —
-    // the real marketplace flow below (open broadcast + first-to-accept)
-    // is what's wired to the backend.
-    setupOffer(directArtisan.name, directArtisan.svc, directArtisan.ico, directArtisan.bg, '4.9', '0.8 km', '~8 min', false);
-    return;
-  }
   var issue = (document.getElementById('issue-text') || {}).value || '';
   var address = ((document.getElementById('req-location') || {}).value || '').replace(/^\s*\u{1F4CD}\s*/u, '');
   var budgetNaira = Number((document.getElementById('req-budget') || {}).value || 0);
   if (!issue.trim()) { toast('Please describe your issue'); return; }
   if (!budgetNaira || budgetNaira <= 0) { toast('Enter your budget'); return; }
 
+  var body = { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: Math.round(budgetNaira * 100) };
+  if (directArtisan && directArtisan.id) body.artisanId = directArtisan.id;
   try {
-    var data = await apiFetch('/bookings', {
-      method: 'POST',
-      body: { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: Math.round(budgetNaira * 100) },
-    });
+    var data = await apiFetch('/bookings', { method: 'POST', body: body });
     window._activeBookingId = data.booking.id;
     window._activeBooking = data.booking;
-    go('finding');
+    if (body.artisanId) {
+      renderMatchScreen(data.booking);
+      go('match');
+      toast('📨 Request sent to ' + firstName(directArtisan.name));
+    } else {
+      go('finding');
+    }
   } catch (e) {
     toast('❌ ' + e.message);
   }
@@ -5213,7 +5279,8 @@ async function checkBookingStatusNow() {
       renderMatchScreen(data.booking);
       go('match');
     } else {
-      toast('Still searching for a nearby artisan…');
+      var who = data.booking.artisan && data.booking.artisan.user ? firstName(data.booking.artisan.user.name) : null;
+      toast(who ? 'Still waiting for ' + who + ' to accept…' : 'Still searching for a nearby artisan…');
     }
   } catch (e) {
     toast('❌ ' + e.message);
@@ -5239,7 +5306,7 @@ function renderMatchScreen(b) {
   var artisanUser = b.artisan && b.artisan.user;
   document.getElementById('match-ava').textContent = '🔧';
   document.getElementById('match-name').textContent = artisanUser ? artisanUser.name : 'Searching…';
-  document.getElementById('match-role').textContent = b.category + (b.artisan ? ' · ' + escapeHtml(b.address) : '');
+  document.getElementById('match-role').textContent = b.category + (b.artisan ? ' · ' + b.address : '');
   document.getElementById('match-price-val').textContent = fmtNaira(b.priceKobo);
   document.getElementById('match-price-lbl').textContent = 'Your Budget';
   document.getElementById('match-eta').textContent = '—';
@@ -5283,6 +5350,15 @@ function renderMatchScreen(b) {
     h.textContent = '🎉 Job complete!';
     statusLine.style.display = 'none';
     btn.style.display = 'none';
+  } else if (b.status === 'REQUESTED' && artisanUser) {
+    tag.textContent = 'Request Sent';
+    h.textContent = 'Waiting for ' + firstName(artisanUser.name) + ' to accept';
+    statusLine.style.display = 'block';
+    statusLine.textContent = 'We’ve sent your job to ' + artisanUser.name + '. You’ll be notified as soon as they accept.';
+    btn.style.display = 'block';
+    btn.style.background = 'var(--navy)';
+    btn.textContent = '🔄 Check Status';
+    btn.onclick = checkBookingStatusNow;
   } else {
     tag.textContent = 'Searching';
     h.textContent = 'Finding an artisan…';
@@ -5342,8 +5418,8 @@ async function realSubmitRating() {
 }
 
 /* ---------------- Chat ---------------- */
-async function loadChatThreads() {
-  var list = document.getElementById('chat-thread-list');
+async function loadChatThreads(listId) {
+  var list = document.getElementById(listId || 'chat-thread-list');
   if (!list) return;
   try {
     var data = await apiFetch('/chat/threads');
@@ -5459,6 +5535,13 @@ async function loadArtisanDash() {
 
     var w = await apiFetch('/wallet');
     document.getElementById('ad-balance').textContent = fmtNaira(w.wallet.balanceKobo);
+    if (!isDemoAccount(u)) {
+      var bal = fmtNaira(w.wallet.balanceKobo);
+      wdAmounts = { daily: bal, weekly: bal, monthly: bal };
+      ['wd-amount', 'wd-balance', 'wd-display', 'art-stat-money'].forEach(function (id) { setText(id, bal); });
+      setText('art-stat-jobs', String(ap.jobsDone || 0));
+      setText('art-stat-rating', ap.ratingCount ? ap.ratingAvg.toFixed(1) + '★' : '–');
+    }
   } catch (e) {
     toast('❌ ' + e.message);
   }
@@ -5590,61 +5673,59 @@ async function realAcceptJob(bookingId) {
   }
 }
 
-/* ---------------- Admin dashboard ---------------- */
-async function loadAdminDash() {
+/* ---------------- Real activity lists (non-demo accounts) ---------------- */
+var STATUS_LABEL = {
+  REQUESTED: ['⏳ Requested', '#FFF3ED', 'var(--orange)'], ACCEPTED: ['✓ Accepted', '#EFF6FF', '#1E40AF'],
+  PAID: ['💳 Paid', '#EFF6FF', '#1E40AF'], IN_PROGRESS: ['🔧 In Progress', '#EFF6FF', '#1E40AF'],
+  COMPLETED: ['✅ Done — confirm', '#FFF3ED', 'var(--orange)'], CONFIRMED: ['✓ Completed', 'var(--g3)', 'var(--g2)'],
+  DECLINED: ['Declined', 'var(--gray)', 'var(--muted)'], CANCELLED: ['Cancelled', 'var(--gray)', 'var(--muted)'], DISPUTED: ['Disputed', '#FEE2E2', '#DC2626']
+};
+async function loadBookingHistory(containerId, asArtisan) {
+  var box = document.getElementById(containerId);
+  if (!box || !document.body.classList.contains('fresh-acct')) return;
+  box.innerHTML = '<div class="empty-note">Loading…</div>';
   try {
-    var s = await apiFetch('/admin/stats');
-    document.getElementById('as-users').textContent = s.customers;
-    document.getElementById('as-artisans').textContent = s.artisans;
-    document.getElementById('as-pending').textContent = s.pendingArtisans;
-    document.getElementById('as-jobs').textContent = s.bookingsTotal;
-    document.getElementById('as-active').textContent = s.bookingsActive;
-    document.getElementById('as-tickets').textContent = s.ticketsOpen;
-    document.getElementById('admin-pending-title').textContent = '⏳ Pending Verifications (' + s.pendingArtisans + ')';
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
-  renderAdminPending();
-}
-
-async function renderAdminPending() {
-  var list = document.getElementById('admin-pending-list');
-  if (!list) return;
-  try {
-    var data = await apiFetch('/admin/artisans/pending');
-    if (!data.artisans.length) {
-      list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">No pending artisans — all caught up! ✅</div>';
+    var data = await apiFetch('/bookings');
+    var list = data.bookings || [];
+    if (!asArtisan) {
+      var spent = list.filter(function (b) { return b.status === 'CONFIRMED'; }).reduce(function (t, b) { return t + b.priceKobo; }, 0);
+      setText('cust-stat-jobs', String(list.length));
+      setText('cust-stat-spent', fmtNaira(spent));
+    }
+    if (!list.length) {
+      box.innerHTML = '<div class="empty-state"><b>No jobs yet</b>' + (asArtisan ? 'Jobs you accept will show up here.' : 'Book an artisan from the home page and your jobs will show up here.') + '</div>';
       return;
     }
-    list.innerHTML = data.artisans.map(function (a) {
+    box.innerHTML = list.map(function (b) {
+      var look = categoryLook(b.category);
+      var st = STATUS_LABEL[b.status] || [b.status, 'var(--gray)', 'var(--muted)'];
+      var other = asArtisan ? (b.customer && b.customer.name) : (b.artisan && b.artisan.user && b.artisan.user.name);
+      var when = new Date(b.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
       return (
-        '<div class="pend-card">' +
-        '<div class="pend-hdr"><div class="pend-ico">🔧</div><div><div class="pend-name">' + escapeHtml(a.user.name) + '</div><div class="pend-skill">' + escapeHtml(a.category) + '</div></div></div>' +
-        '<div class="doc-tags"><span class="doc doc-ok">✅ ' + escapeHtml(a.idType || 'ID') + '</span><span class="doc doc-ok">✅ Phone</span></div>' +
-        '<div class="pend-acts"><button class="p-app" onclick="realApproveArtisan(' + attrJson(a.id) + ')">Approve</button><button class="p-rej" onclick="realRejectArtisan(' + attrJson(a.id) + ')">Reject</button></div>' +
+        '<div class="card" style="margin-bottom:11px">' +
+        '<div style="display:flex;align-items:center;gap:11px;margin-bottom:10px"><div style="width:44px;height:44px;background:' + look[1] + ';border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">' + look[0] + '</div>' +
+        '<div style="min-width:0"><div style="font-weight:700;font-size:15px;color:var(--navy)">' + escapeHtml(b.category) + '</div><div style="font-size:12px;color:var(--muted)">' + escapeHtml(other || 'Awaiting artisan') + ' · ' + when + '</div></div></div>' +
+        '<p style="font-size:13px;color:var(--muted);margin-bottom:10px">"' + escapeHtml(b.issue) + '"</p>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)"><span style="background:' + st[1] + ';color:' + st[2] + ';border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">' + st[0] + '</span><span style="font-weight:800;font-size:16px">' + fmtNaira(b.priceKobo) + '</span></div>' +
         '</div>'
       );
     }).join('');
   } catch (e) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">' + escapeHtml(e.message) + '</div>';
+    box.innerHTML = '<div class="empty-note">' + escapeHtml(e.message) + '</div>';
   }
 }
 
-async function realApproveArtisan(id) {
+/* ---------------- Promote My Page (real) ---------------- */
+var PROMO_PLAN_KEYS = { 'Basic Boost': 'basic', 'Standard Boost': 'standard', 'VIP Annual': 'vip' };
+async function confirmPromoPayment() {
+  var pkg = (document.getElementById('promo-pkg') || {}).textContent || '';
+  var plan = PROMO_PLAN_KEYS[pkg];
+  if (!plan) { toast('Choose a promotion package first'); go('artisan-promote'); return; }
   try {
-    await apiFetch('/admin/artisans/' + id + '/approve', { method: 'POST' });
-    toast('✅ Artisan approved!');
-    loadAdminDash();
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
-}
-
-async function realRejectArtisan(id) {
-  try {
-    await apiFetch('/admin/artisans/' + id + '/reject', { method: 'POST', body: { reason: 'Documents incomplete' } });
-    toast('❌ Rejected');
-    loadAdminDash();
+    var data = await apiFetch('/users/me/promote', { method: 'POST', body: { plan: plan } });
+    var until = new Date(data.artisanProfile.featuredUntil).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
+    toast('✅ ' + data.plan + ' active — you’re featured until ' + until);
+    setTimeout(function () { go('artisan-dash'); loadArtisanDash(); }, 1800);
   } catch (e) {
     toast('❌ ' + e.message);
   }
@@ -5652,17 +5733,28 @@ async function realRejectArtisan(id) {
 
 /* ---------------- Boot ---------------- */
 (function boot() {
-  // Resume an existing session on page load/reload instead of always
-  // restarting at the splash screen — a valid token means this device is
-  // already signed in.
+  // Resume a stored session only if the server still accepts it, so an
+  // expired or revoked login lands on the splash screen instead of a
+  // half-loaded account.
   if (getAccess() && window.currentUser) {
-    afterAuthSuccess(window.currentUser);
+    apiFetch('/auth/me').then(function (data) {
+      if (!getAccess()) return;
+      var user = Object.assign({}, window.currentUser, data.user);
+      setSession(getAccess(), getRefresh(), user);
+      afterAuthSuccess(user);
+    }).catch(function () {
+      clearSession();
+      go('splash');
+    });
   }
-  // Load messages list whenever the "messages" screen is shown.
+  // Load live lists when their screens open.
   var origGo = window.go;
   window.go = function (id) {
     origGo(id);
-    if (id === 'messages') loadChatThreads();
+    if (id === 'messages') loadChatThreads('chat-thread-list');
+    if (id === 'artisan-messages' && document.body.classList.contains('fresh-acct')) loadChatThreads('artisan-chat-thread-list');
+    if (id === 'history' || id === 'profile') loadBookingHistory('history-real', false);
+    if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
   };
 })();
 
