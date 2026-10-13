@@ -14,7 +14,7 @@ router.get("/stats", ctrl.stats);
 router.get("/artisans/pending", ctrl.listPendingArtisans);
 router.post("/artisans/:id/approve", ctrl.approveArtisan);
 router.post("/artisans/:id/reject", ctrl.rejectArtisan);
-router.get("/users", ctrl.listUsers);
+router.get("/users", ops.listUsers);
 router.post("/users/:id/suspend", ctrl.suspendUser);
 router.post("/users/:id/reactivate", ctrl.reactivateUser);
 router.get("/bookings", ctrl.listBookings);

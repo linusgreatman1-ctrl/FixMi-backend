@@ -5,188 +5,427 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FixMi Admin</title>
 <style>
-:root{--g:#00C65E;--navy:#0B1A2E;--muted:#7A8EA8;--line:#E4EAF0;--bg:#F2F5F8;--red:#DC2626;--card:#fff;--text:#0B1A2E}
+:root{--g:#00C65E;--navy:#0B1A2E;--muted:#7A8EA8;--line:#E4EAF0;--bg:#F2F5F8;--red:#DC2626;--card:#fff;--text:#0B1A2E;--amber:#92400E;--amberbg:#FEF3C7}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0B1A2E;--card:#13263F;--line:#22385A;--text:#E8EEF5;--muted:#9AB0C8}}
 :root[data-theme="dark"]{--bg:#0B1A2E;--card:#13263F;--line:#22385A;--text:#E8EEF5;--muted:#9AB0C8}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
-header{background:var(--navy);color:#fff;padding:16px;display:flex;align-items:center;gap:12px}
+header{background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
 header b{font-size:20px}header b span{color:var(--g)}
 header small{opacity:.6;flex:1}
-main{max-width:860px;margin:0 auto;padding:16px}
+#shell{display:flex;min-height:calc(100vh - 54px)}
+nav{width:190px;background:var(--card);border-right:1px solid var(--line);padding:10px;flex-shrink:0}
+nav button{display:flex;justify-content:space-between;width:100%;text-align:left;background:none;color:var(--text);padding:9px 10px;margin-bottom:2px;border-radius:8px;font-weight:600}
+nav button.on{background:var(--navy);color:#fff}
+nav .cnt{background:var(--red);color:#fff;border-radius:10px;padding:0 7px;font-size:11px;line-height:18px}
+main{flex:1;min-width:0;padding:16px;max-width:1100px}
+@media (max-width:760px){#shell{flex-direction:column}nav{width:auto;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}nav button{white-space:nowrap;width:auto;margin-right:4px}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text)}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text)}
 textarea{min-height:60px;resize:vertical}
-button{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:700;cursor:pointer}
-.g{background:var(--g);color:#fff}.r{background:#FEE2E2;color:var(--red)}.n{background:var(--navy);color:#fff}.l{background:var(--bg);color:var(--text)}
+button{border:0;border-radius:10px;padding:9px 13px;font:inherit;font-weight:700;cursor:pointer}
+.g{background:var(--g);color:#fff}.r{background:#FEE2E2;color:var(--red)}.n{background:var(--navy);color:#fff}.l{background:var(--bg);color:var(--text);border:1px solid var(--line)}
 .muted{color:var(--muted);font-size:13px}
-.tag{display:inline-block;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;background:#FEF3C7;color:#92400E}
-.tag.ok{background:#DCFCE7;color:#166534}
+.tag{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--amberbg);color:var(--amber)}
+.tag.ok{background:#DCFCE7;color:#166534}.tag.bad{background:#FEE2E2;color:var(--red)}
 .side{border-left:3px solid var(--line);padding:6px 0 6px 12px;margin:10px 0}
 .side img{max-width:160px;border-radius:8px;display:inline-block;margin:6px 6px 0 0}
 .err{color:var(--red);font-size:13px;min-height:18px}
 label{font-size:13px;font-weight:600;display:block;margin:10px 0 5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.scroll{overflow-x:auto}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:20}
+#modal .box{background:var(--card);border-radius:14px;padding:18px;max-width:720px;width:100%}
+.bars{display:flex;align-items:flex-end;gap:3px;height:60px;margin-top:6px}
+.bars i{flex:1;background:var(--g);border-radius:3px 3px 0 0;min-height:2px}
 </style>
 </head>
 <body>
-<header><b>Fix<span>Mi</span></b><small>Admin</small><button class="l" id="out" hidden onclick="signOut()">Sign out</button></header>
-<main>
-  <div id="login" class="card" hidden>
-    <h3 style="margin-top:0">Admin sign in</h3>
-    <label for="em">Email</label><input id="em" type="email" autocomplete="username">
-    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
-    <div class="err" id="lerr"></div>
-    <button class="g" onclick="signIn()">Sign in</button>
-  </div>
-  <div id="app" hidden>
-    <div class="row" style="margin-bottom:12px">
-      <button class="n" onclick="tab('disputes')">Disputes</button><button class="n" onclick="tab('kyc')">IDs</button><button class="n" onclick="tab('safety')">Safety</button><button class="n" onclick="tab('announce')">Announcements</button><button class="n" onclick="tab('audit')">Audit log</button>
+<header><b>Fix<span>Mi</span></b><small id="who">Admin</small><button class="l" id="out" hidden data-act="signout">Sign out</button></header>
+<div id="shell">
+  <nav id="nav" hidden></nav>
+  <main>
+    <div id="login" class="card" hidden style="max-width:420px;margin:30px auto">
+      <h3 style="margin-top:0">Admin sign in</h3>
+      <label for="em">Email</label><input id="em" type="email" autocomplete="username">
+      <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+      <div class="err" id="lerr"></div>
+      <button class="g" data-act="signin">Sign in</button>
     </div>
-    <div id="sub" class="row" style="margin-bottom:12px"></div>
-    <div id="list"></div>
-  </div>
-</main>
+    <div id="app" hidden><div id="list"></div></div>
+  </main>
+</div>
+<div id="modal"><div class="box" id="mbox"></div></div>
 <script>
-var tok = null; try { tok = sessionStorage.getItem('fixmi_admin'); } catch (e) {}
-function naira(k){ return '₦' + Math.round((k||0)/100).toLocaleString('en-NG'); }
-function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function api(path, body, method){
+var tok = null, me = null, current = 'dashboard';
+try { tok = sessionStorage.getItem('fixmi_admin'); } catch (e) {}
+function $(id) { return document.getElementById(id); }
+function naira(k) { return '₦' + Math.round((k || 0) / 100).toLocaleString('en-NG'); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function when(d) { return d ? new Date(d).toLocaleString() : ''; }
+function api(path, body, method) {
   return fetch('/api' + path, { method: method || (body ? 'POST' : 'GET'), headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: body ? JSON.stringify(body) : undefined })
-    .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Request failed'); return d; }); });
+    .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Request failed'); return d; }); });
 }
-function show(){ document.getElementById('login').hidden = !!tok; document.getElementById('app').hidden = !tok; document.getElementById('out').hidden = !tok; if (tok) tab('disputes'); }
-function signIn(){
-  var e = document.getElementById('lerr'); e.textContent = '';
-  api('/auth/login', { email: document.getElementById('em').value.trim().toLowerCase(), password: document.getElementById('pw').value })
-    .then(function(d){ if (d.user.role !== 'ADMIN') throw new Error('This account is not an admin.'); tok = d.accessToken; try { sessionStorage.setItem('fixmi_admin', tok); } catch (x) {} show(); })
-    .catch(function(err){ e.textContent = err.message; });
+function setList(h) { $('list').innerHTML = h; }
+function fail(err) { if (/token|authentication/i.test(err.message)) signOut(); setList('<div class="card"><span class="err">' + esc(err.message) + '</span></div>'); }
+function tag(text, kind) { return '<span class="tag ' + (kind || '') + '">' + esc(text) + '</span>'; }
+function btn(label, act, id, cls, extra) { return '<button class="' + (cls || 'l') + '" data-act="' + act + '" data-id="' + esc(id) + '"' + (extra || '') + '>' + label + '</button>'; }
+function table(heads, rows) {
+  if (!rows.length) return '<div class="muted">Nothing here yet.</div>';
+  return '<div class="scroll"><table><tr>' + heads.map(function (h) { return '<th>' + h + '</th>'; }).join('') + '</tr>' + rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>';
 }
-function signOut(){ tok = null; try { sessionStorage.removeItem('fixmi_admin'); } catch (x) {} show(); }
-var openOnly = true;
-function load(open){
-  openOnly = open;
-  var list = document.getElementById('list'); list.innerHTML = '<div class="muted">Loading…</div>';
-  api('/admin/disputes' + (open ? '' : '?open=false')).then(function(d){
-    if (!d.disputes.length) { list.innerHTML = '<div class="card muted">No ' + (open ? 'open ' : '') + 'disputes.</div>'; return; }
-    list.innerHTML = d.disputes.map(card).join('');
-  }).catch(function(err){ if (/token|auth/i.test(err.message)) signOut(); list.innerHTML = '<div class="card err">' + esc(err.message) + '</div>'; });
+function openModal(html) { $('mbox').innerHTML = html; $('modal').style.display = 'flex'; }
+function closeModal() { $('modal').style.display = 'none'; }
+function val(id) { var e = $(id); return e ? e.value : ''; }
+
+var SECTIONS = [
+  ['dashboard', 'Dashboard'], ['users', 'Users'], ['artisans', 'Artisan approvals'], ['bookings', 'Bookings'], ['disputes', 'Disputes'],
+  ['withdrawals', 'Withdrawals'], ['money', 'Money'], ['kyc', 'ID reviews'], ['safety', 'Safety'], ['tickets', 'Support'],
+  ['ratings', 'Ratings'], ['appreviews', 'App reviews'], ['content', 'App content'], ['announce', 'Announcements'], ['sms', 'Bulk SMS'],
+  ['admins', 'Admins'], ['audit', 'Audit log']
+];
+var LOAD = {};
+var badges = {};
+
+function buildNav() {
+  $('nav').innerHTML = SECTIONS.map(function (s) {
+    var n = badges[s[0]];
+    return '<button class="' + (s[0] === current ? 'on' : '') + '" data-act="tab" data-id="' + s[0] + '"><span>' + s[1] + '</span>' + (n ? '<span class="cnt">' + n + '</span>' : '') + '</button>';
+  }).join('');
 }
-function photos(urls, who){
-  return String(urls || '').split('\n').filter(Boolean).map(function(u){ return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="' + who + ' evidence"></a>'; }).join('');
+function tab(name) {
+  current = name; buildNav(); setList('<div class="muted">Loading…</div>');
+  (LOAD[name] || function () { setList(''); })();
 }
-function card(t){
-  var b = t.booking || {};
-  var held = (b.escrowHolds || []).filter(function(h){ return h.status === 'DISPUTED'; }).reduce(function(n,h){ return n + h.amountKobo; }, 0);
-  var art = b.artisan ? b.artisan.user.name + ' (' + esc(b.artisan.user.phone || '') + ')' : '—';
-  var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + esc(t.subject) + '</b>' +
-    (t.resolvedAt ? '<span class="tag ok">Resolved · ' + esc(t.resolution) + '</span>' : '<span class="tag">' + naira(held) + ' held</span>') + '</div>' +
-    '<div class="muted">' + new Date(t.createdAt).toLocaleString() + ' · Agreed price ' + naira(b.agreedPriceKobo) + '</div>' +
-    '<div class="side"><b>Customer — ' + esc(t.user.name) + ' (' + esc(t.user.phone || t.user.email || '') + ')</b><div>' + esc(t.message) + '</div>' +
-    (t.requestedRefundKobo ? '<div class="muted">Asks for ' + naira(t.requestedRefundKobo) + ' back</div>' : '') +
-    photos(t.evidenceUrl, 'Customer') + '</div>' +
-    '<div class="side"><b>Artisan — ' + esc(art) + '</b><div>' + (t.secondPartyResponse ? esc(t.secondPartyResponse) : '<span class="muted">No response yet</span>') + '</div>' +
-    photos(t.secondPartyEvidenceUrl, 'Artisan') + '</div>' +
-    '<div class="muted">Job: ' + esc(b.category) + ' — ' + esc(b.issue) + '</div>';
-  if (!t.resolvedAt) {
-    h += '<label>Note to both sides (optional)</label><textarea id="note-' + t.id + '"></textarea>' +
-      '<label>Refund to customer for a split (₦)</label><input id="amt-' + t.id + '" type="number" min="1" placeholder="e.g. ' + Math.round(held/200) + '">' +
-      '<div class="err" id="err-' + t.id + '"></div>' +
-      '<div class="row"><button class="g" onclick="resolve(\'' + t.id + '\',\'RELEASE\')">Pay artisan</button>' +
-      '<button class="r" onclick="resolve(\'' + t.id + '\',\'REFUND\')">Refund customer</button>' +
-      '<button class="n" onclick="resolve(\'' + t.id + '\',\'SPLIT\')">Split</button></div>';
+function refresh() { tab(current); }
+
+function show() {
+  var signedIn = !!tok;
+  $('login').hidden = signedIn; $('app').hidden = !signedIn; $('nav').hidden = !signedIn; $('out').hidden = !signedIn;
+  if (signedIn) {
+    api('/auth/me').then(function (d) { me = d.user; $('who').textContent = me.name + (me.isSuperAdmin ? ' · super admin' : ''); loadBadges(); tab(current); }).catch(function (e) { fail(e); });
   }
-  return h + '</div>';
 }
-function resolve(id, outcome){
-  var body = { outcome: outcome, note: document.getElementById('note-' + id).value };
-  if (outcome === 'SPLIT') body.refundKobo = Math.round(Number(document.getElementById('amt-' + id).value) * 100);
-  if (!confirm(outcome === 'RELEASE' ? 'Pay the artisan?' : outcome === 'REFUND' ? 'Refund the customer in full?' : 'Split as entered?')) return;
-  api('/admin/disputes/' + id + '/resolve', body).then(function(){ load(openOnly); })
-    .catch(function(err){ document.getElementById('err-' + id).textContent = err.message; });
+function loadBadges() {
+  api('/admin/dashboard').then(function (d) {
+    var a = d.needsAttention;
+    badges = { withdrawals: a.withdrawals, kyc: a.idReviews, safety: a.sos + a.safetyReports, disputes: a.disputes, tickets: a.supportTickets, artisans: 0 };
+    api('/admin/artisans/pending').then(function (p) { badges.artisans = p.artisans.length; buildNav(); }).catch(function () { buildNav(); });
+  }).catch(function () {});
 }
+function signIn() {
+  $('lerr').textContent = '';
+  api('/auth/login', { email: val('em').trim().toLowerCase(), password: val('pw') })
+    .then(function (d) { if (d.user.role !== 'ADMIN') throw new Error('This account is not an admin.'); tok = d.accessToken; try { sessionStorage.setItem('fixmi_admin', tok); } catch (x) {} show(); })
+    .catch(function (err) { $('lerr').textContent = err.message; });
+}
+function signOut() { tok = null; me = null; try { sessionStorage.removeItem('fixmi_admin'); } catch (x) {} show(); }
 
-function setList(h){ document.getElementById('list').innerHTML = h; }
-function fail(err){ if (/token|auth/i.test(err.message)) signOut(); setList('<div class="card err">' + esc(err.message) + '</div>'); }
-function tab(name){
-  var sub = document.getElementById('sub'); sub.innerHTML = '';
-  setList('<div class="muted">Loading…</div>');
-  if (name === 'disputes') { sub.innerHTML = '<button class="l" onclick="load(true)">Open disputes</button><button class="l" onclick="load(false)">All disputes</button>'; load(true); }
-  else if (name === 'kyc') loadKyc();
-  else if (name === 'safety') loadSafety();
-  else if (name === 'announce') loadAnnounce();
-  else if (name === 'audit') loadAudit();
-}
-function when(d){ return new Date(d).toLocaleString(); }
-
-function loadKyc(){
-  api('/admin/kyc/documents?status=PENDING').then(function(d){
-    if (!d.documents.length) return setList('<div class="card muted">No IDs waiting for review.</div>');
-    setList(d.documents.map(function(x){
-      return '<div class="card"><b>' + esc(x.user.name) + '</b> <span class="muted">' + esc(x.user.role) + ' · ' + esc(x.user.phone || x.user.email || '') + '</span>' +
-        '<div class="muted">' + esc(x.docType.replace(/_/g,' ').toLowerCase()) + (x.idType ? ' · ' + esc(x.idType.replace(/_/g,' ')) + ' ' + esc(x.idNumber || '') : '') + ' · ' + when(x.createdAt) + '</div>' +
-        '<div><img data-src="' + esc(x.fileUrl) + '" alt="ID" style="max-width:260px;border-radius:8px;margin:8px 0;cursor:zoom-in" onclick="window.open(this.src)"></div>' +
-        '<label>Reason (needed to decline)</label><input id="kr-' + x.id + '"><div class="err" id="ke-' + x.id + '"></div>' +
-        '<div class="row"><button class="g" onclick="reviewKyc(\'' + x.id + '\',\'APPROVED\')">Approve</button><button class="r" onclick="reviewKyc(\'' + x.id + '\',\'REJECTED\')">Decline</button></div></div>';
-    }).join(''));
-    loadImages();
+/* ---------- Dashboard ---------- */
+LOAD.dashboard = function () {
+  api('/admin/dashboard').then(function (d) {
+    var max = Math.max.apply(null, d.series.map(function (s) { return Math.max(s.signups, s.bookings); }).concat([1]));
+    function bars(key) { return '<div class="bars">' + d.series.map(function (s) { return '<i title="' + s.date + ': ' + s[key] + '" style="height:' + Math.max(3, s[key] / max * 100) + '%"></i>'; }).join('') + '</div>'; }
+    var a = d.needsAttention;
+    function stat(v, l) { return '<div class="stat"><b>' + v + '</b><span>' + l + '</span></div>'; }
+    setList('<div class="grid">' + stat(d.users.customers, 'Customers') + stat(d.users.artisans, 'Artisans') + stat(d.users.artisansOnline, 'Artisans online') + stat(d.users.newLast7Days, 'New in 7 days') + '</div>' +
+      '<div class="grid">' + stat(naira(d.money.completedValueKobo), 'Completed job value') + stat(naira(d.money.commissionEarnedKobo), 'Commission earned') + stat(naira(d.money.inEscrowKobo), 'Held in escrow') + stat(naira(d.money.pendingWithdrawals.amountKobo) + ' (' + d.money.pendingWithdrawals.count + ')', 'Withdrawals waiting') + '</div>' +
+      '<div class="card"><b>Needs attention</b><div class="grid" style="margin:10px 0 0">' + stat(a.sos, 'SOS alerts') + stat(a.disputes, 'Open disputes') + stat(a.withdrawals, 'Withdrawals') + stat(a.idReviews, 'ID reviews') + stat(a.safetyReports, 'Safety reports') + stat(a.supportTickets, 'Support tickets') + '</div></div>' +
+      '<div class="card"><b>Last 14 days</b><div class="muted">Bookings</div>' + bars('bookings') + '<div class="muted" style="margin-top:10px">Sign-ups</div>' + bars('signups') + '</div>' +
+      '<div class="card"><b>Bookings by status</b><div class="row" style="margin-top:8px">' + Object.keys(d.bookings).map(function (k) { return tag(k + ': ' + d.bookings[k]); }).join('') + '</div></div>');
   }).catch(fail);
+};
+
+/* ---------- Users ---------- */
+var userQ = { q: '', role: '', status: '' };
+LOAD.users = function () {
+  var qs = '?limit=100' + (userQ.q ? '&q=' + encodeURIComponent(userQ.q) : '') + (userQ.role ? '&role=' + userQ.role : '') + (userQ.status ? '&status=' + userQ.status : '');
+  api('/admin/users' + qs).then(function (d) {
+    function opt(v, l, cur) { return '<option value="' + v + '"' + (cur === v ? ' selected' : '') + '>' + l + '</option>'; }
+    setList('<div class="card"><div class="row"><div style="flex:2;min-width:180px"><input id="uq" placeholder="Search name, email or phone" value="' + esc(userQ.q) + '"></div>' +
+      '<div style="flex:1"><select id="ur">' + opt('', 'All roles', userQ.role) + opt('CUSTOMER', 'Customers', userQ.role) + opt('ARTISAN', 'Artisans', userQ.role) + opt('ADMIN', 'Admins', userQ.role) + '</select></div>' +
+      '<div style="flex:1"><select id="us">' + opt('', 'Any status', userQ.status) + opt('ACTIVE', 'Active', userQ.status) + opt('SUSPENDED', 'Suspended', userQ.status) + '</select></div>' +
+      '<button class="n" data-act="usersearch">Search</button></div><div class="muted" style="margin-top:8px">' + d.total + ' accounts</div></div>' +
+      '<div class="card">' + table(['Name', 'Contact', 'Role', 'Status', 'Wallet', 'Joined', ''], d.users.map(function (u) {
+        return [esc(u.name) + (u.isGuest ? ' ' + tag('guest') : ''), esc(u.phone || u.email || ''), esc(u.role) + (u.artisanProfile ? '<div class="muted">' + esc(u.artisanProfile.category) + (u.artisanProfile.isVerified ? ' ✓' : '') + '</div>' : ''),
+          tag(u.status, u.status === 'ACTIVE' ? 'ok' : 'bad'), naira(u.wallet ? u.wallet.balanceKobo : 0), new Date(u.createdAt).toLocaleDateString(), btn('Open', 'user', u.id, 'n')];
+      })) + '</div>');
+  }).catch(fail);
+};
+
+function userDetail(id) {
+  api('/admin/users/' + id).then(function (d) {
+    var u = d.user, w = u.wallet;
+    var h = '<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + esc(u.name) + '</h3><button class="l" data-act="close">Close</button></div>' +
+      '<div class="muted">' + esc(u.role) + ' · ' + tag(u.status, u.status === 'ACTIVE' ? 'ok' : 'bad') + ' · joined ' + when(u.createdAt) + (u.lastLoginAt ? ' · last seen ' + when(u.lastLoginAt) : '') + '</div>' +
+      '<div class="side">' + esc(u.phone || '') + ' ' + esc(u.email || '') + '<br>' + esc([u.address, u.lga, u.state].filter(Boolean).join(', ')) +
+      (u.bankAccountNumber ? '<br>Bank: ' + esc(u.bankName || '') + ' · ' + esc(u.bankAccountNumber) + ' · ' + esc(u.bankAccountName || '') : '') + '</div>' +
+      (u.artisanProfile ? '<div class="side"><b>Artisan</b> ' + esc(u.artisanProfile.category) + ' · ' + (u.artisanProfile.isVerified ? 'verified' : 'not verified') + ' · KYC ' + esc(u.artisanProfile.kycStatus) + ' · ' + u.artisanProfile.jobsDone + ' jobs · ' + (u.artisanProfile.ratingCount ? u.artisanProfile.ratingAvg.toFixed(1) + '★' : 'no ratings') + '</div>' : '') +
+      '<div class="side"><b>Wallet ' + naira(w ? w.balanceKobo : 0) + '</b> · ' + d.bookingsAsCustomer + ' jobs as customer' + (d.bookingsAsArtisan ? ', ' + d.bookingsAsArtisan + ' as artisan' : '') + '</div>';
+    if (u.id !== me.id) {
+      h += '<div class="row" style="margin:8px 0">' + (u.status === 'ACTIVE' ? btn('Suspend', 'ustatus', u.id, 'r', ' data-v="SUSPENDED"') : btn('Reactivate', 'ustatus', u.id, 'g', ' data-v="ACTIVE"'));
+      if (me.isSuperAdmin) h += btn('Delete account', 'udelete', u.id, 'r');
+      h += '</div>';
+      if (me.isSuperAdmin) h += '<div class="card"><b>Adjust wallet</b><div class="muted">Positive adds money, negative deducts. A reason is required and is logged.</div><div class="row"><div style="flex:1"><input id="adj-amt" type="number" placeholder="₦ amount e.g. 500 or -500"></div><div style="flex:2"><input id="adj-why" placeholder="Reason"></div>' + btn('Apply', 'uadjust', u.id, 'n') + '</div><div class="err" id="adj-err"></div></div>';
+    }
+    h += '<b>Recent jobs</b>' + table(['Job', 'Status', 'Price', 'Date', ''], d.recentBookings.map(function (b) { return [esc(b.category), esc(b.status), naira(b.agreedPriceKobo), new Date(b.createdAt).toLocaleDateString(), btn('View', 'booking', b.id)]; }));
+    h += '<br><b>Wallet activity</b>' + table(['Type', 'Amount', 'Balance', 'Note', 'Date'], d.transactions.map(function (t) { return [esc(t.type), naira(t.amountKobo), naira(t.balanceAfterKobo), esc(t.description || ''), new Date(t.createdAt).toLocaleDateString()]; }));
+    if (u.kycDocuments.length) h += '<br><b>ID documents</b>' + table(['Type', 'ID', 'Status'], u.kycDocuments.map(function (k) { return [esc(k.docType), esc((k.idType || '') + ' ' + (k.idNumber || '')), esc(k.status)]; }));
+    openModal(h);
+  }).catch(function (e) { alert(e.message); });
 }
-function loadImages(){
-  document.querySelectorAll('img[data-src]').forEach(function(img){
-    fetch(img.getAttribute('data-src'), { headers: { Authorization: 'Bearer ' + tok } }).then(function(r){ if (!r.ok) throw 0; return r.blob(); })
-      .then(function(b){ img.src = URL.createObjectURL(b); }).catch(function(){ img.alt = 'Could not load image'; });
-  });
-}
-function reviewKyc(id, decision){
-  api('/admin/kyc/documents/' + id + '/review', { decision: decision, reason: document.getElementById('kr-' + id).value }).then(loadKyc)
-    .catch(function(err){ document.getElementById('ke-' + id).textContent = err.message; });
+function bookingDetail(id) {
+  api('/admin/bookings/' + id).then(function (d) {
+    var b = d.booking;
+    openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + esc(b.category) + ' job</h3><button class="l" data-act="close">Close</button></div>' +
+      '<div class="muted">' + tag(b.status) + ' · ' + when(b.createdAt) + ' · agreed ' + naira(b.agreedPriceKobo) + '</div>' +
+      '<div class="side"><b>Issue</b><br>' + esc(b.issue) + '<br><span class="muted">' + esc(b.address || '') + '</span></div>' +
+      '<div class="side"><b>Customer</b> ' + esc(b.customer.name) + ' ' + esc(b.customer.phone || '') + '<br><b>Artisan</b> ' + (b.artisan ? esc(b.artisan.user.name) + ' ' + esc(b.artisan.user.phone || '') : '—') + '</div>' +
+      '<b>Escrow</b>' + table(['Amount', 'Status', 'To'], b.escrowHolds.map(function (h) { return [naira(h.amountKobo), esc(h.status), h.payeeId ? 'artisan' : 'FixMi']; })) +
+      (d.ratings.length ? '<br><b>Ratings</b>' + table(['Stars', 'Comment'], d.ratings.map(function (r) { return [r.stars + '★' + (r.hidden ? ' (hidden)' : ''), esc(r.comment || '')]; })) : '') +
+      (d.tickets.length ? '<br><b>Tickets</b>' + table(['Subject', 'Status'], d.tickets.map(function (t) { return [esc(t.subject), esc(t.status)]; })) : ''));
+  }).catch(function (e) { alert(e.message); });
 }
 
-function loadSafety(){
-  api('/admin/safety/reports').then(function(d){
+/* ---------- Artisan approvals ---------- */
+LOAD.artisans = function () {
+  api('/admin/artisans/pending').then(function (d) {
+    if (!d.artisans.length) return setList('<div class="card muted">No artisans waiting for approval.</div>');
+    setList(d.artisans.map(function (a) {
+      return '<div class="card"><b>' + esc(a.user.name) + '</b> ' + tag(a.category) + '<div class="muted">' + esc(a.user.phone || a.user.email || '') + ' · applied ' + when(a.createdAt) + '</div>' +
+        '<div class="side">' + esc(a.bio || 'No bio') + '<br><span class="muted">' + esc(a.idType || '') + ' ' + esc(a.idNumber || '') + ' · ' + (a.yearsExp || 0) + ' yrs</span></div>' +
+        '<input id="ar-' + a.id + '" placeholder="Reason (needed to decline)"><div class="row" style="margin-top:8px">' + btn('Approve', 'aapprove', a.id, 'g') + btn('Decline', 'areject', a.id, 'r') + btn('View user', 'user', a.user.id) + '</div></div>';
+    }).join(''));
+  }).catch(fail);
+};
+
+/* ---------- Bookings ---------- */
+LOAD.bookings = function () {
+  api('/admin/bookings').then(function (d) {
+    setList('<div class="card">' + table(['Job', 'Customer', 'Artisan', 'Status', 'Date', ''], d.bookings.map(function (b) {
+      return [esc(b.category), esc(b.customer.name), b.artisan ? esc(b.artisan.user.name) : '—', esc(b.status), new Date(b.createdAt).toLocaleDateString(), btn('View', 'booking', b.id)];
+    })) + '</div>');
+  }).catch(fail);
+};
+
+/* ---------- Disputes ---------- */
+var disputesOpen = true;
+function photos(urls, who) { return String(urls || '').split('\n').filter(Boolean).map(function (u) { return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="' + who + ' evidence"></a>'; }).join(''); }
+LOAD.disputes = function () {
+  api('/admin/disputes' + (disputesOpen ? '' : '?open=false')).then(function (d) {
+    var head = '<div class="row" style="margin-bottom:12px">' + btn('Open disputes', 'dopen', '1', disputesOpen ? 'n' : 'l') + btn('All disputes', 'dopen', '0', disputesOpen ? 'l' : 'n') + '</div>';
+    if (!d.disputes.length) return setList(head + '<div class="card muted">No ' + (disputesOpen ? 'open ' : '') + 'disputes.</div>');
+    setList(head + d.disputes.map(function (t) {
+      var b = t.booking || {};
+      var held = (b.escrowHolds || []).filter(function (h) { return h.status === 'DISPUTED'; }).reduce(function (n, h) { return n + h.amountKobo; }, 0);
+      var art = b.artisan ? b.artisan.user.name + ' (' + (b.artisan.user.phone || '') + ')' : '—';
+      var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + esc(t.subject) + '</b>' + (t.resolvedAt ? tag('Resolved · ' + t.resolution, 'ok') : tag(naira(held) + ' held')) + '</div>' +
+        '<div class="muted">' + when(t.createdAt) + ' · Agreed price ' + naira(b.agreedPriceKobo) + '</div>' +
+        '<div class="side"><b>Customer — ' + esc(t.user.name) + ' (' + esc(t.user.phone || t.user.email || '') + ')</b><div>' + esc(t.message) + '</div>' + (t.requestedRefundKobo ? '<div class="muted">Asks for ' + naira(t.requestedRefundKobo) + ' back</div>' : '') + photos(t.evidenceUrl, 'Customer') + '</div>' +
+        '<div class="side"><b>Artisan — ' + esc(art) + '</b><div>' + (t.secondPartyResponse ? esc(t.secondPartyResponse) : '<span class="muted">No response yet</span>') + '</div>' + photos(t.secondPartyEvidenceUrl, 'Artisan') + '</div>' +
+        '<div class="muted">Job: ' + esc(b.category) + ' — ' + esc(b.issue) + '</div>';
+      if (!t.resolvedAt) h += '<label>Note to both sides (optional)</label><textarea id="dn-' + t.id + '"></textarea><label>Refund to customer for a split (₦)</label><input id="da-' + t.id + '" type="number" min="1" placeholder="e.g. ' + Math.round(held / 200) + '"><div class="err" id="de-' + t.id + '"></div>' +
+        '<div class="row">' + btn('Pay artisan', 'dres', t.id, 'g', ' data-v="RELEASE"') + btn('Refund customer', 'dres', t.id, 'r', ' data-v="REFUND"') + btn('Split', 'dres', t.id, 'n', ' data-v="SPLIT"') + '</div>';
+      return h + '</div>';
+    }).join(''));
+  }).catch(fail);
+};
+
+/* ---------- Withdrawals ---------- */
+var wdStatus = 'PENDING';
+LOAD.withdrawals = function () {
+  api('/admin/withdrawals?status=' + wdStatus).then(function (d) {
+    var head = '<div class="card muted">Send the money from the company bank account, then press <b>Mark paid</b>. <b>Decline</b> returns the money to the user’s wallet.</div><div class="row" style="margin-bottom:12px">' +
+      ['PENDING', 'PAID', 'FAILED'].map(function (s) { return btn(s === 'FAILED' ? 'Declined' : s.charAt(0) + s.slice(1).toLowerCase(), 'wdfilter', s, s === wdStatus ? 'n' : 'l'); }).join('') + '</div>';
+    if (!d.withdrawals.length) return setList(head + '<div class="card muted">Nothing here.</div>');
+    setList(head + d.withdrawals.map(function (w) {
+      var bank = w.accountNumber ? esc(w.bankName || '') + ' · <b>' + esc(w.accountNumber) + '</b> · ' + esc(w.accountName || '') : (w.user && w.user.bankAccountNumber ? esc(w.user.bankName || '') + ' · <b>' + esc(w.user.bankAccountNumber) + '</b> · ' + esc(w.user.bankAccountName || '') : '<span class="err">No bank details</span>');
+      var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + naira(w.amountKobo) + ' — ' + esc(w.user ? w.user.name : '') + '</b>' + tag(w.status, w.status === 'PAID' ? 'ok' : w.status === 'FAILED' ? 'bad' : '') + '</div>' +
+        '<div class="muted">' + when(w.createdAt) + ' · ref ' + esc(w.paystackRef || w.id.slice(0, 8)) + (w.user ? ' · ' + esc(w.user.phone || '') : '') + '</div><div class="side">' + bank + '</div>';
+      if (w.adminNote) h += '<div class="muted">Note: ' + esc(w.adminNote) + '</div>';
+      if (w.rejectionReason) h += '<div class="muted">Declined: ' + esc(w.rejectionReason) + '</div>';
+      if (w.status === 'PENDING' || w.status === 'PROCESSING') h += '<input id="wn-' + w.id + '" placeholder="Bank transfer reference, or reason to decline"><div class="err" id="we-' + w.id + '"></div><div class="row" style="margin-top:6px">' + btn('Mark paid', 'wdpay', w.id, 'g') + btn('Decline', 'wdreject', w.id, 'r') + '</div>';
+      return h + '</div>';
+    }).join(''));
+  }).catch(fail);
+};
+
+/* ---------- Money ---------- */
+var moneyView = 'transactions';
+LOAD.money = function () {
+  var head = '<div class="row" style="margin-bottom:12px">' + [['transactions', 'Wallet transactions'], ['escrow', 'Escrow'], ['commissions', 'Commission']].map(function (v) { return btn(v[1], 'moneyview', v[0], v[0] === moneyView ? 'n' : 'l'); }).join('') + '</div>';
+  if (moneyView === 'transactions') api('/admin/transactions?limit=100').then(function (d) { setList(head + '<div class="card">' + table(['When', 'Who', 'Type', 'Amount', 'Note'], d.transactions.map(function (t) { return [when(t.createdAt), esc(t.wallet.user.name), esc(t.type), naira(t.amountKobo), esc(t.description || '')]; })) + '</div>'); }).catch(fail);
+  else if (moneyView === 'escrow') api('/admin/escrow?limit=100').then(function (d) { setList(head + '<div class="grid">' + d.totals.map(function (t) { return '<div class="stat"><b>' + naira(t.amountKobo) + '</b><span>' + esc(t.status) + ' (' + t.count + ')</span></div>'; }).join('') + '</div><div class="card">' + table(['When', 'Job', 'Amount', 'Status', 'To', ''], d.holds.map(function (h) { return [when(h.createdAt), esc(h.booking.category), naira(h.amountKobo), esc(h.status), h.payeeId ? 'artisan' : 'FixMi', btn('Job', 'booking', h.bookingId)]; })) + '</div>'); }).catch(fail);
+  else api('/admin/commissions?limit=100').then(function (d) { setList(head + '<div class="grid"><div class="stat"><b>' + naira(d.totalKobo) + '</b><span>Total commission earned</span></div></div><div class="card">' + table(['Released', 'Job', 'Commission'], d.commissions.map(function (c) { return [when(c.releasedAt), esc(c.booking.category), naira(c.amountKobo)]; })) + '</div>'); }).catch(fail);
+};
+
+/* ---------- ID reviews ---------- */
+LOAD.kyc = function () {
+  api('/admin/kyc/documents?status=PENDING').then(function (d) {
+    if (!d.documents.length) return setList('<div class="card muted">No IDs waiting for review.</div>');
+    setList(d.documents.map(function (x) {
+      return '<div class="card"><b>' + esc(x.user.name) + '</b> <span class="muted">' + esc(x.user.role) + ' · ' + esc(x.user.phone || x.user.email || '') + '</span>' +
+        '<div class="muted">' + esc(x.docType.replace(/_/g, ' ').toLowerCase()) + (x.idType ? ' · ' + esc(x.idType.replace(/_/g, ' ')) + ' ' + esc(x.idNumber || '') : '') + ' · ' + when(x.createdAt) + '</div>' +
+        '<div><img data-src="' + esc(x.fileUrl) + '" alt="ID" style="max-width:260px;border-radius:8px;margin:8px 0;cursor:zoom-in" data-act="img"></div>' +
+        '<input id="kr-' + x.id + '" placeholder="Reason (needed to decline)"><div class="err" id="ke-' + x.id + '"></div>' +
+        '<div class="row">' + btn('Approve', 'kyc', x.id, 'g', ' data-v="APPROVED"') + btn('Decline', 'kyc', x.id, 'r', ' data-v="REJECTED"') + '</div></div>';
+    }).join(''));
+    document.querySelectorAll('img[data-src]').forEach(function (img) {
+      fetch(img.getAttribute('data-src'), { headers: { Authorization: 'Bearer ' + tok } }).then(function (r) { if (!r.ok) throw 0; return r.blob(); })
+        .then(function (b) { img.src = URL.createObjectURL(b); }).catch(function () { img.alt = 'Could not load image'; });
+    });
+  }).catch(fail);
+};
+
+/* ---------- Safety ---------- */
+LOAD.safety = function () {
+  api('/admin/safety/reports').then(function (d) {
     if (!d.reports.length) return setList('<div class="card muted">No safety reports.</div>');
     var order = { OPEN: 0, REVIEWING: 1, RESOLVED: 2 };
-    d.reports.sort(function(a,b){ return (order[a.status]-order[b.status]) || ((a.type==='SOS'?0:1)-(b.type==='SOS'?0:1)) || (new Date(b.createdAt)-new Date(a.createdAt)); });
-    setList(d.reports.map(function(x){
+    d.reports.sort(function (a, b) { return (order[a.status] - order[b.status]) || ((a.type === 'SOS' ? 0 : 1) - (b.type === 'SOS' ? 0 : 1)) || (new Date(b.createdAt) - new Date(a.createdAt)); });
+    setList(d.reports.map(function (x) {
       var map = x.lat != null ? ' · <a href="https://www.google.com/maps/search/?api=1&query=' + x.lat + ',' + x.lng + '" target="_blank" rel="noopener">map</a>' : '';
-      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + (x.type === 'SOS' ? '🚨 SOS' : esc(x.type.replace(/_/g,' '))) + ' — ' + esc(x.reporter.name) + '</b><span class="tag' + (x.status === 'RESOLVED' ? ' ok' : '') + '">' + x.status + '</span></div>' +
-        '<div class="muted">' + esc(x.reporter.phone || '') + ' · ' + when(x.createdAt) + map + (x.bookingId ? ' · job ' + esc(x.bookingId.slice(0,8)) : '') + '</div>' +
-        (x.description ? '<div class="side">' + esc(x.description) + '</div>' : '') +
+      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + (x.type === 'SOS' ? '🚨 SOS' : esc(x.type.replace(/_/g, ' '))) + ' — ' + esc(x.reporter.name) + '</b>' + tag(x.status, x.status === 'RESOLVED' ? 'ok' : '') + '</div>' +
+        '<div class="muted">' + esc(x.reporter.phone || '') + ' · ' + when(x.createdAt) + map + (x.bookingId ? ' · job ' + esc(x.bookingId.slice(0, 8)) : '') + '</div>' + (x.description ? '<div class="side">' + esc(x.description) + '</div>' : '') +
         '<label>Note</label><textarea id="sn-' + x.id + '">' + esc(x.adminNote || '') + '</textarea><div class="err" id="se-' + x.id + '"></div>' +
-        '<div class="row"><button class="n" onclick="setReport(\'' + x.id + '\',\'REVIEWING\')">Reviewing</button><button class="g" onclick="setReport(\'' + x.id + '\',\'RESOLVED\')">Resolve</button></div></div>';
+        '<div class="row">' + btn('Reviewing', 'sreport', x.id, 'n', ' data-v="REVIEWING"') + btn('Resolve', 'sreport', x.id, 'g', ' data-v="RESOLVED"') + btn('Reporter', 'user', x.reporter.id) + '</div></div>';
     }).join(''));
   }).catch(fail);
-}
-function setReport(id, status){
-  api('/admin/safety/reports/' + id, { status: status, adminNote: document.getElementById('sn-' + id).value }, 'PATCH').then(loadSafety)
-    .catch(function(err){ document.getElementById('se-' + id).textContent = err.message; });
-}
+};
 
-function loadAnnounce(){
-  api('/admin/announcements').then(function(d){
-    setList('<div class="card"><h3 style="margin-top:0">New announcement</h3><div class="muted">Super admin only. Sent as an in-app notification.</div>' +
-      '<label>Title</label><input id="an-t" maxlength="120"><label>Message</label><textarea id="an-b" maxlength="1000"></textarea>' +
-      '<label>Send to</label><select id="an-r"><option value="">Everyone</option><option value="CUSTOMER">Customers</option><option value="ARTISAN">Artisans</option></select>' +
-      '<div class="err" id="an-e"></div><button class="g" onclick="sendAnnounce()">Send</button></div>' +
-      d.announcements.map(function(a){ return '<div class="card"><b>' + esc(a.title) + '</b><div>' + esc(a.body) + '</div><div class="muted">' + when(a.createdAt) + ' · ' + a.recipientCount + ' people · ' + esc(a.sentByName) + '</div></div>'; }).join(''));
+/* ---------- Support ---------- */
+LOAD.tickets = function () {
+  api('/admin/tickets').then(function (d) {
+    var list = d.tickets.filter(function (t) { return !t.isDispute; });
+    if (!list.length) return setList('<div class="card muted">No support requests.</div>');
+    setList(list.map(function (t) {
+      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + esc(t.subject) + '</b>' + tag(t.status, t.status === 'RESOLVED' ? 'ok' : '') + '</div>' +
+        '<div class="muted">' + esc(t.user.name) + ' · ' + esc(t.user.phone || t.user.email || '') + ' · ' + when(t.createdAt) + '</div><div class="side">' + esc(t.message) + '</div>' +
+        (t.adminReply ? '<div class="side"><b>Your reply</b> <span class="muted">' + when(t.repliedAt) + '</span><br>' + esc(t.adminReply) + '</div>' : '') +
+        '<textarea id="tr-' + t.id + '" placeholder="Write a reply. The user is notified."></textarea><div class="err" id="te-' + t.id + '"></div>' +
+        '<div class="row" style="margin-top:6px">' + btn('Reply', 'treply', t.id, 'g', ' data-v="IN_REVIEW"') + btn('Reply & resolve', 'treply', t.id, 'n', ' data-v="RESOLVED"') + btn('User', 'user', t.user.id) + '</div></div>';
+    }).join(''));
   }).catch(fail);
-}
-function sendAnnounce(){
-  var r = document.getElementById('an-r').value;
-  if (!confirm('Send this to ' + (r ? r.toLowerCase() + 's' : 'everyone') + '?')) return;
-  api('/admin/announcements', { title: document.getElementById('an-t').value, body: document.getElementById('an-b').value, roles: r ? [r] : [] }).then(loadAnnounce)
-    .catch(function(err){ document.getElementById('an-e').textContent = err.message; });
-}
+};
 
-function loadAudit(){
-  api('/admin/audit-log').then(function(d){
+/* ---------- Ratings & app reviews ---------- */
+LOAD.ratings = function () {
+  api('/admin/ratings?limit=100').then(function (d) {
+    setList('<div class="card">' + table(['When', 'From', 'For', 'Stars', 'Comment', ''], d.ratings.map(function (r) {
+      return [when(r.createdAt), esc(r.rater.name), esc(r.rateeRole), r.stars + '★' + (r.hidden ? ' ' + tag('hidden', 'bad') : ''), esc(r.comment || ''), btn(r.hidden ? 'Restore' : 'Hide', 'ratehide', r.id, 'l', ' data-v="' + (r.hidden ? '0' : '1') + '"')];
+    })) + '</div>');
+  }).catch(fail);
+};
+LOAD.appreviews = function () {
+  api('/admin/app-reviews?limit=100').then(function (d) {
+    setList('<div class="grid"><div class="stat"><b>' + (d.average ? d.average.toFixed(1) : '—') + '★</b><span>' + d.count + ' reviews</span></div></div>' + d.reviews.map(function (r) {
+      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + r.stars + '★ ' + esc(r.user.name) + '</b>' + (r.hidden ? tag('hidden', 'bad') : '') + '</div><div class="muted">' + esc(r.user.role) + ' · ' + when(r.createdAt) + '</div>' +
+        (r.comment ? '<div class="side">' + esc(r.comment) + '</div>' : '') + '<textarea id="rr-' + r.id + '" placeholder="Public reply">' + esc(r.adminResponse || '') + '</textarea>' +
+        '<div class="row" style="margin-top:6px">' + btn('Save reply', 'rrsave', r.id, 'g') + btn(r.hidden ? 'Show' : 'Hide', 'rrhide', r.id, 'l', ' data-v="' + (r.hidden ? '0' : '1') + '"') + '</div></div>';
+    }).join(''));
+  }).catch(fail);
+};
+
+/* ---------- App content ---------- */
+LOAD.content = function () {
+  api('/admin/app-settings').then(function (d) {
+    var canEdit = me && me.isSuperAdmin;
+    setList('<div class="card muted">Everything the app shows here can be changed without a new release. Edits go live within about 20 seconds. ' + (canEdit ? '' : '<b>Only a super admin can save changes.</b>') + '</div>' + d.settings.map(function (s) {
+      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + esc(s.key) + '</b>' + (s.customised ? tag('customised', 'ok') : tag('default')) + '</div><div class="muted">' + esc(s.description) + '</div>' +
+        '<textarea id="st-' + esc(s.key) + '" style="min-height:140px;font-family:ui-monospace,Consolas,monospace;font-size:12px"' + (canEdit ? '' : ' readonly') + '>' + esc(JSON.stringify(s.value, null, 2)) + '</textarea><div class="err" id="se-' + esc(s.key) + '"></div>' +
+        (canEdit ? '<div class="row" style="margin-top:6px">' + btn('Save', 'setsave', s.key, 'g') + (s.customised ? btn('Reset to default', 'setreset', s.key, 'r') : '') + '</div>' : '') + '</div>';
+    }).join(''));
+  }).catch(fail);
+};
+
+/* ---------- Announcements & bulk SMS ---------- */
+LOAD.announce = function () {
+  api('/admin/announcements').then(function (d) {
+    var canSend = me && me.isSuperAdmin;
+    setList((canSend ? '<div class="card"><h3 style="margin-top:0">New announcement</h3><div class="muted">Sent as an in-app notification.</div><label>Title</label><input id="an-t" maxlength="120"><label>Message</label><textarea id="an-b" maxlength="1000"></textarea>' +
+      '<label>Send to</label><select id="an-r"><option value="">Everyone</option><option value="CUSTOMER">Customers</option><option value="ARTISAN">Artisans</option></select><div class="err" id="an-e"></div>' + btn('Send', 'announce', '', 'g') + '</div>' : '<div class="card muted">Only a super admin can send announcements.</div>') +
+      d.announcements.map(function (a) { return '<div class="card"><b>' + esc(a.title) + '</b><div>' + esc(a.body) + '</div><div class="muted">' + when(a.createdAt) + ' · ' + a.recipientCount + ' people · ' + esc(a.sentByName) + '</div></div>'; }).join(''));
+  }).catch(fail);
+};
+LOAD.sms = function () {
+  api('/admin/bulk-messages').then(function (d) {
+    var canSend = me && me.isSuperAdmin;
+    setList((canSend ? '<div class="card"><h3 style="margin-top:0">Bulk SMS</h3><div class="muted">Needs the Africa’s Talking variables on the server. Max 480 characters.</div><label>Message</label><textarea id="sms-b" maxlength="480"></textarea>' +
+      '<label>Send to</label><select id="sms-r"><option value="">Everyone with a phone</option><option value="CUSTOMER">Customers</option><option value="ARTISAN">Artisans</option></select><div class="err" id="sms-e"></div>' + btn('Send SMS', 'bulksms', '', 'g') + '</div>' : '<div class="card muted">Only a super admin can send SMS.</div>') +
+      '<div class="card">' + table(['When', 'Channel', 'Message', 'Sent', 'Failed', 'By'], d.messages.map(function (m) { return [when(m.createdAt), esc(m.channel), esc(m.body), m.recipientCount, m.failedCount, esc(m.sentByName)]; })) + '</div>');
+  }).catch(fail);
+};
+
+/* ---------- Admins & audit ---------- */
+LOAD.admins = function () {
+  api('/admin/admins').then(function (d) {
+    setList('<div class="card"><h3 style="margin-top:0">Add an admin</h3><div class="row"><div style="flex:1;min-width:140px"><input id="ad-n" placeholder="Name"></div><div style="flex:1;min-width:160px"><input id="ad-e" type="email" placeholder="Email"></div><div style="flex:1;min-width:140px"><input id="ad-p" type="password" placeholder="Password (8+ characters)"></div>' + btn('Add', 'adminadd', '', 'g') + '</div><div class="err" id="ad-err"></div></div>' +
+      '<div class="card">' + table(['Name', 'Email', 'Status', 'Last seen', ''], d.admins.map(function (a) {
+        return [esc(a.name) + (a.isSuperAdmin ? ' ' + tag('super', 'ok') : ''), esc(a.email || ''), tag(a.status, a.status === 'ACTIVE' ? 'ok' : 'bad'), when(a.lastLoginAt),
+          a.isSuperAdmin || a.id === me.id ? '' : (a.status === 'ACTIVE' ? btn('Suspend', 'adminstatus', a.id, 'r', ' data-v="SUSPENDED"') : btn('Reactivate', 'adminstatus', a.id, 'g', ' data-v="ACTIVE"')) + ' ' + btn('Remove', 'adminremove', a.id, 'r')];
+      })) + '</div>');
+  }).catch(fail);
+};
+LOAD.audit = function () {
+  api('/admin/audit-log?limit=300').then(function (d) {
     if (!d.logs.length) return setList('<div class="card muted">Nothing logged yet.</div>');
-    setList('<div class="card">' + d.logs.map(function(l){
-      return '<div class="side"><b>' + esc(l.action) + '</b> <span class="muted">' + esc(l.actorName) + ' · ' + when(l.createdAt) + '</span>' + (l.details ? '<div class="muted">' + esc(l.details) + '</div>' : '') + '</div>';
-    }).join('') + '</div>');
+    setList('<div class="card">' + d.logs.map(function (l) { return '<div class="side"><b>' + esc(l.action) + '</b> <span class="muted">' + esc(l.actorName) + ' · ' + when(l.createdAt) + '</span>' + (l.details ? '<div class="muted">' + esc(l.details) + '</div>' : '') + '</div>'; }).join('') + '</div>');
   }).catch(fail);
-}
+};
+
+/* ---------- Click handling ---------- */
+function done(p, msgId) { return p.then(function () { loadBadges(); refresh(); }).catch(function (err) { var e = msgId && $(msgId); if (e) e.textContent = err.message; else alert(err.message); }); }
+var ACT = {
+  signin: signIn, signout: signOut, close: closeModal,
+  tab: function (id) { tab(id); },
+  user: userDetail, booking: bookingDetail,
+  usersearch: function () { userQ = { q: val('uq').trim(), role: val('ur'), status: val('us') }; LOAD.users(); },
+  ustatus: function (id, el) { if (!confirm((el.dataset.v === 'SUSPENDED' ? 'Suspend' : 'Reactivate') + ' this account?')) return; api('/admin/users/' + id + '/status', { status: el.dataset.v }, 'PATCH').then(function () { closeModal(); refresh(); }).catch(function (e) { alert(e.message); }); },
+  udelete: function (id) { if (!confirm('Permanently delete this account? This cannot be undone.')) return; api('/admin/users/' + id, null, 'DELETE').then(function () { closeModal(); refresh(); }).catch(function (e) { alert(e.message); }); },
+  uadjust: function (id) { var amt = Math.round(Number(val('adj-amt')) * 100); if (!amt) { $('adj-err').textContent = 'Enter an amount.'; return; } if (!confirm('Apply ' + naira(amt) + ' to this wallet?')) return; api('/admin/users/' + id + '/wallet-adjustment', { amountKobo: amt, reason: val('adj-why') }).then(function () { userDetail(id); }).catch(function (e) { $('adj-err').textContent = e.message; }); },
+  aapprove: function (id) { done(api('/admin/artisans/' + id + '/approve', {})); },
+  areject: function (id) { done(api('/admin/artisans/' + id + '/reject', { reason: val('ar-' + id) })); },
+  dopen: function (id) { disputesOpen = id === '1'; LOAD.disputes(); },
+  dres: function (id, el) {
+    var o = el.dataset.v, body = { outcome: o, note: val('dn-' + id) };
+    if (o === 'SPLIT') body.refundKobo = Math.round(Number(val('da-' + id)) * 100);
+    if (!confirm(o === 'RELEASE' ? 'Pay the artisan?' : o === 'REFUND' ? 'Refund the customer in full?' : 'Split as entered?')) return;
+    done(api('/admin/disputes/' + id + '/resolve', body), 'de-' + id);
+  },
+  wdfilter: function (id) { wdStatus = id; LOAD.withdrawals(); },
+  wdpay: function (id) { if (!confirm('Confirm you have sent this money?')) return; done(api('/admin/withdrawals/' + id + '/pay', { note: val('wn-' + id) }), 'we-' + id); },
+  wdreject: function (id) { if (!val('wn-' + id).trim()) { $('we-' + id).textContent = 'Write the reason in the box first.'; return; } if (!confirm('Decline and return the money to the wallet?')) return; done(api('/admin/withdrawals/' + id + '/reject', { reason: val('wn-' + id) }), 'we-' + id); },
+  moneyview: function (id) { moneyView = id; LOAD.money(); },
+  kyc: function (id, el) { done(api('/admin/kyc/documents/' + id + '/review', { decision: el.dataset.v, reason: val('kr-' + id) }), 'ke-' + id); },
+  img: function (id, el) { if (el.src) window.open(el.src); },
+  sreport: function (id, el) { done(api('/admin/safety/reports/' + id, { status: el.dataset.v, adminNote: val('sn-' + id) }, 'PATCH'), 'se-' + id); },
+  treply: function (id, el) { done(api('/admin/tickets/' + id + '/reply', { reply: val('tr-' + id), status: el.dataset.v }), 'te-' + id); },
+  ratehide: function (id, el) { done(api('/admin/ratings/' + id + '/hide', { hidden: el.dataset.v === '1' })); },
+  rrsave: function (id) { done(api('/admin/app-reviews/' + id, { response: val('rr-' + id) }, 'PATCH')); },
+  rrhide: function (id, el) { done(api('/admin/app-reviews/' + id, { hidden: el.dataset.v === '1' }, 'PATCH')); },
+  setsave: function (id) { var v; try { v = JSON.parse(val('st-' + id)); } catch (e) { $('se-' + id).textContent = 'That is not valid JSON: ' + e.message; return; } done(api('/admin/app-settings/' + encodeURIComponent(id), { value: v }, 'PUT'), 'se-' + id); },
+  setreset: function (id) { if (!confirm('Go back to the built-in default?')) return; done(api('/admin/app-settings/' + encodeURIComponent(id), null, 'DELETE')); },
+  announce: function () { var r = val('an-r'); if (!confirm('Send this to ' + (r ? r.toLowerCase() + 's' : 'everyone') + '?')) return; done(api('/admin/announcements', { title: val('an-t'), body: val('an-b'), roles: r ? [r] : [] }), 'an-e'); },
+  bulksms: function () { var r = val('sms-r'); if (!confirm('Send this SMS to ' + (r ? r.toLowerCase() + 's' : 'everyone with a phone') + '? This costs SMS credit.')) return; done(api('/admin/bulk-sms', { body: val('sms-b'), roles: r ? [r] : [] }), 'sms-e'); },
+  adminadd: function () { done(api('/admin/admins', { name: val('ad-n'), email: val('ad-e'), password: val('ad-p') }), 'ad-err'); },
+  adminstatus: function (id, el) { done(api('/admin/admins/' + id + '/status', { status: el.dataset.v }, 'PATCH')); },
+  adminremove: function (id) { if (!confirm('Remove admin access for this person?')) return; done(api('/admin/admins/' + id, null, 'DELETE')); }
+};
+document.addEventListener('click', function (e) {
+  if (e.target === $('modal')) return closeModal();
+  var el = e.target.closest('[data-act]');
+  if (!el) return;
+  var fn = ACT[el.dataset.act];
+  if (fn) fn(el.dataset.id, el);
+});
+$('pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
 show();
 </script>
 </body>
