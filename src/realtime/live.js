@@ -87,23 +87,39 @@ function attachLiveSocket(httpServer) {
     // each other's live socket id and start real SDP/ICE signaling. This
     // server only relays the small handshake messages — audio/video itself
     // is peer-to-peer.
-    socket.on("call:invite", async ({ toUserId, bookingId, callerName }) => {
-      if (!toUserId) return;
-      if (bookingId) {
-        const booking = await prisma.booking.findUnique({ where: { id: bookingId }, include: { artisan: { select: { userId: true } } } });
-        if (!booking) return;
-        const allowed = booking.customerId === user.id || (booking.artisan && booking.artisan.userId === user.id);
-        if (!allowed) return;
-      }
-      io.to(`user:${toUserId}`).emit("call:incoming", { fromUserId: user.id, fromSocketId: socket.id, bookingId: bookingId || null, callerName: callerName || user.name });
+    socket.on("call:invite", async ({ toUserId, bookingId, callerName, callerAvatar, callerRole }) => {
+      // Calls only happen between the two people on a booking.
+      if (!toUserId || !bookingId) return;
+      const booking = await prisma.booking.findUnique({ where: { id: bookingId }, include: { artisan: { select: { userId: true } } } });
+      if (!booking || !booking.artisan) return;
+      const parties = [booking.customerId, booking.artisan.userId];
+      if (!parties.includes(user.id) || !parties.includes(toUserId) || toUserId === user.id) return;
+      io.to(`user:${toUserId}`).emit("call:incoming", {
+        fromUserId: user.id,
+        fromSocketId: socket.id,
+        bookingId,
+        callerName: callerName || user.name,
+        callerAvatar: callerAvatar || "👤",
+        callerRole: callerRole || "",
+      });
     });
     socket.on("call:accept", ({ toSocketId, bookingId }) => {
       if (!toSocketId) return;
       io.to(toSocketId).emit("call:accepted", { fromUserId: user.id, fromSocketId: socket.id, bookingId: bookingId || null });
     });
-    socket.on("call:decline", ({ toSocketId, bookingId }) => {
+    socket.on("call:decline", ({ toSocketId, bookingId, reason }) => {
       if (!toSocketId) return;
-      io.to(toSocketId).emit("call:declined", { fromUserId: user.id, bookingId: bookingId || null });
+      io.to(toSocketId).emit("call:declined", { fromUserId: user.id, bookingId: bookingId || null, reason: reason === "busy" ? "busy" : "declined" });
+    });
+    // Caller hung up before the callee answered: stop the ringing on every
+    // device the callee has open.
+    socket.on("call:cancel", ({ toUserId, bookingId }) => {
+      if (!toUserId) return;
+      io.to(`user:${toUserId}`).emit("call:cancelled", { fromUserId: user.id, fromSocketId: socket.id, bookingId: bookingId || null });
+    });
+    // Callee answered on one device: the others stop ringing.
+    socket.on("call:answered-elsewhere", ({ bookingId }) => {
+      socket.to(`user:${user.id}`).emit("call:cancelled", { fromUserId: user.id, bookingId: bookingId || null });
     });
     socket.on("call:end", ({ toSocketId, bookingId }) => {
       if (!toSocketId) return;
@@ -128,12 +144,22 @@ function attachLiveSocket(httpServer) {
   // Server-side escrow auto-release — replaces a frontend client setTimeout
   // countdown, which stops running the moment a tab closes and would
   // otherwise strand an artisan's payout forever.
-  const sweepMs = 5 * 60 * 1000;
-  setInterval(() => {
-    escrowSvc.runAutoReleaseSweep().catch((err) => console.error("[escrow] auto-release sweep failed:", err));
-  }, sweepMs);
-  setInterval(() => {
-    bookingsCtrl.finalizeAutoReleasedBookings(io).catch((err) => console.error("[booking] auto-release finalize sweep failed:", err));
+  // Every 30s so the 5-minute window (ESCROW_AUTO_RELEASE_MINUTES) is
+  // honoured to within half a minute.
+  const sweepMs = 30 * 1000;
+  // Release first, then close out the bookings whose money just moved, in
+  // the same tick so a booking flips to CONFIRMED as soon as it's paid.
+  setInterval(async () => {
+    try {
+      await escrowSvc.runAutoReleaseSweep();
+    } catch (err) {
+      console.error("[escrow] auto-release sweep failed:", err);
+    }
+    try {
+      await bookingsCtrl.finalizeAutoReleasedBookings(io);
+    } catch (err) {
+      console.error("[booking] auto-release finalize sweep failed:", err);
+    }
   }, sweepMs);
 
   return io;

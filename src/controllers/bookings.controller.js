@@ -1,8 +1,9 @@
 const prisma = require("../config/db");
 const wallet = require("../services/wallet.service");
 const escrow = require("../services/escrow.service");
-const { notify } = require("../services/notifications.service");
+const { notify, notifyAllAdmins } = require("../services/notifications.service");
 const { generateReference } = require("../utils/reference");
+const corporate = require("../services/corporate.service");
 
 // Booking flow (escrow first, like Handa's shopper requests):
 //
@@ -129,6 +130,11 @@ function pushJobToArtisan(sock, booking) {
 // customer's wallet, or return what's left over to it.
 async function settleEscrow(tx, booking, priceKobo) {
   const diff = priceKobo - booking.escrowKobo;
+  if (booking.corporatePlanId) {
+    if (diff > 0) await corporate.debitPlan(tx, booking.corporatePlanId, diff);
+    else if (diff < 0) await corporate.creditPlan(tx, booking.corporatePlanId, -diff);
+    return priceKobo;
+  }
   if (diff > 0) {
     await wallet.debitWallet(booking.customerId, diff, "ESCROW_HOLD", {
       bookingId: booking.id,
@@ -170,6 +176,14 @@ async function createBooking(req, res, next) {
     }
     if (budget < MIN_PRICE_KOBO) return res.status(400).json({ error: `The minimum budget is ${naira(MIN_PRICE_KOBO)}.` });
 
+    let plan = null;
+    if (req.body.corporate) {
+      plan = await corporate.activePlanFor(req.user.id);
+      if (!plan) return res.status(409).json({ error: "You don't have an active corporate plan." });
+      if (!corporate.coversCategory(plan, category)) return res.status(400).json({ error: `${category} isn't one of your plan's services.` });
+      if (corporate.callsLeft(plan) === 0) return res.status(409).json({ error: "You've used all the service calls on your plan for this period." });
+    }
+
     const booking = await prisma.$transaction(async (tx) => {
       const created = await tx.booking.create({
         data: {
@@ -184,13 +198,19 @@ async function createBooking(req, res, next) {
           paidAt: new Date(),
           scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
           artisanId: direct ? direct.id : null,
+          corporatePlanId: plan ? plan.id : null,
         },
       });
-      await wallet.debitWallet(req.user.id, budget, "ESCROW_HOLD", {
-        bookingId: created.id,
-        reference: generateReference("ESC"),
-        description: `Escrow for ${category} request`,
-      }, tx);
+      if (plan) {
+        await corporate.debitPlan(tx, plan.id, budget);
+        await tx.corporatePlan.update({ where: { id: plan.id }, data: { callsUsed: { increment: 1 } } });
+      } else {
+        await wallet.debitWallet(req.user.id, budget, "ESCROW_HOLD", {
+          bookingId: created.id,
+          reference: generateReference("ESC"),
+          description: `Escrow for ${category} request`,
+        }, tx);
+      }
       return created;
     });
 
@@ -462,7 +482,10 @@ async function cancelBooking(req, res, next) {
     const updated = await prisma.$transaction(async (tx) => {
       const fresh = await tx.booking.findUnique({ where: { id: booking.id } });
       if (fresh.status !== booking.status) throw httpError(409, "This booking just changed. Refresh and try again.");
-      if (fresh.escrowKobo > 0) {
+      if (fresh.corporatePlanId) {
+        if (fresh.escrowKobo > 0) await corporate.creditPlan(tx, fresh.corporatePlanId, fresh.escrowKobo);
+        await tx.corporatePlan.update({ where: { id: fresh.corporatePlanId }, data: { callsUsed: { decrement: 1 } } });
+      } else if (fresh.escrowKobo > 0) {
         await wallet.creditWallet(fresh.customerId, fresh.escrowKobo, "ESCROW_REFUND", {
           bookingId: fresh.id,
           reference: generateReference("REF"),
@@ -615,7 +638,8 @@ async function confirmBooking(req, res, next) {
     await escrow.releaseAllHoldsForBooking(booking.id, { reference: generateReference("REL"), description: `Released for booking ${booking.id}` });
     await prisma.$transaction(async (tx) => {
       if (booking.artisanId) await tx.artisanProfile.update({ where: { id: booking.artisanId }, data: { jobsDone: { increment: 1 } } });
-      await tx.booking.update({ where: { id: booking.id }, data: { status: "CONFIRMED", confirmedAt: new Date() } });
+      const { count } = await tx.booking.updateMany({ where: { id: booking.id, status: "COMPLETED" }, data: { status: "CONFIRMED", confirmedAt: new Date() } });
+      if (!count) throw httpError(409, "This job just changed. Refresh and try again.");
     });
     const job = await publishJob(req, booking.id);
     notify(io(req), job.artisan.userId, "PAYMENT", "Payment released", `You've been paid for the ${job.category} job.`, { bookingId: job.id }).catch(() => {});
@@ -646,7 +670,164 @@ async function finalizeAutoReleasedBookings(sock) {
   return candidates.length;
 }
 
+// ---------------------------------------------------------------- disputes
+
+// "Job not completed", as in Handa: before the money is released the
+// customer can freeze it. The booking moves to DISPUTED, the payout holds
+// stop counting down, and a dispute ticket goes to admins. The artisan can
+// add their side once; an admin then releases, refunds or splits.
+const DISPUTE_REASONS = ["Job not completed", "Poor quality work", "Artisan didn't show up", "Damage to property", "Overcharged", "Other"];
+
+function disputeFor(bookingId) {
+  return prisma.supportTicket.findFirst({ where: { bookingId, isDispute: true }, orderBy: { createdAt: "desc" } });
+}
+
+async function openDispute(req, res, next) {
+  try {
+    const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: JOB_VIEW });
+    if (!booking) return res.status(404).json({ error: "Booking not found." });
+    if (booking.customerId !== req.user.id) return res.status(403).json({ error: "Not your booking." });
+    if (booking.status === "DISPUTED") return res.status(409).json({ error: "This job is already under review." });
+    if (booking.status !== "COMPLETED") {
+      return res.status(409).json({ error: booking.status === "CONFIRMED"
+        ? "Payment for this job has already been released. Use Report an Issue and support will help."
+        : "You can report a job as not completed once the artisan marks it done." });
+    }
+    const reason = DISPUTE_REASONS.includes(req.body?.reason) ? req.body.reason : "Job not completed";
+    const details = String(req.body?.details || "").trim();
+    if (details.length < 5) return res.status(400).json({ error: "Tell us briefly what went wrong." });
+    const held = (await prisma.escrowHold.findMany({ where: { bookingId: booking.id, status: "HELD" } })).reduce((n, h) => n + h.amountKobo, 0);
+    let requestedRefundKobo = req.body?.requestedRefundKobo == null || req.body.requestedRefundKobo === "" ? null : Math.round(Number(req.body.requestedRefundKobo));
+    if (requestedRefundKobo != null && (!Number.isFinite(requestedRefundKobo) || requestedRefundKobo <= 0)) requestedRefundKobo = null;
+    if (requestedRefundKobo != null) requestedRefundKobo = Math.min(requestedRefundKobo, held);
+
+    const ticket = await prisma.$transaction(async (tx) => {
+      const frozen = await escrow.freezeHoldsForBooking(booking.id, tx);
+      if (!frozen) throw httpError(409, "Payment for this job has just been released. Use Report an Issue and support will help.");
+      await tx.booking.update({ where: { id: booking.id }, data: { status: "DISPUTED" } });
+      return tx.supportTicket.create({
+        data: {
+          userId: req.user.id,
+          bookingId: booking.id,
+          isDispute: true,
+          category: reason,
+          subject: `${reason} — ${booking.category} job`,
+          message: details,
+          evidenceUrl: req.body?.evidenceUrl || null,
+          requestedRefundKobo,
+          secondPartyUserId: booking.artisan?.userId || null,
+        },
+      });
+    });
+
+    await publishJob(req, booking.id);
+    if (booking.artisan) {
+      notify(io(req), booking.artisan.userId, "BOOKING", "Payment on hold", `${firstName(req.user.name)} reported "${reason}" for the ${booking.category} job. Your payment is held until FixMi reviews it — add your side now.`, { bookingId: booking.id }).catch(() => {});
+    }
+    notify(io(req), req.user.id, "BOOKING", "Payment held in escrow", "Your money stays in escrow while FixMi reviews the job. We'll update you here.", { bookingId: booking.id }).catch(() => {});
+    notifyAllAdmins(io(req), "⚖️ New dispute", `${reason} — ${booking.category} job, ${naira(held)} held`, { bookingId: booking.id, ticketId: ticket.id }).catch(() => {});
+    res.status(201).json({ ticket, booking: await customerView(booking.id) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getDispute(req, res, next) {
+  try {
+    const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: { artisan: { select: { userId: true } } } });
+    if (!booking) return res.status(404).json({ error: "Booking not found." });
+    const allowed = booking.customerId === req.user.id || booking.artisan?.userId === req.user.id || req.user.role === "ADMIN";
+    if (!allowed) return res.status(403).json({ error: "Not your booking." });
+    const holds = await prisma.escrowHold.findMany({ where: { bookingId: booking.id, status: "DISPUTED" } });
+    res.json({ dispute: await disputeFor(booking.id), heldKobo: holds.reduce((n, h) => n + h.amountKobo, 0) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function respondDispute(req, res, next) {
+  try {
+    const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: { artisan: { select: { userId: true } } } });
+    if (!booking) return res.status(404).json({ error: "Booking not found." });
+    if (booking.artisan?.userId !== req.user.id) return res.status(403).json({ error: "Not your job." });
+    const ticket = await disputeFor(booking.id);
+    if (!ticket || ticket.resolvedAt) return res.status(409).json({ error: "There is no open dispute on this job." });
+    if (ticket.secondPartyRespondedAt) return res.status(409).json({ error: "You've already sent your side." });
+    const response = String(req.body?.response || "").trim();
+    if (response.length < 5) return res.status(400).json({ error: "Tell us your side of what happened." });
+    const updated = await prisma.supportTicket.update({
+      where: { id: ticket.id },
+      data: { secondPartyResponse: response, secondPartyEvidenceUrl: req.body?.evidenceUrl || null, secondPartyRespondedAt: new Date(), status: "IN_REVIEW" },
+    });
+    notifyAllAdmins(io(req), "⚖️ Artisan responded", `${req.user.name} replied to a dispute`, { bookingId: booking.id, ticketId: ticket.id }).catch(() => {});
+    notify(io(req), booking.customerId, "BOOKING", "Artisan responded", "Your artisan has added their side. FixMi will decide shortly.", { bookingId: booking.id }).catch(() => {});
+    await publishJob(req, booking.id);
+    res.json({ dispute: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Admin decision. Moves the booking out of DISPUTED: CONFIRMED when the
+// artisan was paid anything, CANCELLED on a full refund.
+async function resolveDispute(req, res, next) {
+  try {
+    const ticket = await prisma.supportTicket.findUnique({ where: { id: req.params.ticketId } });
+    if (!ticket || !ticket.isDispute) return res.status(404).json({ error: "Dispute not found." });
+    if (ticket.resolvedAt) return res.status(409).json({ error: "This dispute is already resolved." });
+    const outcome = String(req.body?.outcome || "").toUpperCase();
+    const refundKobo = req.body?.refundKobo != null ? Number(req.body.refundKobo) : 0;
+    const result = await escrow.resolveDisputedHolds(ticket.bookingId, outcome, refundKobo);
+    const note = String(req.body?.note || "").trim();
+    const booking = await prisma.booking.findUnique({ where: { id: ticket.bookingId } });
+    const paid = result.payoutKobo > 0;
+    await prisma.$transaction(async (tx) => {
+      if (paid && booking.artisanId) await tx.artisanProfile.update({ where: { id: booking.artisanId }, data: { jobsDone: { increment: 1 } } });
+      await tx.booking.update({
+        where: { id: booking.id },
+        data: paid ? { status: "CONFIRMED", confirmedAt: new Date() } : { status: "CANCELLED", cancelledAt: new Date(), cancelReason: "Refunded after dispute review" },
+      });
+      await tx.supportTicket.update({
+        where: { id: ticket.id },
+        data: { status: "RESOLVED", resolvedAt: new Date(), resolution: outcome + (note ? ` — ${note}` : ""), refundAmountKobo: result.refundKobo },
+      });
+    });
+    const job = await publishJob(req, booking.id);
+    const summary = outcome === "RELEASE" ? "Payment released to the artisan."
+      : outcome === "REFUND" ? `${naira(result.refundKobo)} refunded to the customer.`
+      : `${naira(result.refundKobo)} refunded to the customer, ${naira(result.payoutKobo)} paid to the artisan.`;
+    notify(io(req), booking.customerId, "BOOKING", "Dispute resolved", summary + (note ? ` ${note}` : ""), { bookingId: booking.id }).catch(() => {});
+    if (job.artisan) notify(io(req), job.artisan.userId, "BOOKING", "Dispute resolved", summary + (note ? ` ${note}` : ""), { bookingId: booking.id }).catch(() => {});
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listDisputes(req, res, next) {
+  try {
+    const tickets = await prisma.supportTicket.findMany({
+      where: { isDispute: true, ...(req.query.open === "false" ? {} : { resolvedAt: null }) },
+      include: { user: { select: { id: true, name: true, phone: true, email: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    const ids = tickets.map((t) => t.bookingId).filter(Boolean);
+    const bookings = await prisma.booking.findMany({ where: { id: { in: ids } }, include: { ...JOB_VIEW, escrowHolds: true } });
+    const byId = Object.fromEntries(bookings.map((b) => [b.id, b]));
+    res.json({ disputes: tickets.map((t) => ({ ...t, booking: byId[t.bookingId] || null })) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
+  openDispute,
+  getDispute,
+  respondDispute,
+  resolveDispute,
+  listDisputes,
+  DISPUTE_REASONS,
   createBooking,
   listMyBookings,
   listOpenBookings,

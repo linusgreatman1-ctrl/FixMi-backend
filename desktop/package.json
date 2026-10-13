@@ -1,7 +1,7 @@
 {
-  "name": "fixme-desktop",
+  "name": "fixmi-desktop",
   "version": "1.0.0",
-  "description": "FixMe desktop app — a thin Electron shell around the real web app served at /app by fixmi-backend.",
+  "description": "FixMi desktop app — a thin Electron shell around the real web app served at /app by fixmi-backend.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -12,8 +12,8 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "com.fixme.app",
-    "productName": "FixMe",
+    "appId": "com.fixmi.app",
+    "productName": "FixMi",
     "files": ["main.js", "icon.png"],
     "mac": { "target": "dmg" },
     "win": { "target": "nsis" },

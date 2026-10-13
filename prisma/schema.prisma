@@ -54,6 +54,7 @@ model User {
   chatParticipants ChatParticipant[]
 
   @@index([role])
+  corporatePlans CorporatePlan[]
 }
 
 model RefreshToken {
@@ -168,6 +169,11 @@ model Booking {
   ratings     Rating[]
   offers      BookingOffer[]
 
+  // Raised under a corporate plan: the budget comes from the plan's escrow
+  // instead of the customer's wallet, and refunds go back to the plan.
+  corporatePlanId String?
+  corporatePlan   CorporatePlan? @relation(fields: [corporatePlanId], references: [id])
+
   @@index([customerId])
   @@index([artisanId])
   @@index([status])
@@ -200,6 +206,28 @@ model BookingOffer {
 
   @@unique([bookingId, artisanId])
   @@index([artisanId])
+}
+
+// A business's Corporate Plan: paid up front into its own escrow balance,
+// which each corporate job draws its budget from.
+model CorporatePlan {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  plan       String // BASIC / STANDARD / VIP
+  label      String
+  priceKobo  Int
+  period     String // week / month / year
+  callsTotal Int // 0 = unlimited
+  callsUsed  Int       @default(0)
+  categories String[]
+  escrowKobo Int       @default(0)
+  startsAt   DateTime  @default(now())
+  endsAt     DateTime
+  createdAt  DateTime  @default(now())
+  bookings   Booking[]
+
+  @@index([userId])
 }
 
 model Wallet {
@@ -244,6 +272,7 @@ enum EscrowStatus {
   HELD
   RELEASED
   REFUNDED
+  DISPUTED // frozen: a customer reported the job not completed; only an admin decision moves it
 }
 
 model EscrowHold {
@@ -350,6 +379,22 @@ model SupportTicket {
   bookingId String?
   status    TicketStatus @default(OPEN)
   createdAt DateTime     @default(now())
+
+  // "Job not completed" disputes are tickets with money attached (as in
+  // Handa): filing one freezes the booking's escrow until an admin
+  // releases it, refunds it, or splits it. The other party can add their
+  // side once.
+  isDispute              Boolean   @default(false)
+  category               String?
+  evidenceUrl            String?
+  requestedRefundKobo    Int?
+  secondPartyUserId      String?
+  secondPartyResponse    String?
+  secondPartyEvidenceUrl String?
+  secondPartyRespondedAt DateTime?
+  resolution             String?
+  refundAmountKobo       Int?
+  resolvedAt             DateTime?
 
   @@index([userId])
   @@index([status])

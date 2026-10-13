@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FixMi Disputes</title>
+<style>
+:root{--g:#00C65E;--navy:#0B1A2E;--muted:#7A8EA8;--line:#E4EAF0;--bg:#F2F5F8;--red:#DC2626;--card:#fff;--text:#0B1A2E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0B1A2E;--card:#13263F;--line:#22385A;--text:#E8EEF5;--muted:#9AB0C8}}
+:root[data-theme="dark"]{--bg:#0B1A2E;--card:#13263F;--line:#22385A;--text:#E8EEF5;--muted:#9AB0C8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+header{background:var(--navy);color:#fff;padding:16px;display:flex;align-items:center;gap:12px}
+header b{font-size:20px}header b span{color:var(--g)}
+header small{opacity:.6;flex:1}
+main{max-width:860px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text)}
+textarea{min-height:60px;resize:vertical}
+button{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:700;cursor:pointer}
+.g{background:var(--g);color:#fff}.r{background:#FEE2E2;color:var(--red)}.n{background:var(--navy);color:#fff}.l{background:var(--bg);color:var(--text)}
+.muted{color:var(--muted);font-size:13px}
+.tag{display:inline-block;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;background:#FEF3C7;color:#92400E}
+.tag.ok{background:#DCFCE7;color:#166534}
+.side{border-left:3px solid var(--line);padding:6px 0 6px 12px;margin:10px 0}
+.side img{max-width:160px;border-radius:8px;display:inline-block;margin:6px 6px 0 0}
+.err{color:var(--red);font-size:13px;min-height:18px}
+label{font-size:13px;font-weight:600;display:block;margin:10px 0 5px}
+</style>
+</head>
+<body>
+<header><b>Fix<span>Mi</span></b><small>Disputes</small><button class="l" id="out" hidden onclick="signOut()">Sign out</button></header>
+<main>
+  <div id="login" class="card" hidden>
+    <h3 style="margin-top:0">Admin sign in</h3>
+    <label for="em">Email</label><input id="em" type="email" autocomplete="username">
+    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+    <div class="err" id="lerr"></div>
+    <button class="g" onclick="signIn()">Sign in</button>
+  </div>
+  <div id="app" hidden>
+    <div class="row" style="margin-bottom:12px"><button class="n" onclick="load(true)">Open disputes</button><button class="l" onclick="load(false)">All disputes</button></div>
+    <div id="list"></div>
+  </div>
+</main>
+<script>
+var tok = null; try { tok = sessionStorage.getItem('fixmi_admin'); } catch (e) {}
+function naira(k){ return '₦' + Math.round((k||0)/100).toLocaleString('en-NG'); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function api(path, body){
+  return fetch('/api' + path, { method: body ? 'POST' : 'GET', headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: body ? JSON.stringify(body) : undefined })
+    .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Request failed'); return d; }); });
+}
+function show(){ document.getElementById('login').hidden = !!tok; document.getElementById('app').hidden = !tok; document.getElementById('out').hidden = !tok; if (tok) load(true); }
+function signIn(){
+  var e = document.getElementById('lerr'); e.textContent = '';
+  api('/auth/login', { email: document.getElementById('em').value.trim().toLowerCase(), password: document.getElementById('pw').value })
+    .then(function(d){ if (d.user.role !== 'ADMIN') throw new Error('This account is not an admin.'); tok = d.accessToken; try { sessionStorage.setItem('fixmi_admin', tok); } catch (x) {} show(); })
+    .catch(function(err){ e.textContent = err.message; });
+}
+function signOut(){ tok = null; try { sessionStorage.removeItem('fixmi_admin'); } catch (x) {} show(); }
+var openOnly = true;
+function load(open){
+  openOnly = open;
+  var list = document.getElementById('list'); list.innerHTML = '<div class="muted">Loading…</div>';
+  api('/admin/disputes' + (open ? '' : '?open=false')).then(function(d){
+    if (!d.disputes.length) { list.innerHTML = '<div class="card muted">No ' + (open ? 'open ' : '') + 'disputes.</div>'; return; }
+    list.innerHTML = d.disputes.map(card).join('');
+  }).catch(function(err){ if (/token|auth/i.test(err.message)) signOut(); list.innerHTML = '<div class="card err">' + esc(err.message) + '</div>'; });
+}
+function photos(urls, who){
+  return String(urls || '').split('\n').filter(Boolean).map(function(u){ return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="' + who + ' evidence"></a>'; }).join('');
+}
+function card(t){
+  var b = t.booking || {};
+  var held = (b.escrowHolds || []).filter(function(h){ return h.status === 'DISPUTED'; }).reduce(function(n,h){ return n + h.amountKobo; }, 0);
+  var art = b.artisan ? b.artisan.user.name + ' (' + esc(b.artisan.user.phone || '') + ')' : '—';
+  var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + esc(t.subject) + '</b>' +
+    (t.resolvedAt ? '<span class="tag ok">Resolved · ' + esc(t.resolution) + '</span>' : '<span class="tag">' + naira(held) + ' held</span>') + '</div>' +
+    '<div class="muted">' + new Date(t.createdAt).toLocaleString() + ' · Agreed price ' + naira(b.agreedPriceKobo) + '</div>' +
+    '<div class="side"><b>Customer — ' + esc(t.user.name) + ' (' + esc(t.user.phone || t.user.email || '') + ')</b><div>' + esc(t.message) + '</div>' +
+    (t.requestedRefundKobo ? '<div class="muted">Asks for ' + naira(t.requestedRefundKobo) + ' back</div>' : '') +
+    photos(t.evidenceUrl, 'Customer') + '</div>' +
+    '<div class="side"><b>Artisan — ' + esc(art) + '</b><div>' + (t.secondPartyResponse ? esc(t.secondPartyResponse) : '<span class="muted">No response yet</span>') + '</div>' +
+    photos(t.secondPartyEvidenceUrl, 'Artisan') + '</div>' +
+    '<div class="muted">Job: ' + esc(b.category) + ' — ' + esc(b.issue) + '</div>';
+  if (!t.resolvedAt) {
+    h += '<label>Note to both sides (optional)</label><textarea id="note-' + t.id + '"></textarea>' +
+      '<label>Refund to customer for a split (₦)</label><input id="amt-' + t.id + '" type="number" min="1" placeholder="e.g. ' + Math.round(held/200) + '">' +
+      '<div class="err" id="err-' + t.id + '"></div>' +
+      '<div class="row"><button class="g" onclick="resolve(\'' + t.id + '\',\'RELEASE\')">Pay artisan</button>' +
+      '<button class="r" onclick="resolve(\'' + t.id + '\',\'REFUND\')">Refund customer</button>' +
+      '<button class="n" onclick="resolve(\'' + t.id + '\',\'SPLIT\')">Split</button></div>';
+  }
+  return h + '</div>';
+}
+function resolve(id, outcome){
+  var body = { outcome: outcome, note: document.getElementById('note-' + id).value };
+  if (outcome === 'SPLIT') body.refundKobo = Math.round(Number(document.getElementById('amt-' + id).value) * 100);
+  if (!confirm(outcome === 'RELEASE' ? 'Pay the artisan?' : outcome === 'REFUND' ? 'Refund the customer in full?' : 'Split as entered?')) return;
+  api('/admin/disputes/' + id + '/resolve', body).then(function(){ load(openOnly); })
+    .catch(function(err){ document.getElementById('err-' + id).textContent = err.message; });
+}
+show();
+</script>
+</body>
+</html>

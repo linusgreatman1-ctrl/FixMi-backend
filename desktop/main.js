@@ -4,14 +4,14 @@ const path = require("path");
 // Same principle as the mobile shell: load the real deployed web app
 // directly rather than bundling a second copy of the frontend, so the
 // desktop app can never drift from what /app actually serves.
-const APP_URL = process.env.FIXME_APP_URL || "https://YOUR-DEPLOYED-BACKEND.example.com/app";
+const APP_URL = process.env.FIXMI_APP_URL || "https://fixmi-backend-production.up.railway.app/app";
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 430,
     height: 900,
     minWidth: 375,
-    title: "FixMe",
+    title: "FixMi",
     icon: path.join(__dirname, "icon.png"),
     webPreferences: {
       contextIsolation: true,

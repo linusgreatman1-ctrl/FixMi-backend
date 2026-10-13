@@ -1,6 +1,6 @@
-# FixMe Desktop (Electron)
+# FixMi Desktop (Electron)
 
-A thin desktop shell around the real FixMe web app — same reasoning as
+A thin desktop shell around the real FixMi web app — same reasoning as
 `mobile/`: it loads your deployed backend's `/app` directly instead of
 bundling a second copy of the frontend, so there's exactly one frontend to
 maintain and the desktop app can never drift from the web version.
@@ -10,7 +10,7 @@ maintain and the desktop app can never drift from the web version.
 ```bash
 cd desktop
 npm install
-FIXME_APP_URL=https://your-deployed-backend.example.com/app npm start
+FIXMI_APP_URL=https://your-deployed-backend.example.com/app npm start
 ```
 
 Or edit the `APP_URL` fallback directly in `main.js` if you'd rather not

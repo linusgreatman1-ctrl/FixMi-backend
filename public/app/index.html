@@ -354,7 +354,7 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .oc-btn.navy{background:var(--navy);color:#fff;flex:0 0 auto;padding:12px 18px}
 .oc-btn.wide{display:block;width:100%;margin-top:8px}
 .oc-acts{display:flex;gap:9px;margin-top:10px}
-.oc-counter{display:flex;gap:8px;margin-top:10px}
+.oc-counter{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .oc-counter[hidden]{display:none}
 .oc-counter .input{flex:1;min-width:0;padding:11px 13px}
 .offer-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 14px rgba(11,26,46,.06)}
@@ -404,6 +404,36 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .job-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
 .contact-btns{display:flex;gap:8px;flex-shrink:0}
 .ct-btn{width:42px;height:42px;border-radius:12px;border:none;background:var(--g3);font-size:19px;cursor:pointer}
+.search-chip.on{background:var(--navy);color:#fff}
+.ev-pick{width:64px;height:64px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:1.5px dashed var(--border);font-family:inherit}
+.ev-pick span{font-size:22px}.ev-pick small{font-size:9px;color:var(--muted)}
+.ev-previews{display:flex;gap:6px;flex-wrap:wrap}
+.ev-thumb{position:relative;width:64px;height:64px;border-radius:12px;overflow:hidden}
+.ev-thumb img{width:100%;height:100%;object-fit:cover}
+.ev-thumb button{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,.65);color:#fff;font-size:10px;cursor:pointer}
+.countdown{margin-top:8px;font-weight:800;font-size:15px}
+.dispute-box{background:#FFF7ED;border:1.5px solid #FDBA74;border-radius:14px;padding:13px 14px;margin:10px 0;font-size:13px;color:#7C2D12;line-height:1.5}
+.dispute-box .db-line{margin-top:5px}.dispute-box .muted{color:#9A3412;opacity:.8}
+.dispute-box .db-res{margin-top:8px;font-weight:800;color:var(--g2)}
+.corp-chips{display:flex;flex-wrap:wrap;gap:6px;max-height:260px;overflow:auto;margin-bottom:6px}
+.corp-job{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:13px;margin-bottom:8px;cursor:pointer}
+.corp-job b{display:block;font-size:14px;color:var(--navy)}.corp-job small{font-size:12px;color:var(--muted)}.corp-job span{font-weight:800;white-space:nowrap}
+.fee-note{background:#EFF6FF;border-radius:13px;padding:12px 14px;font-size:13px;color:#1E40AF;line-height:1.5;margin:0 0 14px}
+.bcall-ov{position:fixed;inset:0;z-index:9970;background:rgba(8,16,28,.97);display:flex;align-items:center;justify-content:center;padding:16px}
+.bcall-ov[hidden]{display:none}
+.bcall-body{width:100%;max-width:360px;text-align:center;color:#fff}
+.cl-ava{width:92px;height:92px;border-radius:50%;margin:0 auto 16px;background:rgba(255,255,255,.08);border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:40px}
+.cl-ava.cl-ring{animation:bcPulse 1.4s ease-out infinite}
+@keyframes bcPulse{0%{box-shadow:0 0 0 0 rgba(0,198,94,.55)}100%{box-shadow:0 0 0 26px rgba(0,198,94,0)}}
+.cl-name{font-size:21px;font-weight:800}
+.cl-sub{font-size:14px;color:rgba(255,255,255,.6);margin-top:5px}
+.cl-row{display:flex;gap:26px;justify-content:center;margin-top:38px}
+.cl-row small{display:block;margin-top:7px;font-size:12px;color:rgba(255,255,255,.6)}
+.cl-btn{width:64px;height:64px;border-radius:50%;border:none;font-size:26px;cursor:pointer;color:#fff}
+.cl-btn.end{background:#E5372C;transform:rotate(135deg)}
+.cl-btn.ok{background:var(--g)}
+.cl-btn.sm{width:56px;height:56px;font-size:22px;background:rgba(255,255,255,.12);margin-top:4px}
+.cl-btn.off{background:#E5372C}
 .rq-card{background:#fff;border:2px solid var(--g);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,198,94,.12)}
 .rq-card.current{border-color:var(--navy);box-shadow:none}
 .rq-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
@@ -415,6 +445,7 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .rq-addr{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;overflow-wrap:anywhere}
 .rq-price{font-family:'AppFont',sans-serif;font-size:21px;font-weight:800;color:var(--orange)}
 .rq-help{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px}
+.rq-take{font-size:12px;font-weight:700;color:var(--g2);margin-top:3px}
 .rq-sent{background:#EFF6FF;color:#1E40AF;border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.5}
 .req-pop{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9000;max-height:72vh;overflow-y:auto;background:var(--navy);border-radius:22px;padding:10px 10px 2px;box-shadow:0 18px 60px rgba(0,0,0,.4);animation:popIn .25s ease}
 .req-pop[hidden],.req-pill[hidden]{display:none}
@@ -482,16 +513,25 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .s:has(> .bnav){padding-bottom:calc(76px + env(safe-area-inset-bottom))}
 .s > div[style="height:78px"]{display:none}
 .feat-grid.featured .feat-card:nth-child(n+11){display:none}
+/* Home services: 5 a row on phones, 6 on tablets, 8 on desktop — 5 rows each */
+.home-svc{grid-template-columns:repeat(5,minmax(0,1fr))}
+.home-svc .svc-item:nth-child(n+26){display:none}
+.svc-lbl{overflow-wrap:anywhere}
 @media (max-width:420px){
   .svc-ico{width:50px;height:50px;font-size:24px;border-radius:14px}
   .svc-lbl{font-size:10px}
 }
 @media (min-width:640px){
+  .home-svc{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .home-svc .svc-item:nth-child(n+26){display:flex}
+  .home-svc .svc-item:nth-child(n+31){display:none}
   .feat-grid.featured .feat-card:nth-child(n+11){display:flex}
   .feat-grid.featured .feat-card:nth-child(n+16){display:none}
   .req-pop{left:auto;right:20px;width:420px}
 }
 @media (min-width:1024px){
+  .home-svc{grid-template-columns:repeat(8,minmax(0,1fr))}
+  .home-svc .svc-item:nth-child(n+31){display:flex}
   .feat-grid.featured .feat-card:nth-child(n+16){display:flex}
   .only-wide{display:flex !important}
   .only-narrow{display:none !important}
@@ -675,7 +715,7 @@ body{background:#fff}
   <div style="padding:18px">
     <div class="steps"><div class="step done"></div><div class="step cur"></div><div class="step"></div><div class="step"></div></div>
     <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Step 2 of 4 — Your Skills</p>
-    <div class="fg"><label class="label">Primary Skill</label><select class="input" id="reg-a-category"><option>Electrician</option><option>Plumber</option><option>AC Technician</option><option>Mechanic</option><option>Carpenter</option><option>Painter</option><option>Cleaner</option><option>Barber</option><option>Hairdresser</option><option>Phone Repairer</option></select></div>
+    <div class="fg"><label class="label">Primary Skill</label><select class="input" id="reg-a-category"><option>Electrician</option><option>Plumber</option><option>Painter</option><option>Carpenter</option><option>Cleaner</option><option>Bricklayer</option><option>POP Installer</option><option>Tiler</option><option>Welder</option><option>Waterproofer</option><option>Blacksmith</option><option>Drywall Installer</option><option>Scaffolder</option><option>Interlock Layer</option><option>Construction Worker</option><option>General Labourer</option><option>Aluminum Roofer</option><option>Window Installer</option><option>Security Door Installer</option><option>Cabinet Maker</option><option>AC Technician</option><option>CCTV Installer</option><option>Solar Panel Installer</option><option>Generator Mechanic</option><option>Car Electrician</option><option>Smart Home Installer</option><option>Automation Technician</option><option>Elevator Mechanic</option><option>Phone Repairer</option><option>TV Repairer</option><option>Appliance Repairer</option><option>Fridge Technician</option><option>Gas Technician</option><option>Laptop Repairer</option><option>Mechanic</option><option>Driver</option><option>Truck Loader/Offloader</option><option>Borehole Sinker</option><option>Furniture/Upholsterer</option><option>Home/Office Decorator</option><option>Event Decorator</option><option>Landscaper</option><option>Sign Maker</option><option>Artist/Drawing</option><option>Pool/Spa Technician</option><option>Barber</option><option>Hairdresser</option><option>Fashion Designer</option><option>Shoemaker</option><option>Goldsmith/Jeweler</option><option>Dyer</option><option>Pet Groomer</option><option>Laundry Service</option><option>Security Personnel</option><option>DJ</option><option>Trumpeter/Musician</option><option>Event Usher</option></select></div>
     <div class="fg"><label class="label">Secondary Skill (optional)</label><select class="input"><option>None</option><option>Electrician</option><option>Plumber</option><option>Carpenter</option></select></div>
     <div class="fg"><label class="label">Years of Experience</label><select class="input" id="reg-a-years"><option value="0">Less than 1 year</option><option value="1">1 – 2 years</option><option value="4">3 – 5 years</option><option value="7">5 – 10 years</option><option value="12">10+ years</option></select></div>
     <div class="fg"><label class="label">About You</label><textarea class="input" id="reg-a-bio" placeholder="Tell customers about your experience..."></textarea></div>
@@ -754,26 +794,51 @@ body{background:#fff}
 
   <div class="sec">
     <div class="sec-hdr"><div class="sec-title">Our Services</div><div class="see-all" onclick="go('all-services')">See all 60+</div></div>
-    <div class="svc-grid">
+    <div class="svc-grid home-svc">
       <div class="svc-item" onclick="bookSvc('Electrician','⚡','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">⚡</div><div class="svc-lbl">Electrician</div></div>
       <div class="svc-item" onclick="bookSvc('Plumber','🔩','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🔩</div><div class="svc-lbl">Plumber</div></div>
-      <div class="svc-item" onclick="bookSvc('AC Tech','❄️','#F0F9FF')"><div class="svc-ico" style="background:#F0F9FF">❄️</div><div class="svc-lbl">AC Tech</div></div>
+      <div class="svc-item" onclick="bookSvc('AC Technician','❄️','#F0F9FF')"><div class="svc-ico" style="background:#F0F9FF">❄️</div><div class="svc-lbl">AC Tech</div></div>
       <div class="svc-item" onclick="bookSvc('Mechanic','🚘','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🚘</div><div class="svc-lbl">Mechanic</div></div>
       <div class="svc-item" onclick="bookSvc('Painter','🖌️','#FDF4FF')"><div class="svc-ico" style="background:#FDF4FF">🖌️</div><div class="svc-lbl">Painter</div></div>
       <div class="svc-item" onclick="bookSvc('Carpenter','🪚','#FFF8ED')"><div class="svc-ico" style="background:#FFF8ED">🪚</div><div class="svc-lbl">Carpenter</div></div>
       <div class="svc-item" onclick="bookSvc('Cleaner','🧹','#F0FDF4')"><div class="svc-ico" style="background:#F0FDF4">🧹</div><div class="svc-lbl">Cleaner</div></div>
       <div class="svc-item" onclick="bookSvc('Barber','✂️','#FFF1F2')"><div class="svc-ico" style="background:#FFF1F2">✂️</div><div class="svc-lbl">Barber</div></div>
       <div class="svc-item" onclick="bookSvc('Hairdresser','💇','#FDF4FF')"><div class="svc-ico" style="background:#FDF4FF">💇</div><div class="svc-lbl">Hairdresser</div></div>
-      <div class="svc-item" onclick="bookSvc('Phone Repair','📱','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">📱</div><div class="svc-lbl">Phone Repair</div></div>
-      <div class="svc-item" onclick="bookSvc('Generator','⚙️','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">⚙️</div><div class="svc-lbl">Generator</div></div>
+      <div class="svc-item" onclick="bookSvc('Phone Repairer','📱','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">📱</div><div class="svc-lbl">Phone Repair</div></div>
+      <div class="svc-item" onclick="bookSvc('Generator Mechanic','⚙️','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">⚙️</div><div class="svc-lbl">Generator</div></div>
       <div class="svc-item" onclick="bookSvc('Tiler','🟫','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🟫</div><div class="svc-lbl">Tiler</div></div>
-      <div class="svc-item" onclick="bookSvc('CCTV','📹','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">📹</div><div class="svc-lbl">CCTV</div></div>
+      <div class="svc-item" onclick="bookSvc('CCTV Installer','📹','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">📹</div><div class="svc-lbl">CCTV</div></div>
       <div class="svc-item" onclick="bookSvc('Bricklayer','🧱','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🧱</div><div class="svc-lbl">Bricklayer</div></div>
       <div class="svc-item" onclick="bookSvc('Welder','🔥','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">🔥</div><div class="svc-lbl">Welder</div></div>
+      <div class="svc-item" onclick="bookSvc('POP Installer','🏛️','#F5F3FF')"><div class="svc-ico" style="background:#F5F3FF">🏛️</div><div class="svc-lbl">POP Installer</div></div>
+      <div class="svc-item" onclick="bookSvc('Waterproofer','💧','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">💧</div><div class="svc-lbl">Waterproofer</div></div>
+      <div class="svc-item" onclick="bookSvc('Blacksmith','⚒️','#F2F2F2')"><div class="svc-ico" style="background:#F2F2F2">⚒️</div><div class="svc-lbl">Blacksmith</div></div>
+      <div class="svc-item" onclick="bookSvc('Drywall Installer','🧲','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🧲</div><div class="svc-lbl">Drywall/Taper</div></div>
+      <div class="svc-item" onclick="bookSvc('Scaffolder','🏗️','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🏗️</div><div class="svc-lbl">Scaffolder</div></div>
+      <div class="svc-item" onclick="bookSvc('Interlock Layer','🛤️','#F0FDF4')"><div class="svc-ico" style="background:#F0FDF4">🛤️</div><div class="svc-lbl">Interlock Layer</div></div>
+      <div class="svc-item" onclick="bookSvc('Construction Worker','👷','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">👷</div><div class="svc-lbl">Construction</div></div>
+      <div class="svc-item" onclick="bookSvc('General Labourer','🔨','#F2F2F2')"><div class="svc-ico" style="background:#F2F2F2">🔨</div><div class="svc-lbl">Gen. Labour</div></div>
+      <div class="svc-item" onclick="bookSvc('Aluminum Roofer','🏠','#F0FDF4')"><div class="svc-ico" style="background:#F0FDF4">🏠</div><div class="svc-lbl">Alum. Roofer</div></div>
+      <div class="svc-item" onclick="bookSvc('Window Installer','🪟','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🪟</div><div class="svc-lbl">Window Install</div></div>
+      <div class="svc-item" onclick="bookSvc('Security Door Installer','🔐','#FFF1F2')"><div class="svc-ico" style="background:#FFF1F2">🔐</div><div class="svc-lbl">Security Door</div></div>
+      <div class="svc-item" onclick="bookSvc('Cabinet Maker','🗄️','#FFF8ED')"><div class="svc-ico" style="background:#FFF8ED">🗄️</div><div class="svc-lbl">Cabinet Maker</div></div>
+      <div class="svc-item" onclick="bookSvc('Solar Panel Installer','☀️','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">☀️</div><div class="svc-lbl">Solar Panel</div></div>
+      <div class="svc-item" onclick="bookSvc('Car Electrician','🚗','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🚗</div><div class="svc-lbl">Car Electrician</div></div>
+      <div class="svc-item" onclick="bookSvc('Smart Home Installer','🏡','#F0FDF4')"><div class="svc-ico" style="background:#F0FDF4">🏡</div><div class="svc-lbl">Smart Home</div></div>
+      <div class="svc-item" onclick="bookSvc('Automation Technician','🤖','#F5F3FF')"><div class="svc-ico" style="background:#F5F3FF">🤖</div><div class="svc-lbl">Automation</div></div>
+      <div class="svc-item" onclick="bookSvc('Elevator Mechanic','🛗','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🛗</div><div class="svc-lbl">Elevator Mech.</div></div>
+      <div class="svc-item" onclick="bookSvc('TV Repairer','📺','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">📺</div><div class="svc-lbl">TV Repair</div></div>
+      <div class="svc-item" onclick="bookSvc('Appliance Repairer','🔌','#F2F2F2')"><div class="svc-ico" style="background:#F2F2F2">🔌</div><div class="svc-lbl">Appliance Repair</div></div>
+      <div class="svc-item" onclick="bookSvc('Fridge Technician','🧊','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🧊</div><div class="svc-lbl">Fridge Tech</div></div>
+      <div class="svc-item" onclick="bookSvc('Gas Technician','🔴','#FFF1F2')"><div class="svc-ico" style="background:#FFF1F2">🔴</div><div class="svc-lbl">Gas Tech</div></div>
+      <div class="svc-item" onclick="bookSvc('Laptop Repairer','💻','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">💻</div><div class="svc-lbl">Laptop Repair</div></div>
+      <div class="svc-item" onclick="bookSvc('Driver','🚖','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🚖</div><div class="svc-lbl">Driver</div></div>
+      <div class="svc-item" onclick="bookSvc('Truck Loader/Offloader','🚛','#F2F2F2')"><div class="svc-ico" style="background:#F2F2F2">🚛</div><div class="svc-lbl">Truck Loader</div></div>
+      <div class="svc-item" onclick="bookSvc('Borehole Sinker','🕳️','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🕳️</div><div class="svc-lbl">Borehole Sinker</div></div>
     </div>
   </div>
 
-  <div onclick="go('corp-plan')" style="margin:0 18px 16px;cursor:pointer">
+  <div onclick="openCorporate()" style="margin:0 18px 16px;cursor:pointer">
     <div style="background:var(--navy2);border-radius:17px;padding:18px">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
         <span style="font-size:20px">🏢</span>
@@ -799,7 +864,7 @@ body{background:#fff}
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div>
     <div class="bn-dot" data-demo></div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
-    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -927,7 +992,7 @@ body{background:#fff}
     <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
-    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1401,6 +1466,7 @@ body{background:#fff}
     <div id="rate-lbl" style="color:var(--muted);font-size:14px;min-height:22px;margin-bottom:18px;font-weight:500">Tap a star to rate</div>
     <textarea class="input" id="rating-comment" style="width:100%;margin-bottom:16px" placeholder="Share your experience... (optional)"></textarea>
     <button class="btn btn-g" style="width:100%" onclick="realSubmitRating()">Submit Review</button>
+    <button class="btn btn-gray" style="width:100%;margin-top:10px" onclick="openReportIssue(window._ratingBookingId)">⚠️ Report an Issue</button>
   </div>
 </div>
 
@@ -1428,7 +1494,7 @@ body{background:#fff}
     <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn on"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
-    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1455,7 +1521,7 @@ body{background:#fff}
     <button class="chip" onclick="filterHistory(this,'history','pending')">Pending</button>
     <button class="chip" onclick="filterHistory(this,'history','cancelled')">Cancelled</button>
   </div>
-  <div data-fresh id="history-real" style="padding:8px 16px"></div>
+  <div id="history-real" style="padding:8px 16px"></div>
   <div data-demo style="padding:8px 16px">
     <div class="empty-state hist-empty" hidden><b>No jobs here</b>Try another filter.</div>
     <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Electrical Repair','⚡','Emeka Okafor','24 Feb 2026','₦5,500','✓ Completed','Lights tripping, bedroom switch not working')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Electrical Repair</div><div style="font-size:12px;color:var(--muted)">Emeka Okafor · 24 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 5.0</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Lights tripping, bedroom switch not working"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦5,500</span></div></div>
@@ -1468,7 +1534,7 @@ body{background:#fff}
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div>
     <div class="bn-dot" data-demo></div></div>
     <div class="bn on"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
-    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1504,7 +1570,7 @@ body{background:#fff}
     <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('saved-addresses')"><div class="mi-ico">📍</div><div class="mi-txt">Saved Addresses</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('payment-methods')"><div class="mi-ico">💳</div><div class="mi-txt">Payment Methods</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('corp-plan')"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openCorporate()"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('history')"><div class="mi-ico">📋</div><div class="mi-txt">Job History</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge" data-demo>3</div></div>
     <div class="menu-div"></div>
@@ -1519,7 +1585,7 @@ body{background:#fff}
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div>
     <div class="bn-dot" data-demo></div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
-    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn on"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -1565,9 +1631,9 @@ body{background:#fff}
 
 <!-- ████ REPORT ISSUE ████ -->
 <div class="s" id="report-issue">
-  <div class="topbar"><button class="back" onclick="go('job-detail')">←</button><div class="tb-title">Report an Issue</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Report an Issue</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span>Reports are reviewed within 24 hours. Provide as much detail as possible to help us resolve your issue quickly.</span></div>
+    <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span id="report-issue-note">Reports are reviewed within 24 hours. Provide as much detail as possible to help us resolve your issue quickly.</span></div>
     <div class="fg"><label class="label">Issue Type</label>
       <select class="input" id="report-type">
         <option>Select issue type...</option>
@@ -1590,7 +1656,7 @@ body{background:#fff}
         <div onclick="openGalleryPicker()" style="width:64px;height:64px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:1.5px dashed var(--border)">
           <span style="font-size:22px">🖼️</span><span style="font-size:9px;color:var(--muted)">Gallery</span>
         </div>
-        <div id="report-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div id="report-previews" class="ev-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
       </div>
     </div>
     <button onclick="submitReport()" class="btn btn-g">Submit Report</button>
@@ -1692,8 +1758,8 @@ body{background:#fff}
       </div>
       <div style="background:var(--gray);border-radius:13px;padding:14px;text-align:center;margin-bottom:14px">
         <div style="font-size:12px;color:var(--muted)">Expected Earnings</div>
-        <div id="jactive-earn-display" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:26px;color:var(--g);margin-top:4px">+₦5,100</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">After 15% FixMi commission</div>
+        <div id="jactive-earn-display" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:26px;color:var(--g);margin-top:4px">+₦5,400</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">After <span data-commission>10%</span> FixMi commission</div>
       </div>
     </div>
 
@@ -1702,7 +1768,7 @@ body{background:#fff}
       <div style="background:var(--g3);border-radius:14px;padding:20px;margin-bottom:14px;text-align:center">
         <div style="font-size:48px;margin-bottom:10px">🎉</div>
         <div style="font-weight:700;font-size:18px;color:var(--g2);margin-bottom:6px">Payment Made / Job Completed!</div>
-        <div id="jactive-earn-final" style="font-family:'AppFont',sans-serif;font-size:28px;font-weight:800;color:var(--navy);margin:10px 0">+₦5,100</div>
+        <div id="jactive-earn-final" style="font-family:'AppFont',sans-serif;font-size:28px;font-weight:800;color:var(--navy);margin:10px 0">+₦5,400</div>
         <div style="font-size:13px;color:var(--g2);line-height:1.6">Amount sent to your wallet. Returning to dashboard...</div>
       </div>
     </div>
@@ -1742,22 +1808,22 @@ body{background:#fff}
   <div style="padding:18px">
     <div style="background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:14px;padding:16px;margin-bottom:16px">
       <div style="font-weight:700;font-size:14px;color:#DC2626;margin-bottom:6px">⚠️ Commission Due to FixMi</div>
-      <div style="font-size:13px;color:#991B1B;line-height:1.6">You received a cash payment for Job #FM-2841 (Generator Repair). FixMi's 15% commission of ₦950 must be remitted within 7 days or your account will be suspended.</div>
+      <div style="font-size:13px;color:#991B1B;line-height:1.6">You received a cash payment for Job #FM-2841 (Generator Repair). FixMi's 10% commission of ₦600 must be remitted within 7 days or your account will be suspended.</div>
     </div>
     <div class="card" style="margin-bottom:16px">
       <div class="pay-row"><span class="pay-lbl">Job</span><span class="pay-val">Generator Repair</span></div>
       <div class="pay-row"><span class="pay-lbl">Cash Received</span><span class="pay-val">₦6,000</span></div>
-      <div class="pay-row"><span class="pay-lbl">Commission (15%)</span><span class="pay-val" style="color:#DC2626;font-weight:700">₦950</span></div>
+      <div class="pay-row"><span class="pay-lbl">Commission (10%)</span><span class="pay-val" style="color:#DC2626;font-weight:700">₦600</span></div>
       <div class="pay-row"><span class="pay-lbl">Days Remaining</span><span class="pay-val" style="color:var(--orange)">4 days</span></div>
     </div>
     <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px">Payment Method</div>
     <div style="border:2px solid var(--g);background:var(--g3);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer">
       <span style="font-size:22px">🏦</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--navy)">Bank Transfer</div><div style="font-size:11px;color:var(--muted)">Transfer ₦950 to FixMi account</div></div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--navy)">Bank Transfer</div><div style="font-size:11px;color:var(--muted)">Transfer ₦600 to FixMi account</div></div>
       <span style="color:var(--g);font-size:18px;font-weight:700">✓</span>
     </div>
     <div class="info yellow" style="margin-bottom:14px"><span>🔒</span><span>Pay from your earnings to clear this commission. Your account remains active.</span></div>
-    <button onclick="submitCommissionPayment()" class="btn btn-g">Pay ₦950 Commission →</button>
+    <button onclick="submitCommissionPayment()" class="btn btn-g">Pay ₦600 Commission →</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -1778,8 +1844,8 @@ body{background:#fff}
       </div>
       <div class="pay-row"><span class="pay-lbl">Description</span><span id="ajd-desc" style="font-size:13px;color:var(--navy);text-align:right;max-width:60%">Install ceiling fan in master bedroom</span></div>
       <div class="pay-row"><span class="pay-lbl">Location</span><span id="ajd-location" style="font-size:13px;color:var(--navy)">Victoria Island, Lagos</span></div>
-      <div class="pay-row"><span class="pay-lbl">Amount Earned</span><span id="ajd-earned" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:15px;color:var(--g)">+₦4,250</span></div>
-      <div class="pay-row"><span class="pay-lbl">FixMi Commission</span><span id="ajd-commission" style="font-size:13px;color:var(--muted)">₦750 (15%)</span></div>
+      <div class="pay-row"><span class="pay-lbl">Amount Earned</span><span id="ajd-earned" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:15px;color:var(--g)">+₦4,500</span></div>
+      <div class="pay-row"><span class="pay-lbl">FixMi Commission</span><span id="ajd-commission" style="font-size:13px;color:var(--muted)">₦500 (10%)</span></div>
       <div style="display:flex;justify-content:space-between;padding:10px 0"><span class="pay-lbl">Customer Rating</span><span id="ajd-rating" style="color:var(--yellow);font-size:14px;font-weight:700">⭐ 5.0</span></div>
     </div>
     <!-- Customer card -->
@@ -1799,7 +1865,7 @@ body{background:#fff}
 
 <!-- ████ REPORT CUSTOMER ████ -->
 <div class="s" id="report-customer">
-  <div class="topbar"><button class="back" onclick="go('artisan-job-detail')">←</button><div class="tb-title">Report Customer</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Report Customer</div><div class="tb-space"></div></div>
   <div style="padding:16px">
     <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span>Reports are reviewed within 24 hours. Only report genuine issues. False reports may affect your account.</span></div>
     <div class="fg"><label class="label">Issue Type</label>
@@ -1823,7 +1889,7 @@ body{background:#fff}
         <div onclick="openGalleryPicker()" role="button" style="width:64px;height:64px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:1.5px dashed var(--border)">
           <span style="font-size:22px">🖼️</span><span style="font-size:9px;color:var(--muted)">Gallery</span>
         </div>
-        <div id="cust-report-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div id="cust-report-previews" class="ev-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
       </div>
     </div>
     <button onclick="submitCustomerReport()" class="btn btn-g">Submit Report</button>
@@ -1839,10 +1905,10 @@ body{background:#fff}
     <div style="background:var(--navy);border-radius:17px;padding:20px;text-align:center;margin-bottom:18px"><div style="font-size:34px;margin-bottom:9px">🤝</div><div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">How can we help?</div><div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:13px">Available 8am–10pm every day</div><button class="btn btn-g" onclick="go('user-chat-support')">Chat with Support</button></div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs</div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I book an artisan? <span class="faq-arr">›</span></div><div class="faq-a">Select the service you need, describe your issue, set your location, and tap "Find Nearby Artisans". Verified artisans near you will be notified and can accept your request.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How does payment work? <span class="faq-arr">›</span></div><div class="faq-a">Payment is made through FixMi only — never pay cash directly. After the job, you pay via bank transfer or card. FixMi holds the money and pays the artisan after your confirmation.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if I'm not satisfied? <span class="faq-arr">›</span></div><div class="faq-a">Raise a complaint within 24 hours. Our team reviews the case and can facilitate a refund or send another artisan at no extra cost.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How does payment work? <span class="faq-arr">›</span></div><div class="faq-a">When you request a job, your budget goes into FixMi escrow from your wallet. Once you and an artisan agree a price, the escrow is topped up or the difference refunded. The artisan is paid from escrow only after you confirm the job is done — never pay cash.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if I'm not satisfied? <span class="faq-arr">›</span></div><div class="faq-a">When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 5 minutes). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How are artisans verified? <span class="faq-arr">›</span></div><div class="faq-a">Every artisan must provide a government ID (NIN or Voter Card), a profile photo, and their phone number. Our admin team reviews each application before approval.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I call an artisan directly? <span class="faq-arr">›</span></div><div class="faq-a">No — calling is disabled for your safety. All communication happens through FixMi's in-app chat only.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I call an artisan directly? <span class="faq-arr">›</span></div><div class="faq-a">Yes. Once an artisan has your job, tap 📞 on the job screen for a free in-app call, a regular phone call or WhatsApp. Keep payments inside FixMi escrow.</div></div>
   </div>
 </div>
 
@@ -1903,6 +1969,9 @@ body{background:#fff}
     </div>
     <button onclick="artisanWithdrawNow()" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:13px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer">Withdraw Now →</button>
   </div>
+
+  <!-- Platform fee, so artisans price without a loss -->
+  <div class="fee-note" style="margin:0 16px 14px"><b>💡 Pricing tip:</b> FixMi keeps <b data-commission>10%</b> of every job and you receive <b data-takehome>90%</b>. Set your price so your share covers materials, transport and profit — for example, quote ₦10,000 and you receive ₦9,000.</div>
 
   <!-- REAL JOBS: open requests to accept, or the artisan's current active job -->
   <div id="job-alert-section" style="margin:0 16px 16px">
@@ -2067,8 +2136,8 @@ body{background:#fff}
         <span style="font-size:13px;font-weight:600;color:var(--navy)">₦5,000</span>
       </div>
       <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:13px;color:var(--muted)">FixMi Commission (15%)</span>
-        <span style="font-size:13px;font-weight:600;color:var(--orange)">−₦750</span>
+        <span style="font-size:13px;color:var(--muted)">FixMi Commission (10%)</span>
+        <span style="font-size:13px;font-weight:600;color:var(--orange)">−₦500</span>
       </div>
       <div style="display:flex;justify-content:space-between;padding:9px 0">
         <span style="font-size:13px;font-weight:700;color:var(--navy)">Your Earnings</span>
@@ -2138,8 +2207,8 @@ body{background:#fff}
         <span style="font-size:13px;font-weight:600;color:var(--navy)">₦6,000</span>
       </div>
       <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(253,186,116,.4)">
-        <span style="font-size:13px;color:#92400E">Commission (15%)</span>
-        <span style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:800;color:var(--orange)">₦950</span>
+        <span style="font-size:13px;color:#92400E">Commission (10%)</span>
+        <span style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:800;color:var(--orange)">₦600</span>
       </div>
       <div style="display:flex;justify-content:space-between;padding:9px 0">
         <span style="font-size:13px;color:#92400E">Days Remaining</span>
@@ -2208,10 +2277,10 @@ body{background:#fff}
     <button class="chip" onclick="filterHistory(this,'artisan-history','pending')">Pending</button>
     <button class="chip" onclick="filterHistory(this,'artisan-history','cancelled')">Cancelled</button>
   </div>
-  <div data-fresh id="artisan-history-real" style="padding:8px 16px"></div>
+  <div id="artisan-history-real" style="padding:8px 16px"></div>
   <div data-demo style="padding:8px 16px">
     <div class="empty-state hist-empty" hidden><b>No jobs here</b>Try another filter.</div>
-    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Fan Installation','⚡','Blessing O.','Yesterday','+₦4,250','✓ Completed','Install ceiling fan in master bedroom')">
+    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Fan Installation','⚡','Blessing O.','Yesterday','+₦4,500','✓ Completed','Install ceiling fan in master bedroom')">
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
         <div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
         <div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Fan Installation</div><div style="font-size:12px;color:var(--muted)">Blessing O. · Yesterday</div></div>
@@ -2219,10 +2288,10 @@ body{background:#fff}
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:11px;border-top:1px solid var(--border)">
         <span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span>
-        <span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--g)">+₦4,250</span>
+        <span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--g)">+₦4,500</span>
       </div>
     </div>
-    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Panel Wiring Fix','⚡','Emeka C.','5 days ago','+₦7,650','✓ Completed','Rewire the distribution panel')">
+    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Panel Wiring Fix','⚡','Emeka C.','5 days ago','+₦8,100','✓ Completed','Rewire the distribution panel')">
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
         <div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
         <div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Panel Wiring Fix</div><div style="font-size:12px;color:var(--muted)">Emeka C. · 5 days ago</div></div>
@@ -2230,7 +2299,7 @@ body{background:#fff}
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:11px;border-top:1px solid var(--border)">
         <span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span>
-        <span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--g)">+₦7,650</span>
+        <span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--g)">+₦8,100</span>
       </div>
     </div>
   </div>
@@ -2403,8 +2472,8 @@ body{background:#fff}
       <button class="btn btn-g" onclick="go('artisan-chat-support')">Chat with Support</button>
     </div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs for Artisans</div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I receive payments? <span class="faq-arr">›</span></div><div class="faq-a">After a customer confirms the job, FixMi releases 85% of the agreed amount to your registered bank account. Transfers are processed within 30 minutes for major banks.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What is FixMi's commission? <span class="faq-arr">›</span></div><div class="faq-a">FixMi retains 15% of every job. For cash jobs, you must remit this commission within 7 days. Failure to do so will result in account suspension.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I receive payments? <span class="faq-arr">›</span></div><div class="faq-a">After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 5 minutes after you mark the job done. Withdraw from your wallet to your bank account.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What is FixMi's commission? <span class="faq-arr">›</span></div><div class="faq-a">FixMi keeps 10% of every job as its platform fee and you receive 90%. Every job is paid through escrow — there are no cash jobs. Set your price so the 90% you take home covers your materials, transport and profit. Example: quote ₦10,000 and you receive ₦9,000.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I get more job requests? <span class="faq-arr">›</span></div><div class="faq-a">Stay online, maintain a high rating, respond quickly, and consider boosting your profile under Promote My Page. Artisans with 4.5+ ratings receive 3x more requests.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if a customer is difficult? <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in your Job History. Provide details and our team will review within 24 hours. Never engage in arguments — complete the job or contact support.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I cancel a job? <span class="faq-arr">›</span></div><div class="faq-a">Cancellations affect your rating. Only cancel via the app with a valid reason. Repeated cancellations may result in account suspension.</div></div>
@@ -2509,7 +2578,7 @@ body{background:#fff}
 <div class="s" id="artisan-messages">
   <div class="topbar"><button class="back" onclick="go('artisan-dash')">←</button><div class="tb-title">Messages</div><div class="tb-space"></div></div>
   <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">🔒</span><span>All chats happen here on FixMi only. Calls are disabled for your safety.</span></div>
-  <div class="chat-list" data-fresh id="artisan-chat-thread-list"></div>
+  <div class="chat-list" id="artisan-chat-thread-list"></div>
   <div class="chat-list" data-demo>
     <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div><div style="flex:1;min-width:0"><div class="chat-name">Chukwuemeka Obi</div><div class="chat-prev">I'm near your location now</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0"><div style="font-size:11px;color:var(--muted)">5m ago</div><div class="unread">1</div></div></div>
     <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,var(--g2),#00E875)">🛡️</div><div style="flex:1;min-width:0"><div class="chat-name">FixMi Support</div><div class="chat-prev">Your account has been verified.</div></div><div style="font-size:11px;color:var(--muted);flex-shrink:0">Mon</div></div>
@@ -2642,7 +2711,7 @@ body{background:#fff}
 <div class="s" id="artisan-bank-account">
   <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">Bank Account</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div class="info green" style="margin-bottom:16px"><span>💰</span><span>Your earnings are paid directly to your bank account after each completed job (app payments). Commission from cash jobs must be remitted within 7 days.</span></div>
+    <div class="info green" style="margin-bottom:16px"><span>💰</span><span>Your earnings (the agreed price less FixMi’s 10%) land in your FixMi wallet after each job. Withdraw them to this bank account.</span></div>
     <div data-demo class="card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
         <div style="width:44px;height:44px;background:var(--g3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏦</div>
@@ -2877,20 +2946,8 @@ body{background:#fff}
       <div style="font-size:14px;font-weight:700;color:#0B1A2E">Select Service Categories</div>
     </div>
 
-    <div style="margin-bottom:6px">
-      <span onclick="toggleSvc(this,'Electrical')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">⚡ Electrical</span>
-      <span onclick="toggleSvc(this,'Plumbing')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">🔩 Plumbing</span>
-      <span onclick="toggleSvc(this,'AC Service')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">❄️ AC Service</span>
-      <span onclick="toggleSvc(this,'Cleaning')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">🧹 Cleaning</span>
-      <span onclick="toggleSvc(this,'Security')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">🛡️ Security</span>
-      <span onclick="toggleSvc(this,'Generator')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">⚙️ Generator</span>
-      <span onclick="toggleSvc(this,'Carpentry')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">🪚 Carpentry</span>
-      <span onclick="toggleSvc(this,'Painting')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">🖌️ Painting</span>
-      <span onclick="toggleSvc(this,'CCTV')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">📹 CCTV</span>
-      <span onclick="toggleSvc(this,'Laundry')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">👔 Laundry</span>
-      <span onclick="toggleSvc(this,'Solar')" style="display:inline-block;background:#F2F5F8;color:#7A8EA8;border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;margin:3px;transition:.15s">☀️ Solar</span>
-    </div>
-    <div style="font-size:11px;color:#7A8EA8;margin-bottom:24px">Tap to select the services your business needs</div>
+    <div id="corp-svc-chips" class="corp-chips"></div>
+    <div style="font-size:12px;color:#7A8EA8;margin-bottom:24px" id="corp-svc-hint">Tap the services your business needs — Basic covers up to 3, Standard up to 6, VIP Annual covers every service.</div>
 
     <!-- Step 2: Choose Plan -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
@@ -2910,7 +2967,7 @@ body{background:#fff}
         ✓ Verified artisans only<br>
         ✓ 24-hour response guarantee
       </div>
-      <button onclick="choosePlan('Basic','25000','week','5')" style="width:100%;background:#0B1A2E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose Basic — Fund Escrow →</button>
+      <button onclick="choosePlan('basic')" style="width:100%;background:#0B1A2E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose Basic — Fund Escrow →</button>
     </div>
 
     <!-- Standard -->
@@ -2927,7 +2984,7 @@ body{background:#fff}
         ✓ Dedicated account manager<br>
         ✓ Up to 3 office locations
       </div>
-      <button onclick="choosePlan('Standard','80000','month','20')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose Standard — Fund Escrow →</button>
+      <button onclick="choosePlan('standard')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose Standard — Fund Escrow →</button>
     </div>
 
     <!-- VIP -->
@@ -2943,7 +3000,7 @@ body{background:#fff}
         ✓ Up to 10 office/site locations<br>
         ✓ Dedicated vetted artisan team
       </div>
-      <button onclick="choosePlan('VIP Annual','750000','year','999')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose VIP Annual — Fund Escrow →</button>
+      <button onclick="choosePlan('vip')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose VIP Annual — Fund Escrow →</button>
     </div>
 
   </div>
@@ -2952,7 +3009,7 @@ body{background:#fff}
     <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
     <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
     <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
-    <div class="bn on" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -2963,7 +3020,7 @@ body{background:#fff}
 ═══════════════════════════════════════════ -->
 <div class="s" id="corp-escrow" style="background:#fff">
   <div style="background:#0B1A2E;padding:18px">
-    <button class="back w" style="margin-bottom:14px" onclick="goTo('corp-plan')">←</button>
+    <button class="back w" style="margin-bottom:14px" onclick="go('corp-plan')">←</button>
     <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Fund Escrow Wallet</div>
     <div style="font-size:13px;color:rgba(255,255,255,.45)">Held securely. Released only after job confirmation.</div>
   </div>
@@ -2995,27 +3052,18 @@ body{background:#fff}
       <div style="font-size:12px;color:#7A8EA8">Covers your full plan period. Unused funds are refundable.</div>
     </div>
 
-    <!-- Payment -->
-    <div style="font-size:14px;font-weight:700;color:#0B1A2E;margin-bottom:10px">Payment Method</div>
-    <div id="pm1" onclick="pickPay('pm1')" style="border:1.5px solid #00C65E;background:#E6FFF2;border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:9px;cursor:pointer">
-      <span style="font-size:22px">🏦</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0B1A2E">Bank Transfer</div><div style="font-size:11px;color:#7A8EA8">Transfer to FixMi escrow account</div></div>
-      <span id="pm1-tick" style="color:#00C65E;font-size:18px">✓</span>
+    <div style="font-size:14px;font-weight:700;color:#0B1A2E;margin-bottom:10px">Pay From</div>
+    <div style="border:1.5px solid #00C65E;background:#E6FFF2;border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:9px">
+      <span style="font-size:22px">👛</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0B1A2E">FixMi Wallet</div><div style="font-size:11px;color:#7A8EA8" id="fe-wallet">Balance: …</div></div>
+      <span style="color:#00C65E;font-size:18px">✓</span>
     </div>
-    <div id="pm2" onclick="pickPay('pm2')" style="border:1.5px solid #E4EAF0;border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:9px;cursor:pointer">
-      <span style="font-size:22px">💳</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0B1A2E">Card Payment</div><div style="font-size:11px;color:#7A8EA8">Debit / Credit via Paystack</div></div>
-    </div>
-    <div id="pm3" onclick="pickPay('pm3')" style="border:1.5px solid #E4EAF0;border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer">
-      <span style="font-size:22px">📱</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#0B1A2E">USSD</div><div style="font-size:11px;color:#7A8EA8">Pay via any bank USSD code</div></div>
-    </div>
-
+    <div style="font-size:12px;color:#7A8EA8;margin-bottom:16px">Not enough in your wallet? <a href="#" onclick="openWallet();return false" style="color:#00C65E;font-weight:700">Top up your wallet</a> first.</div>
     <div style="background:#EFF6FF;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#1E40AF;line-height:1.5">
-      🔒 Payment goes into a secure escrow wallet. FixMi only releases funds after you confirm each job is complete.
+      🔒 The plan amount moves into your corporate escrow. Each job takes its price from it, and FixMi only pays the artisan after you confirm the job. Unused escrow is refundable.
     </div>
 
-    <button onclick="fundEscrow()" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Fund Escrow &amp; Activate Plan →</button>
+    <button id="fe-btn" onclick="fundEscrow(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Fund Escrow &amp; Activate Plan →</button>
     <div style="height:24px"></div>
   </div>
 </div>
@@ -3068,16 +3116,18 @@ body{background:#fff}
       </div>
     </div>
 
-    <button onclick="goTo('corp-raise')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:14px">+ Raise a New Job</button>
+    <button onclick="openCorpRaise()" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:14px">+ Raise a New Job</button>
 
     <div style="font-size:14px;font-weight:700;color:#0B1A2E;margin-bottom:10px">Recent Jobs</div>
-    <div id="jobs-list" style="background:#F2F5F8;border-radius:13px;padding:18px;text-align:center;color:#7A8EA8;font-size:13px">No jobs raised yet. Tap above to get started.</div>
+    <div id="jobs-list"><div class="empty-note">No jobs raised yet. Tap above to get started.</div></div>
+    <div id="corp-cats" style="font-size:12px;color:#7A8EA8;margin-top:12px;line-height:1.5"></div>
 
-    <div id="low-warn" style="background:#FFF3ED;border-radius:13px;padding:14px;margin-top:14px">
+    <div id="low-warn" hidden style="background:#FFF3ED;border-radius:13px;padding:14px;margin-top:14px">
       <div style="font-size:14px;font-weight:700;color:#FF6B2B;margin-bottom:5px">⚠️ Low Escrow Balance</div>
       <div style="font-size:13px;color:#92400E;line-height:1.5;margin-bottom:10px">Your balance is running low. Top up to continue raising jobs.</div>
       <button onclick="goTo('corp-topup')" style="width:100%;background:#FF6B2B;color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Top Up Escrow →</button>
     </div>
+    <button class="btn btn-gray" style="margin-top:16px" onclick="cancelCorpPlan(this)">End Plan &amp; Refund Unused Escrow</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -3137,6 +3187,12 @@ body{background:#fff}
       </div>
     </div>
 
+    <div style="margin-bottom:14px">
+      <label for="job-budget" style="font-size:13px;font-weight:600;color:#0B1A2E;margin-bottom:7px">Budget (₦)</label>
+      <input id="job-budget" type="number" min="500" step="100" inputmode="numeric" placeholder="What you'd pay, e.g. 8000" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:15px;outline:none">
+      <div style="font-size:12px;color:#7A8EA8;margin-top:5px" id="job-escrow-note">Taken from your corporate escrow. Artisans can accept it or send their own price.</div>
+    </div>
+
     <div style="margin-bottom:20px">
       <label style="font-size:13px;font-weight:600;color:#0B1A2E;margin-bottom:7px">Priority</label>
       <select id="job-priority" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:15px;outline:none;background:#fff;appearance:none;cursor:pointer">
@@ -3146,7 +3202,7 @@ body{background:#fff}
       </select>
     </div>
 
-    <button onclick="corpSubmitJob()" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Find Artisan →</button>
+    <button onclick="corpSubmitJob(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Find Artisan →</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -3213,15 +3269,8 @@ body{background:#fff}
       <input id="custom-topup" type="number" placeholder="Enter amount (min ₦1,000)" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:18px;font-weight:700;outline:none">
     </div>
 
-    <div style="font-size:14px;font-weight:700;color:#0B1A2E;margin-bottom:10px">Payment Method</div>
-    <div id="tpm1" onclick="pickPayTopup('tpm1')" style="border:1.5px solid #00C65E;background:#E6FFF2;border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:9px;cursor:pointer">
-      <span style="font-size:22px">🏦</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Bank Transfer</div><div style="font-size:11px;color:#7A8EA8">Transfer to FixMi escrow</div></div><span style="color:#00C65E">✓</span>
-    </div>
-    <div id="tpm2" onclick="pickPayTopup('tpm2')" style="border:1.5px solid #E4EAF0;border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer">
-      <span style="font-size:22px">💳</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Card Payment</div><div style="font-size:11px;color:#7A8EA8">Via Paystack</div></div>
-    </div>
-
-    <button onclick="confirmTopUp()" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Confirm Top Up →</button>
+    <div style="font-size:13px;color:#7A8EA8;margin-bottom:16px">Paid from your FixMi wallet (<span id="tu-wallet">…</span>).</div>
+    <button onclick="confirmTopUp(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Confirm Top Up →</button>
     <div style="height:24px"></div>
   </div>
 </div>
@@ -3284,6 +3333,31 @@ body{background:#fff}
   </div>
 </div>
 
+<!-- ████ JOB NOT COMPLETED / ARTISAN'S SIDE (dispute) ████ -->
+<div class="s" id="dispute-form">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title" id="df-title">Job Not Completed</div><div class="tb-space"></div></div>
+  <div style="padding:16px 18px">
+    <div class="info yellow" style="margin-bottom:16px" id="df-info"></div>
+    <div id="df-reason-wrap">
+      <div class="label" style="margin-bottom:8px">What went wrong?</div>
+      <div class="search-chips" id="df-reasons" style="margin-bottom:14px"></div>
+    </div>
+    <div class="fg"><label class="label" for="df-details" id="df-details-lbl">Describe what happened</label>
+      <textarea class="input" id="df-details" style="min-height:110px;resize:vertical" placeholder="Tell FixMi exactly what happened…"></textarea></div>
+    <div class="fg" id="df-refund-wrap"><label class="label" for="df-refund">Refund you’re asking for (₦, optional)</label>
+      <input class="input" id="df-refund" type="number" min="0" step="100" inputmode="numeric" placeholder="Leave empty to let FixMi decide">
+      <div class="job-hint" id="df-refund-hint"></div></div>
+    <div class="fg"><div class="label">Photo evidence (optional)</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button type="button" class="ev-pick" onclick="openCamera()"><span>📷</span><small>Camera</small></button>
+        <button type="button" class="ev-pick" onclick="openGalleryPicker()"><span>🖼️</span><small>Gallery</small></button>
+        <div class="ev-previews"></div>
+      </div></div>
+    <button class="btn" id="df-submit" style="background:#DC2626;color:#fff" onclick="submitDisputeForm(this)">Hold Payment &amp; Report</button>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
 <!-- ████ BOOKING DETAIL (history) ████ -->
 <div class="s" id="bk-detail">
   <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Job Details</div><div class="tb-space"></div></div>
@@ -3313,6 +3387,10 @@ body{background:#fff}
     <button class="btn btn-gray" style="margin-top:6px" onclick="closeCallSheet()">Cancel</button>
   </div>
 </div>
+
+<!-- In-app call (ringing / in call), shows over any screen -->
+<div class="bcall-ov" id="bcall-ov" hidden role="dialog" aria-label="Call"><div id="bcall-body" class="bcall-body"></div></div>
+<audio id="bcall-remote-audio" autoplay playsinline hidden></audio>
 
 <!-- Menu (phone & tablet) -->
 <div class="sheet-overlay menu-overlay" id="menu-drawer" hidden onclick="if(event.target===this)closeMenu()">
@@ -3766,6 +3844,11 @@ function openGalleryPicker() {
   inp.click();
 }
 function renderPreviews() {
+  document.querySelectorAll('.ev-previews').forEach(function (el) {
+    el.innerHTML = mediaFiles.map(function (m, i) {
+      return '<div class="ev-thumb"><img src="' + m.url + '" alt="Evidence photo ' + (i + 1) + '"><button type="button" onclick="removeMedia(' + i + ')" aria-label="Remove photo">✕</button></div>';
+    }).join('');
+  });
   var grid = document.getElementById('preview-grid'), wrap = document.getElementById('media-previews');
   var hint = document.getElementById('media-empty-hint'), lbl = document.getElementById('media-count-lbl');
   if (!grid) return;
@@ -3957,17 +4040,7 @@ function toggleSvc(el, name) {
 }
 
 // ── CHOOSE PLAN ──────────────────────────────────────────
-function choosePlan(plan, price, period, calls) {
-  corp.plan = plan;
-  corp.price = parseInt(price);
-  corp.period = period;
-  corp.calls = parseInt(calls);
-  var fmt = '₦' + parseInt(price).toLocaleString();
-  document.getElementById('fe-name').textContent = plan + ' Plan';
-  document.getElementById('fe-price').textContent = fmt + '/' + period;
-  document.getElementById('fe-amount').textContent = fmt;
-  goTo('corp-escrow');
-}
+
 
 // ── PAYMENT METHOD ───────────────────────────────────────
 function pickPay(id) {
@@ -4009,46 +4082,10 @@ function pickPayTopup(id) {
 }
 
 // ── FUND ESCROW ──────────────────────────────────────────
-function fundEscrow() {
-  corp.escrow = corp.price;
-  corp.max = corp.price;
-  corp.done = 0;
-  var days = corp.period==='week'?7:corp.period==='month'?30:365;
-  document.getElementById('dash-plan').textContent = corp.plan + ' Plan';
-  document.getElementById('dash-period').textContent = days + ' days remaining';
-  document.getElementById('dash-bal').textContent = '₦' + corp.escrow.toLocaleString();
-  document.getElementById('dash-bar').style.width = '100%';
-  document.getElementById('dash-used').textContent = 'Used: ₦0';
-  document.getElementById('dash-total').textContent = 'Total: ₦' + corp.price.toLocaleString();
-  document.getElementById('dash-jobs').textContent = '0';
-  document.getElementById('dash-calls').textContent = corp.calls >= 999 ? '∞' : corp.calls;
-  document.getElementById('dash-days').textContent = days;
-  toast('✅ Plan activated! Your escrow is funded.');
-  goTo('corp-dash');
-}
+
 
 // ── SUBMIT JOB ───────────────────────────────────────────
-function corpSubmitJob() {
-  var svc = document.getElementById('job-svc').value;
-  var loc = document.getElementById('job-loc').value.trim();
-  var desc = document.getElementById('job-desc').value.trim();
-  if (!svc) { toast('Please select a service type'); return; }
-  if (!loc) { toast('Please enter a location / office'); return; }
-  if (!desc) { toast('Please describe the job'); return; }
-  // Reset radar counters
-  document.getElementById('fn-notified').textContent = '0';
-  document.getElementById('fn-responded').textContent = '0';
-  // Animate counters
-  var ni=0, ri=0;
-  var iv = setInterval(function(){
-    ni = Math.min(ni+1, 7);
-    if (ni>2 && Math.random()>.5) ri = Math.min(ri+1,4);
-    document.getElementById('fn-notified').textContent = ni;
-    document.getElementById('fn-responded').textContent = ri;
-    if (ni>=7) clearInterval(iv);
-  }, 400);
-  goTo('corp-finding');
-}
+
 
 // ── ARTISAN FOUND ────────────────────────────────────────
 function artisanFound() {
@@ -4107,34 +4144,9 @@ function corpRaiseAnother() {
 }
 
 // ── TOP UP ────────────────────────────────────────────────
-function pickTopUp(el, amt) {
-  corp.topAmt = parseInt(amt);
-  ['tu1','tu2','tu3','tu4'].forEach(function(id){
-    var b = document.getElementById(id);
-    if (b) { b.style.background='#F2F5F8'; b.style.borderColor='#E4EAF0'; b.style.color='#0B1A2E'; }
-  });
-  el.style.background = '#0B1A2E';
-  el.style.color = '#fff';
-  el.style.borderColor = '#0B1A2E';
-}
 
-function confirmTopUp() {
-  var custom = parseInt(document.getElementById('custom-topup').value) || 0;
-  var amt = corp.topAmt || custom;
-  if (!amt || amt < 1000) { toast('Please select or enter an amount (min ₦1,000)'); return; }
-  corp.escrow += amt;
-  corp.max = Math.max(corp.max, corp.escrow);
-  var pct = corp.max > 0 ? (corp.escrow / corp.max * 100) : 100;
-  document.getElementById('dash-bal').textContent = '₦' + corp.escrow.toLocaleString();
-  document.getElementById('dash-bar').style.width = Math.min(pct,100) + '%';
-  document.getElementById('dash-used').textContent = 'Used: ₦' + (corp.max - corp.escrow).toLocaleString();
-  document.getElementById('low-warn').style.display = 'none';
-  corp.topAmt = 0;
-  var ctInp = document.getElementById('custom-topup');
-  if (ctInp) ctInp.value = '';
-  toast('✅ Escrow topped up with ₦' + amt.toLocaleString() + '!');
-  setTimeout(function(){ goTo('corp-dash'); }, 1200);
-}
+
+
 function goTo(id) { go(id); }
 
 function corpArtisanFound() {
@@ -4253,14 +4265,7 @@ function hireArtisanAgain() {
 }
 
 // ── SUBMIT REPORT (user) ──────────────────────────────────────────
-function submitReport() {
-  var type = document.getElementById('report-type');
-  var desc = document.getElementById('report-desc');
-  if(!type || type.value === 'Select issue type...') { toast('Please select an issue type'); return; }
-  if(!desc || !desc.value.trim()) { toast('Please describe the issue'); return; }
-  toast('✅ Report submitted. We will review within 24 hours.');
-  setTimeout(function(){ go('history'); }, 1800);
-}
+function submitReport() { submitIssueReport('report-type', 'report-desc', 'history'); }
 
 // ── OPEN ARTISAN JOB DETAIL ───────────────────────────────────────
 function openArtisanJobDetail(service, ico, customer, date, earned, status, desc) {
@@ -4269,6 +4274,8 @@ function openArtisanJobDetail(service, ico, customer, date, earned, status, desc
   if(el('ajd-ico')) el('ajd-ico').textContent = ico;
   if(el('ajd-date')) el('ajd-date').textContent = date;
   if(el('ajd-earned')) el('ajd-earned').textContent = earned;
+  var net = Number(String(earned).replace(/[^\d]/g, '')) || 0, fee = Math.round(net * APP_CFG.commissionPercent / (100 - APP_CFG.commissionPercent));
+  if(el('ajd-commission')) el('ajd-commission').textContent = '₦' + fee.toLocaleString() + ' (' + APP_CFG.commissionPercent + '%)';
   if(el('ajd-desc')) el('ajd-desc').textContent = desc;
   if(el('ajd-cust-name')) el('ajd-cust-name').textContent = customer;
   go('artisan-job-detail');
@@ -4279,14 +4286,7 @@ function reportCustomer() {
   go('report-customer');
 }
 
-function submitCustomerReport() {
-  var type = document.getElementById('cust-report-type');
-  var desc = document.getElementById('cust-report-desc');
-  if(!type || type.value === 'Select issue type...') { toast('Please select an issue type'); return; }
-  if(!desc || !desc.value.trim()) { toast('Please describe the issue'); return; }
-  toast('✅ Customer report submitted. We will review within 24 hours.');
-  setTimeout(function(){ go('artisan-history'); }, 1800);
-}
+function submitCustomerReport() { submitIssueReport('cust-report-type', 'cust-report-desc', 'artisan-history'); }
 
 // ── UPLOAD PROFILE PIC (user) ─────────────────────────────────────
 function uploadProfilePic() {
@@ -4695,7 +4695,7 @@ function artisanPayCommission() {
 }
 
 function submitCommissionPayment() {
-  toast('✅ Commission of ₦950 paid to FixMi! Your account is clear.');
+  toast('✅ Commission of ₦600 paid to FixMi! Your account is clear.');
   setTimeout(function() { go('artisan-dash'); }, 1600);
 }
 
@@ -4844,7 +4844,7 @@ function jactiveSubmitPrice() {
     return;
   }
   var price = inp.value;
-  var earn = Math.round(Number(price) * 0.85);
+  var earn = takeHomeKobo(Number(price) * 100) / 100;
   var earnEl = document.getElementById('jactive-earn-display');
   if (earnEl) earnEl.textContent = '+₦' + earn.toLocaleString();
   var earnFinal = document.getElementById('jactive-earn-final');
@@ -5217,6 +5217,7 @@ function initSocket() {
   // After a reconnect, re-sync whatever may have changed while offline.
   _socket.on('connect', function () { refreshLiveState(); });
 
+  bcallBindListeners(_socket);
   _socket.on('booking:updated', function (b) { onCustomerBookingUpdate(b); });
   _socket.on('request:updated', function (b) { onRequestUpdated(b); });
   _socket.on('request:closed', function (d) { onRequestClosed(d && d.bookingId); });
@@ -5648,7 +5649,7 @@ function updateActiveBanner() {
   if (!_booking || !bookingIsLive(_booking)) { el.hidden = true; return; }
   el.hidden = false;
   var offers = (_booking.offers || []).filter(function (o) { return o.status === 'PENDING'; }).length;
-  setText('hab-title', _booking.status === 'REQUESTED' ? 'Your ' + _booking.category + ' request is open' : 'Your ' + _booking.category + ' job is in progress');
+  setText('hab-title', _booking.status === 'REQUESTED' ? 'Your ' + _booking.category + ' request is open' : _booking.status === 'DISPUTED' ? 'Your ' + _booking.category + ' job is under review' : 'Your ' + _booking.category + ' job is in progress');
   setText('hab-sub', _booking.status === 'REQUESTED' ? (offers ? offers + ' offer' + (offers > 1 ? 's' : '') + ' waiting for you' : 'Waiting for artisans to respond') : 'Tap to see its status');
 }
 function resumeBooking() { if (_booking) showCustomerBooking(_booking); }
@@ -5756,7 +5757,7 @@ async function cancelActiveRequest(btn) {
 var JOB_STEPS = ['Request sent', 'Price agreed', 'Arrived', 'Working', 'Done', 'Paid'];
 function jobStep(b) {
   if (b.status === 'CONFIRMED') return 6;
-  if (b.status === 'COMPLETED') return 5;
+  if (b.status === 'COMPLETED' || b.status === 'DISPUTED') return 5;
   if (b.status === 'IN_PROGRESS') return 4;
   if (b.arrivedAt && b.agreedPriceKobo != null) return 3;
   if (b.agreedPriceKobo != null) return 2;
@@ -5780,8 +5781,18 @@ function renderCustJob(b) {
     panel = '<div class="job-panel green">You’ll confirm once the work is done. ' + fmtNaira(b.agreedPriceKobo) + ' stays in escrow until then.</div>';
   } else if (b.status === 'COMPLETED') {
     tag = 'Job Done'; title = 'Check the work and release payment';
-    panel = '<div class="job-panel green">' + escapeHtml(fn) + ' marked the job done. If you’re happy, release ' + fmtNaira(b.agreedPriceKobo) + ' from escrow. It releases automatically after 24 hours.</div>' +
-      '<button class="btn btn-g" onclick="customerConfirmJob()">✅ Confirm &amp; Release ' + fmtNaira(b.agreedPriceKobo) + '</button>';
+    panel = '<div class="job-panel green">' + escapeHtml(fn) + ' marked the job done. If you’re happy, release ' + fmtNaira(b.agreedPriceKobo) + ' from escrow. If you do nothing it releases automatically after ' + releaseWindowText() + '.<div class="countdown" id="cj-countdown">' + releaseCountdown(b) + '</div></div>' +
+      '<button class="btn btn-g" onclick="customerConfirmJob()">✅ Confirm &amp; Release ' + fmtNaira(b.agreedPriceKobo) + '</button>' +
+      '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="openDisputeForm(\'open\', _booking)">⚠️ Job Not Completed</button>' +
+      '<div class="job-hint">Not finished or not done properly? Tap <b>Job Not Completed</b> before it releases — your money stays in escrow until FixMi resolves it.</div>';
+  } else if (b.status === 'DISPUTED') {
+    tag = 'Under Review'; title = 'Payment held while FixMi reviews';
+    panel = '<div class="job-panel orange">You reported a problem, so ' + fmtNaira(b.agreedPriceKobo) + ' is held in escrow and not released to ' + escapeHtml(fn) + '. FixMi will pay the artisan, refund you, or split it, and notify you here.</div><div id="cj-dispute"></div>' +
+      '<button class="btn btn-gray" style="margin-top:10px" onclick="go(\'home\')">Back to Home</button>';
+    setTimeout(function () { fillDisputeBox('cj-dispute', b, false); }, 0);
+  } else if (b.status === 'CONFIRMED') {
+    tag = 'Completed'; title = 'Job complete';
+    panel = '<div class="job-panel green">This job is closed and payment has been settled.</div><button class="btn btn-gray" onclick="openReportIssue(_booking.id)">⚠️ Report an Issue</button><button class="btn btn-g" style="margin-top:10px" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
   } else if (b.agreedPriceKobo == null) {
     cancel = true;
     if (b.onsitePriceKobo != null) {
@@ -5811,7 +5822,7 @@ function renderCustJob(b) {
   setHTML('cj-person', u ? (
     '<div class="feat-ava" style="background:' + look[1] + ';margin:0;width:52px;height:52px;font-size:26px">' + look[0] + '</div>' +
     '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(u.name) + '</div><div class="oc-meta">' + escapeHtml(b.category) + ' · ' + (a.ratingCount ? '⭐ ' + a.ratingAvg.toFixed(1) : '⭐ New') + '</div></div>' +
-    contactButtons(u.name, u.phone)) : '');
+    contactButtons(u.name, u.phone, u.id, b.id, look[0])) : '');
   setHTML('cj-money',
     '<div><small>In escrow</small><b>' + fmtNaira(b.escrowKobo || (b.status === 'COMPLETED' || b.status === 'CONFIRMED' ? b.agreedPriceKobo : 0)) + '</b></div>' +
     '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'On hold' : '—')) + '</b></div>' +
@@ -5872,14 +5883,161 @@ async function realSubmitRating() {
   }
 }
 
+/* ---------------- Disputes & issue reports ---------------- */
+// Platform cut and the confirm window, from the server so the text always matches.
+var APP_CFG = { commissionPercent: 10, autoReleaseMinutes: 5 };
+function loadAppConfig() {
+  apiFetch('/config/app').then(function (d) { if (d) { APP_CFG = d; applyCommissionText(); } }).catch(function () {});
+}
+function releaseWindowText() {
+  var m = APP_CFG.autoReleaseMinutes;
+  return m >= 60 ? Math.round(m / 60) + ' hour' + (m >= 120 ? 's' : '') : m + ' minute' + (m === 1 ? '' : 's');
+}
+function takeHomeKobo(kobo) { return Math.round((kobo || 0) * (100 - APP_CFG.commissionPercent) / 100); }
+function applyCommissionText() {
+  document.querySelectorAll('[data-commission]').forEach(function (el) { el.textContent = APP_CFG.commissionPercent + '%'; });
+  document.querySelectorAll('[data-takehome]').forEach(function (el) { el.textContent = (100 - APP_CFG.commissionPercent) + '%'; });
+}
+
+// Mins:secs left before the escrow releases on its own.
+function releaseCountdown(b) {
+  if (!b.completedAt) return '';
+  var left = new Date(b.completedAt).getTime() + APP_CFG.autoReleaseMinutes * 60000 - Date.now();
+  if (left <= 0) return 'Releasing now…';
+  var s = Math.ceil(left / 1000);
+  return 'Releases automatically in ' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+}
+setInterval(function () {
+  var el = document.getElementById('cj-countdown');
+  if (el && _booking && _booking.status === 'COMPLETED') el.textContent = releaseCountdown(_booking);
+  var el2 = document.getElementById('aj-countdown');
+  if (el2 && _job && _job.status === 'COMPLETED') el2.textContent = releaseCountdown(_job);
+}, 1000);
+
+var DISPUTE_REASONS = ['Job not completed', 'Poor quality work', 'Artisan didn\'t show up', 'Damage to property', 'Overcharged', 'Other'];
+var _disputeCtx = null;
+function openDisputeForm(mode, booking) {
+  if (!booking) return;
+  _disputeCtx = { mode: mode, booking: booking, reason: 'Job not completed' };
+  mediaFiles = []; renderPreviews();
+  setValue('df-details', ''); setValue('df-refund', '');
+  var open = mode === 'open';
+  setText('df-title', open ? 'Job Not Completed' : 'Add Your Side');
+  setHTML('df-info', open
+    ? '<span>🔒</span><span>Your ' + fmtNaira(booking.agreedPriceKobo) + ' stays in escrow and is <b>not</b> released to the artisan while FixMi reviews what happened. The artisan can add their side, then FixMi decides: pay the artisan, refund you, or split it.</span>'
+    : '<span>⚖️</span><span>The customer says the job wasn’t finished properly. Your payment of ' + fmtNaira(takeHomeKobo(booking.agreedPriceKobo)) + ' is on hold until FixMi decides. Explain what happened and add photos of your work.</span>');
+  document.getElementById('df-reason-wrap').hidden = !open;
+  document.getElementById('df-refund-wrap').hidden = !open;
+  setText('df-details-lbl', open ? 'Describe what happened' : 'Your side of what happened');
+  setText('df-refund-hint', open ? 'Up to ' + fmtNaira(booking.agreedPriceKobo) + '.' : '');
+  setHTML('df-submit', open ? 'Hold Payment &amp; Report' : 'Send My Side');
+  setHTML('df-reasons', DISPUTE_REASONS.map(function (r) {
+    return '<button type="button" class="search-chip' + (r === _disputeCtx.reason ? ' on' : '') + '" onclick="pickDisputeReason(this,' + attrJson(r) + ')">' + escapeHtml(r) + '</button>';
+  }).join(''));
+  go('dispute-form');
+}
+function pickDisputeReason(el, r) {
+  _disputeCtx.reason = r;
+  document.querySelectorAll('#df-reasons .search-chip').forEach(function (b) { b.classList.toggle('on', b === el); });
+}
+
+// Uploads up to three photos and returns their URLs, one per line.
+async function uploadEvidence() {
+  var urls = [];
+  for (var i = 0; i < Math.min(mediaFiles.length, 3); i++) {
+    var blob = await (await fetch(mediaFiles[i].url)).blob();
+    var fd = new FormData();
+    fd.append('photo', blob, 'evidence-' + (i + 1) + '.jpg');
+    urls.push((await apiFetch('/support/evidence', { method: 'POST', body: fd })).url);
+  }
+  return urls.join('\n') || undefined;
+}
+
+async function submitDisputeForm(btn) {
+  var ctx = _disputeCtx; if (!ctx) return;
+  var details = (document.getElementById('df-details').value || '').trim();
+  if (details.length < 5) { toast('Please describe what happened'); return; }
+  btn.disabled = true;
+  try {
+    var evidenceUrl = await uploadEvidence();
+    if (ctx.mode === 'open') {
+      var refund = Number(document.getElementById('df-refund').value || 0);
+      var d = await apiFetch('/bookings/' + ctx.booking.id + '/dispute', { method: 'POST', body: { reason: ctx.reason, details: details, evidenceUrl: evidenceUrl, requestedRefundKobo: refund > 0 ? Math.round(refund * 100) : undefined } });
+      toast('🔒 Payment held in escrow — FixMi will review it');
+      _booking = d.booking; window._activeBooking = d.booking;
+      renderCustJob(d.booking); go('cust-job');
+    } else {
+      await apiFetch('/bookings/' + ctx.booking.id + '/dispute/respond', { method: 'POST', body: { response: details, evidenceUrl: evidenceUrl } });
+      toast('✅ Sent — FixMi will decide shortly');
+      renderArtJob(); go(_job && _job.id === ctx.booking.id ? 'art-job' : 'artisan-history');
+    }
+    mediaFiles = []; renderPreviews();
+  } catch (e) {
+    toast('❌ ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Fills a dispute status box (job screens and job details) from the server.
+async function fillDisputeBox(elId, booking, asArtisan) {
+  try {
+    var d = await apiFetch('/bookings/' + booking.id + '/dispute');
+    var t = d.dispute, el = document.getElementById(elId);
+    if (!t || !el) return;
+    var h = '<div class="dispute-box"><b>⚖️ ' + escapeHtml(t.category || 'Dispute') + '</b>' +
+      '<div class="db-line">Customer: “' + escapeHtml(t.message) + '”</div>' +
+      (t.requestedRefundKobo ? '<div class="db-line">Refund asked: ' + fmtNaira(t.requestedRefundKobo) + '</div>' : '') +
+      (t.secondPartyResponse ? '<div class="db-line">Artisan: “' + escapeHtml(t.secondPartyResponse) + '”</div>' : '<div class="db-line muted">Waiting for the artisan’s side</div>');
+    if (t.resolvedAt) h += '<div class="db-res">Decision: ' + escapeHtml(disputeOutcomeText(t)) + '</div>';
+    else h += '<div class="db-line muted">' + fmtNaira(d.heldKobo) + ' held in escrow · FixMi is reviewing</div>';
+    if (asArtisan && !t.resolvedAt && !t.secondPartyResponse) {
+      h += '<button class="btn" style="background:var(--orange);color:#fff;margin-top:10px" onclick="openDisputeForm(\'respond\',' + attrJson({ id: booking.id, agreedPriceKobo: booking.agreedPriceKobo }) + ')">Add Your Side</button>';
+    }
+    el.innerHTML = h + '</div>';
+  } catch (e) {}
+}
+function disputeOutcomeText(t) {
+  var r = String(t.resolution || '');
+  if (/^RELEASE/.test(r)) return 'paid to the artisan' + r.replace(/^RELEASE/, '');
+  if (/^REFUND/.test(r)) return 'refunded to the customer' + r.replace(/^REFUND/, '');
+  if (/^SPLIT/.test(r)) return 'split — ' + fmtNaira(t.refundAmountKobo) + ' refunded to the customer' + r.replace(/^SPLIT/, '');
+  return r;
+}
+
+// Report an Issue (customer) / Report Customer (artisan), tied to a booking.
+var _reportBookingId = null;
+function openReportIssue(bookingId) {
+  _reportBookingId = bookingId || null;
+  mediaFiles = []; renderPreviews();
+  var artisan = isArtisanUser();
+  setValue(artisan ? 'cust-report-desc' : 'report-desc', '');
+  var sel = document.getElementById(artisan ? 'cust-report-type' : 'report-type'); if (sel) sel.selectedIndex = 0;
+  go(artisan ? 'report-customer' : 'report-issue');
+}
+async function submitIssueReport(typeId, descId, after) {
+  var type = document.getElementById(typeId), desc = document.getElementById(descId);
+  if (!type || type.selectedIndex === 0) { toast('Please select an issue type'); return; }
+  if (!desc || !desc.value.trim()) { toast('Please describe the issue'); return; }
+  try {
+    var evidenceUrl = await uploadEvidence();
+    await apiFetch('/support/tickets', { method: 'POST', body: { subject: type.value, message: desc.value.trim(), category: type.value, bookingId: _reportBookingId || undefined, evidenceUrl: evidenceUrl } });
+    mediaFiles = []; renderPreviews();
+    toast('✅ Report sent. FixMi will review it and get back to you.');
+    setTimeout(function () { go(after); }, 900);
+  } catch (e) {
+    toast('❌ ' + e.message);
+  }
+}
+
 /* ---------------- Chat & call (shared) ---------------- */
-function contactButtons(name, phone) {
+function contactButtons(name, phone, userId, bookingId, avatar) {
   return '<div class="contact-btns"><button class="ct-btn" onclick="openChatForActiveBooking()" aria-label="Chat">💬</button>' +
-    '<button class="ct-btn" onclick="openCallSheet(' + attrJson(name || '') + ',' + attrJson(phone || '') + ')" aria-label="Call">📞</button></div>';
+    '<button class="ct-btn" onclick="openCallSheet(' + attrJson(name || '') + ',' + attrJson(phone || '') + ',' + attrJson(userId || '') + ',' + attrJson(bookingId || '') + ',' + attrJson(avatar || '') + ')" aria-label="Call">📞</button></div>';
 }
 var _callTarget = { name: '', phone: '' };
-function openCallSheet(name, phone) {
-  _callTarget = { name: name, phone: phone };
+function openCallSheet(name, phone, userId, bookingId, avatar) {
+  _callTarget = { name: name, phone: phone, userId: userId, bookingId: bookingId, avatar: avatar };
   setText('call-sheet-name', 'Call ' + firstName(name));
   setText('call-sheet-phone', phone || 'No phone number on file');
   document.getElementById('call-sheet').hidden = false;
@@ -5888,10 +6046,237 @@ function closeCallSheet() { document.getElementById('call-sheet').hidden = true;
 function doCall(type) {
   var phone = String(_callTarget.phone || '').replace(/[^\d+]/g, '');
   closeCallSheet();
-  if (type === 'inapp') { toast('In-app calling is coming soon — use Phone or WhatsApp for now 📞'); return; }
+  if (type === 'inapp') { bcallStart(); return; }
   if (!phone) { toast('No phone number on file — use chat instead'); return; }
   if (type === 'phone') window.location.href = 'tel:' + phone;
   else window.open('https://wa.me/' + phone.replace(/^\+/, ''), '_blank', 'noopener');
+}
+
+/* ---------------- In-app call (ported from Handa's booking call) ----------------
+   A ring handshake over each side's personal user room (call:invite /
+   accept / decline / cancel / end), then a peer-to-peer WebRTC audio call
+   with SDP/ICE relayed by the server (call:offer / answer / ice-candidate). */
+var _bcallRingTimer = null, _bcallInviteResendIv = null, _iceServersCache = null;
+async function fetchIceServers() {
+  if (_iceServersCache) return _iceServersCache;
+  try { _iceServersCache = (await apiFetch('/config/ice-servers')).iceServers; } catch (e) {}
+  if (!_iceServersCache || !_iceServersCache.length) _iceServersCache = [{ urls: 'stun:stun.l.google.com:19302' }];
+  return _iceServersCache;
+}
+function myCallAvatar() { return window.currentUser && window.currentUser.role === 'ARTISAN' ? '🔧' : '👤'; }
+function bcallStart() {
+  var t = _callTarget;
+  if (!t.userId || !t.bookingId) { toast('In-app calls work between you and the artisan or customer on a job.'); return; }
+  if (!_socket || !_socket.connected) { toast('You’re offline — check your connection and try again.'); return; }
+  if (window._bcall || window._bcallIncoming) { toast('You are already on a call.'); return; }
+  window._bcall = { role: 'caller', bookingId: t.bookingId, otherUserId: t.userId, otherName: t.name, otherAvatar: t.avatar || '👤', pc: null, localStream: null, remoteSocketId: null, status: 'ringing', startedAt: null, micMuted: false, _ts: Date.now() };
+  renderBcallOverlay();
+  _socket.emit('booking:join', { bookingId: t.bookingId });
+  var u = window.currentUser || {};
+  var payload = { toUserId: t.userId, bookingId: t.bookingId, callerName: u.name || 'Someone', callerAvatar: myCallAvatar(), callerRole: u.role === 'ARTISAN' ? 'Artisan' : 'Customer' };
+  _socket.emit('call:invite', payload);
+  // Resend while ringing so one dropped message doesn't mean "it never rang".
+  clearInterval(_bcallInviteResendIv);
+  _bcallInviteResendIv = setInterval(function () {
+    var c = window._bcall;
+    if (c && c.role === 'caller' && c.status === 'ringing' && _socket) _socket.emit('call:invite', payload);
+    else clearInterval(_bcallInviteResendIv);
+  }, 3000);
+  clearTimeout(_bcallRingTimer);
+  _bcallRingTimer = setTimeout(function () {
+    if (window._bcall && window._bcall.status === 'ringing') { toast('No answer'); bcallEnd(); }
+  }, 30000);
+}
+function bcallAccept() {
+  var inc = window._bcallIncoming; if (!inc) return;
+  window._bcallIncoming = null;
+  window._bcall = { role: 'callee', bookingId: inc.bookingId, otherUserId: inc.fromUserId, otherName: inc.callerName, otherAvatar: inc.callerAvatar, pc: null, localStream: null, remoteSocketId: inc.fromSocketId, status: 'connecting', startedAt: null, micMuted: false, _ts: Date.now() };
+  renderBcallOverlay();
+  if (inc.bookingId) _socket.emit('booking:join', { bookingId: inc.bookingId });
+  _socket.emit('call:answered-elsewhere', { bookingId: inc.bookingId });
+  bcallSetupPeer().then(function () {
+    if (_socket && window._bcall) _socket.emit('call:accept', { toSocketId: inc.fromSocketId, bookingId: inc.bookingId });
+  });
+}
+function bcallDecline() {
+  var inc = window._bcallIncoming; if (!inc) return;
+  if (_socket) _socket.emit('call:decline', { toSocketId: inc.fromSocketId, bookingId: inc.bookingId });
+  window._bcallIncoming = null;
+  renderBcallOverlay();
+}
+async function bcallSetupPeer() {
+  var c = window._bcall; if (!c) return;
+  if (typeof RTCPeerConnection === 'undefined' || !navigator.mediaDevices) { toast('Calls are not supported in this browser'); bcallEnd(); return; }
+  try { c.localStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (err) { c.localStream = null; }
+  var iceServers = await fetchIceServers();
+  if (window._bcall !== c) { if (c.localStream) c.localStream.getTracks().forEach(function (t) { t.stop(); }); return; }
+  var pc = new RTCPeerConnection({ iceServers: iceServers });
+  c.pc = pc;
+  if (c.localStream) c.localStream.getTracks().forEach(function (t) { pc.addTrack(t, c.localStream); });
+  else { pc.addTransceiver('audio', { direction: 'recvonly' }); toast('Microphone unavailable — allow mic access to talk. You can still listen.'); }
+  pc.onicecandidate = function (ev) {
+    if (ev.candidate && c.remoteSocketId && _socket) _socket.emit('call:ice-candidate', { toSocketId: c.remoteSocketId, candidate: ev.candidate, bookingId: c.bookingId });
+  };
+  pc.ontrack = function (ev) {
+    var el = document.getElementById('bcall-remote-audio');
+    if (el) { el.srcObject = ev.streams[0]; var p = el.play(); if (p && p.catch) p.catch(function () {}); }
+  };
+  pc.onconnectionstatechange = function () {
+    if (window._bcall !== c) return;
+    if (pc.connectionState === 'connected') {
+      clearTimeout(c._disconnectTimer);
+      if (c.status !== 'connected') {
+        c.status = 'connected'; c.startedAt = Date.now();
+        renderBcallOverlay();
+        clearInterval(window._bcallTickTimer);
+        // Only the timer text changes each second, so taps on the buttons never get lost.
+        window._bcallTickTimer = setInterval(function () {
+          if (!window._bcall || window._bcall.status !== 'connected') return;
+          setText('bcall-status-text', bcallFmtDuration(Date.now() - window._bcall.startedAt));
+        }, 1000);
+      }
+    } else if (pc.connectionState === 'failed') {
+      toast('Call connection lost'); bcallEnd();
+    } else if (pc.connectionState === 'disconnected') {
+      clearTimeout(c._disconnectTimer);
+      c._disconnectTimer = setTimeout(function () {
+        if (window._bcall === c && pc.connectionState !== 'connected') { toast('Call connection lost'); bcallEnd(); }
+      }, 8000);
+    }
+  };
+}
+function bcallBindListeners(sock) {
+  sock.on('call:incoming', function (p) {
+    if (!p) return;
+    var bc = window._bcall, inc = window._bcallIncoming;
+    // The caller resends the invite every 3s while ringing: same caller, same call.
+    if (inc && inc.fromUserId === p.fromUserId && inc.fromSocketId === p.fromSocketId) { inc._ts = Date.now(); return; }
+    var bcStale = bc && bc.status !== 'connected' && bc._ts && (Date.now() - bc._ts) > 40000;
+    var incStale = inc && inc._ts && (Date.now() - inc._ts) > 40000;
+    if ((bc && !bcStale) || (inc && !incStale)) { sock.emit('call:decline', { toSocketId: p.fromSocketId, bookingId: p.bookingId, reason: 'busy' }); return; }
+    if (bcStale) bcallTeardown();
+    p._ts = Date.now();
+    window._bcallIncoming = p;
+    renderBcallOverlay();
+    if (navigator.vibrate) { try { navigator.vibrate([400, 200, 400]); } catch (e) {} }
+  });
+  sock.on('call:accepted', function (p) {
+    var c = window._bcall;
+    if (!c || c.role !== 'caller' || c.otherUserId !== p.fromUserId || c.remoteSocketId) return;
+    clearTimeout(_bcallRingTimer); clearInterval(_bcallInviteResendIv);
+    c.remoteSocketId = p.fromSocketId; c.status = 'connecting';
+    renderBcallOverlay();
+    bcallSetupPeer().then(function () {
+      if (window._bcall !== c || !c.pc) return;
+      c.pc.createOffer().then(function (offer) {
+        return c.pc.setLocalDescription(offer).then(function () { sock.emit('call:offer', { toSocketId: c.remoteSocketId, sdp: offer, bookingId: c.bookingId }); });
+      }).catch(function () {});
+    });
+  });
+  sock.on('call:declined', function (p) {
+    var c = window._bcall;
+    if (!c || c.role !== 'caller' || c.otherUserId !== p.fromUserId) return;
+    if (p.reason === 'busy') {
+      // Another of their devices may still be ringing — keep ringing, say it once.
+      if (c.status !== 'ringing' || c._busyToastShown) return;
+      c._busyToastShown = true;
+      toast(firstName(c.otherName) + ' is on another call right now');
+      return;
+    }
+    toast(firstName(c.otherName) + ' declined the call');
+    bcallTeardown();
+  });
+  sock.on('call:cancelled', function (p) {
+    var inc = window._bcallIncoming; if (!inc) return;
+    var me = window.currentUser && window.currentUser.id;
+    if (p.fromUserId === me) { window._bcallIncoming = null; renderBcallOverlay(); return; } // answered on another device
+    if (inc.fromUserId !== p.fromUserId) return;
+    window._bcallIncoming = null; renderBcallOverlay();
+    toast('Missed call from ' + firstName(inc.callerName));
+  });
+  sock.on('call:offer', function (p) {
+    var c = window._bcall;
+    if (!c || c.role !== 'callee' || !c.pc || p.fromSocketId !== c.remoteSocketId) return;
+    c.pc.setRemoteDescription(new RTCSessionDescription(p.sdp)).then(function () { return c.pc.createAnswer(); }).then(function (answer) {
+      return c.pc.setLocalDescription(answer).then(function () { sock.emit('call:answer', { toSocketId: p.fromSocketId, sdp: answer, bookingId: c.bookingId }); });
+    }).catch(function () {});
+  });
+  sock.on('call:answer', function (p) {
+    var c = window._bcall;
+    if (!c || c.role !== 'caller' || !c.pc || p.fromSocketId !== c.remoteSocketId) return;
+    c.pc.setRemoteDescription(new RTCSessionDescription(p.sdp)).catch(function () {});
+  });
+  sock.on('call:ice-candidate', function (p) {
+    var c = window._bcall;
+    if (!c || !c.pc || p.fromSocketId !== c.remoteSocketId || !p.candidate) return;
+    c.pc.addIceCandidate(new RTCIceCandidate(p.candidate)).catch(function () {});
+  });
+  sock.on('call:ended', function (p) {
+    var c = window._bcall;
+    if (!c || p.fromUserId !== c.otherUserId) return;
+    if (c.bookingId && p.bookingId && c.bookingId !== p.bookingId) return;
+    toast('Call ended');
+    bcallTeardown();
+  });
+}
+function bcallToggleMic() {
+  var c = window._bcall; if (!c || !c.localStream) return;
+  var t = c.localStream.getAudioTracks()[0]; if (!t) return;
+  t.enabled = !t.enabled; c.micMuted = !t.enabled;
+  renderBcallOverlay();
+}
+function bcallToggleSpeaker() {
+  var el = document.getElementById('bcall-remote-audio'); if (!el) return;
+  el.muted = !el.muted; window._bcallSpeakerMuted = el.muted;
+  renderBcallOverlay();
+}
+function bcallEnd() {
+  var c = window._bcall;
+  if (c && _socket) {
+    if (c.remoteSocketId) _socket.emit('call:end', { toSocketId: c.remoteSocketId, bookingId: c.bookingId });
+    else if (c.role === 'caller') _socket.emit('call:cancel', { toUserId: c.otherUserId, bookingId: c.bookingId });
+  }
+  bcallTeardown();
+}
+function bcallTeardown() {
+  clearTimeout(_bcallRingTimer); clearInterval(_bcallInviteResendIv); clearInterval(window._bcallTickTimer);
+  var c = window._bcall;
+  if (c) {
+    clearTimeout(c._disconnectTimer);
+    if (c.pc) { try { c.pc.close(); } catch (e) {} }
+    if (c.localStream) c.localStream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
+  }
+  window._bcall = null;
+  var el = document.getElementById('bcall-remote-audio'); if (el) el.srcObject = null;
+  renderBcallOverlay();
+}
+function bcallFmtDuration(ms) {
+  var s = Math.floor(ms / 1000), m = Math.floor(s / 60); s = s % 60;
+  return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+}
+function renderBcallOverlay() {
+  var ov = document.getElementById('bcall-ov'), body = document.getElementById('bcall-body');
+  if (!ov || !body) return;
+  var inc = window._bcallIncoming, c = window._bcall;
+  if (!inc && !c) { ov.hidden = true; body.innerHTML = ''; return; }
+  ov.hidden = false;
+  if (inc && !c) {
+    body.innerHTML = '<div class="cl-ava cl-ring">' + escapeHtml(inc.callerAvatar || '👤') + '</div>' +
+      '<div class="cl-name">' + escapeHtml(inc.callerName || 'Someone') + '</div>' +
+      '<div class="cl-sub">Incoming FixMi call' + (inc.callerRole ? ' · ' + escapeHtml(inc.callerRole) : '') + '</div>' +
+      '<div class="cl-row"><div><button class="cl-btn end" onclick="bcallDecline()" aria-label="Decline">📞</button><small>Decline</small></div>' +
+      '<div><button class="cl-btn ok" onclick="bcallAccept()" aria-label="Accept">📞</button><small>Accept</small></div></div>';
+    return;
+  }
+  var status = c.status === 'ringing' ? 'Calling…' : c.status === 'connecting' ? 'Connecting…' : bcallFmtDuration(Date.now() - (c.startedAt || Date.now()));
+  body.innerHTML = '<div class="cl-ava">' + escapeHtml(c.otherAvatar || '👤') + '</div>' +
+    '<div class="cl-name">' + escapeHtml(c.otherName || 'Contact') + '</div>' +
+    '<div class="cl-sub" id="bcall-status-text">' + status + '</div>' +
+    (c.status === 'ringing'
+      ? '<div class="cl-row"><div><button class="cl-btn end" onclick="bcallEnd()" aria-label="Cancel call">📞</button><small>Cancel</small></div></div>'
+      : '<div class="cl-row"><div><button class="cl-btn sm' + (c.micMuted ? ' off' : '') + '" onclick="bcallToggleMic()" aria-label="Mute">🎤</button><small>' + (c.micMuted ? 'Unmute' : 'Mute') + '</small></div>' +
+        '<div><button class="cl-btn end" onclick="bcallEnd()" aria-label="End call">📞</button><small>End</small></div>' +
+        '<div><button class="cl-btn sm' + (window._bcallSpeakerMuted ? ' off' : '') + '" onclick="bcallToggleSpeaker()" aria-label="Speaker">🔊</button><small>Speaker</small></div></div>');
 }
 
 /* ---------------- Chat ---------------- */
@@ -5901,7 +6286,8 @@ async function loadChatThreads(listId) {
   try {
     var data = await apiFetch('/chat/threads');
     if (!data.threads.length) {
-      list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">No conversations yet — they start once a job is accepted.</div>';
+      // demo accounts still have their sample chats below
+      list.innerHTML = document.body.classList.contains('fresh-acct') ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">No conversations yet — they start once a job is accepted.</div>' : '';
       return;
     }
     list.innerHTML = data.threads.map(function (t) {
@@ -6128,6 +6514,7 @@ function requestCard(b, where) {
   } else {
     var counter = mine && mine.lastBy === 'CUSTOMER';
     bodyHtml = '<div class="rq-price">' + (counter ? 'Customer counter-offer: ' : 'Customer offers: ') + fmtNaira(onTable) + '</div>' +
+      '<div class="rq-take">You receive ' + fmtNaira(takeHomeKobo(onTable)) + ' after FixMi’s ' + APP_CFG.commissionPercent + '%</div>' +
       '<div class="rq-help">Accept the price, send a counter offer, or put Price on Hold if you need to see the job first.</div>' +
       '<div class="oc-acts"><button class="oc-btn ghost" onclick="artisanRespondTo(' + id + ',\'decline\')">Decline</button>' +
       '<button class="oc-btn green" onclick="artisanRespondTo(' + id + ',\'accept\')">Accept ' + fmtNaira(onTable) + '</button></div>' +
@@ -6135,8 +6522,12 @@ function requestCard(b, where) {
       '<button class="oc-btn orange" onclick="artisanRespondTo(' + id + ',\'hold\')">⏸ Price on Hold</button></div>';
   }
   return '<div class="rq-card">' + head + bodyHtml +
-    '<div class="oc-counter" id="rqc-' + key + '" hidden><input class="input" type="number" min="500" step="100" inputmode="numeric" id="rqc-in-' + key + '" placeholder="Your price in ₦"><button class="oc-btn navy" onclick="artisanSendPrice(' + id + ',' + attrJson(key) + ')">Send</button></div>' +
+    '<div class="oc-counter" id="rqc-' + key + '" hidden><input class="input" type="number" min="500" step="100" inputmode="numeric" id="rqc-in-' + key + '" placeholder="Your price in ₦" oninput="rqTakeHome(this)"><button class="oc-btn navy" onclick="artisanSendPrice(' + id + ',' + attrJson(key) + ')">Send</button><div class="rq-take" style="flex-basis:100%"></div></div>' +
     '</div>';
+}
+function rqTakeHome(inp) {
+  var out = inp.parentNode.querySelector('.rq-take'), n = Number(inp.value);
+  if (out) out.textContent = n >= 1 ? 'You receive ' + fmtNaira(takeHomeKobo(n * 100)) + ' after FixMi’s ' + APP_CFG.commissionPercent + '%' : '';
 }
 function toggleRqCounter(key) {
   var row = document.getElementById('rqc-' + key);
@@ -6243,10 +6634,15 @@ function renderArtJob() {
     panel = '<div class="job-panel grey">The customer’s escrow was refunded.</div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');renderRequests()">Back to Dashboard</button>';
   } else if (b.status === 'CONFIRMED') {
     tag = 'Paid'; title = '🎉 Payment released to your wallet';
-    panel = '<div class="job-panel green">' + fmtNaira(b.agreedPriceKobo) + ' (less FixMi commission) is in your wallet.</div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
+    panel = '<div class="job-panel green">' + fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' is in your wallet (' + fmtNaira(b.agreedPriceKobo) + ' less FixMi’s ' + APP_CFG.commissionPercent + '%).</div><div id="aj-dispute"></div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
+    setTimeout(function () { fillDisputeBox('aj-dispute', b, true); }, 0);
+  } else if (b.status === 'DISPUTED') {
+    tag = 'Payment on Hold'; title = 'The customer reported a problem';
+    panel = '<div class="job-panel orange">' + escapeHtml(firstName(c.name)) + ' said the job wasn’t completed, so your payment is held in escrow until FixMi reviews it. Add your side with photos of your work.</div><div id="aj-dispute"></div>';
+    setTimeout(function () { fillDisputeBox('aj-dispute', b, true); }, 0);
   } else if (b.status === 'COMPLETED') {
     tag = 'Awaiting Payment'; title = 'Waiting for the customer to confirm';
-    panel = '<div class="job-panel green">Once ' + escapeHtml(firstName(c.name)) + ' confirms, ' + fmtNaira(b.agreedPriceKobo) + ' is released to you. It releases automatically after 24 hours.</div>';
+    panel = '<div class="job-panel green">Once ' + escapeHtml(firstName(c.name)) + ' confirms, ' + fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' (' + fmtNaira(b.agreedPriceKobo) + ' less FixMi’s ' + APP_CFG.commissionPercent + '%) is released to you. If they don’t respond it releases automatically after ' + releaseWindowText() + '.<div class="countdown" id="aj-countdown">' + releaseCountdown(b) + '</div></div>';
   } else if (b.status === 'IN_PROGRESS') {
     tag = 'In Progress'; title = 'You are working';
     panel = '<button class="btn btn-g" onclick="artisanJobStep(' + id + ',\'complete\')">✅ Work Is Done</button>';
@@ -6278,7 +6674,7 @@ function renderArtJob() {
   setHTML('aj-person',
     '<div class="feat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0);margin:0;width:52px;height:52px;font-size:26px">👤</div>' +
     '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div></div>' +
-    contactButtons(c.name, c.phone));
+    contactButtons(c.name, c.phone, c.id, b.id, '👤'));
   setHTML('aj-money',
     '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : 'On hold') + '</b></div>' +
     '<div><small>Customer escrow</small><b>' + fmtNaira(b.escrowKobo) + '</b></div>' +
@@ -6457,18 +6853,20 @@ function statusColors(s) {
 var _historyCache = {};
 async function loadBookingHistory(containerId, asArtisan) {
   var box = document.getElementById(containerId);
-  if (!box || !document.body.classList.contains('fresh-acct')) return;
+  if (!box || !getAccess()) return;
+  // Ada and Emeka keep their sample jobs underneath their real ones.
+  var fresh = document.body.classList.contains('fresh-acct');
   box.innerHTML = '<div class="empty-note">Loading…</div>';
   try {
     var data = await apiFetch('/bookings');
     var list = data.bookings || [];
     list.forEach(function (b) { _historyCache[b.id] = b; });
-    if (!asArtisan) {
+    if (!asArtisan && fresh) {
       var spent = list.filter(function (b) { return b.status === 'CONFIRMED'; }).reduce(function (t, b) { return t + (b.agreedPriceKobo || b.priceKobo); }, 0);
       setText('cust-stat-jobs', String(list.length));
       setText('cust-stat-spent', fmtNaira(spent));
     }
-    var empty = '<div class="empty-state hist-empty"' + (list.length ? ' hidden' : '') + '><b>No jobs here</b>' + (asArtisan ? 'Jobs you take will show up here.' : 'Book an artisan from the home page and your jobs will show up here.') + '</div>';
+    var empty = '<div class="empty-state hist-empty"' + (list.length || !fresh ? ' hidden' : '') + '><b>No jobs here</b>' + (asArtisan ? 'Jobs you take will show up here.' : 'Book an artisan from the home page and your jobs will show up here.') + '</div>';
     box.innerHTML = empty + list.map(function (b) {
       var look = categoryLook(b.category), colors = statusColors(b.status);
       var label = (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
@@ -6500,14 +6898,15 @@ async function openBookingDetail(id) {
     ['Requested', new Date(b.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })],
     ['Budget', fmtNaira(b.priceKobo)],
     ['Agreed price', b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'Price on Hold' : '—')],
-    ['Payment', { CONFIRMED: 'Released to artisan', COMPLETED: 'Pending your confirmation', CANCELLED: 'Escrow refunded to wallet' }[b.status] || (b.escrowKobo ? fmtNaira(b.escrowKobo) + ' held in escrow' : '—')]
+    ['Payment', { CONFIRMED: asArtisan ? fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' paid to you (after ' + APP_CFG.commissionPercent + '% fee)' : 'Released to artisan', COMPLETED: asArtisan ? 'Waiting for the customer to confirm' : 'Pending your confirmation', CANCELLED: 'Escrow refunded', DISPUTED: 'Held in escrow — under review' }[b.status] || (b.escrowKobo ? fmtNaira(b.escrowKobo) + ' held in escrow' : '—')]
   ];
   if (b.cancelReason) rows.push(['Reason', escapeHtml(b.cancelReason)]);
   var actions = '';
   if (!asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="showCustomerBooking(_historyCache[' + attrJson(b.id) + '] || _booking)">Open Live Booking →</button>';
   if (asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="go(\'art-job\')">Open Job →</button>';
   if (!asArtisan && b.artisan) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="bookDirectArtisan(' + attrJson(b.artisan.id) + ',' + attrJson(b.artisan.user.name) + ',' + attrJson(b.category) + ')">🔄 Hire ' + escapeHtml(firstName(b.artisan.user.name)) + ' Again</button>';
-  actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="go(' + (asArtisan ? '\'report-customer\'' : '\'report-issue\'') + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'an Issue') + '</button>';
+  if (!asArtisan && b.status === 'COMPLETED') actions += '<button class="btn" style="background:#DC2626;color:#fff;margin-bottom:10px" onclick="openDisputeForm(\'open\', _historyCache[' + attrJson(b.id) + '])">⚠️ Job Not Completed — Hold Payment</button>';
+  actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="openReportIssue(' + attrJson(b.id) + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'an Issue') + '</button>';
   _historyCache[b.id] = b;
   setHTML('bkd-body',
     '<div class="card" style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">' +
@@ -6515,8 +6914,9 @@ async function openBookingDetail(id) {
     '<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:16px;color:var(--navy)">' + escapeHtml(b.category) + '</div><div style="font-size:12px;color:var(--muted)">' + escapeHtml(other ? other.name : 'No artisan yet') + '</div></div>' +
     '<span style="background:' + colors[0] + ';color:' + colors[1] + ';border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap">' + label + '</span></div>' +
     rows.map(function (r) { return '<div class="pay-row"><span class="pay-lbl">' + r[0] + '</span><span class="pay-val" style="text-align:right;max-width:62%">' + r[1] + '</span></div>'; }).join('') +
-    '</div>' + actions);
+    '</div><div id="bkd-dispute"></div>' + actions);
   go('bk-detail');
+  if (b.status === 'DISPUTED' || b.status === 'CONFIRMED' || b.status === 'CANCELLED') fillDisputeBox('bkd-dispute', b, asArtisan);
 }
 
 // Demo history cards (Ada) — find the real artisan by name, then book them.
@@ -6575,7 +6975,7 @@ async function openArtisanProfile(id) {
 /* ---------------- Menu (phone & tablet) ---------------- */
 var MENU_ITEMS = {
   customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['🔔', 'Notifications', 'openNotifications()'],
-    ['🏢', 'Corporate Plan', "go('corp-plan')"], ['📍', 'Saved Addresses', "go('saved-addresses')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
+    ['🏢', 'Corporate Plan', "openCorporate()"], ['📍', 'Saved Addresses', "go('saved-addresses')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
   artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'My Jobs', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
     ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"]]
 };
@@ -6593,6 +6993,132 @@ function closeMenu() { document.getElementById('menu-drawer').hidden = true; }
 
 /* ---------------- Small helpers for older screens ---------------- */
 // Corporate jobs can be raised for any FixMi service, plus Others.
+
+/* ---------------- Corporate plans (real) ---------------- */
+var _corp = null, _corpSel = [], _corpPlanKey = null, _corpTopAmt = 0;
+async function openCorporate() {
+  if (!requireLogin()) return;
+  try {
+    _corp = await apiFetch('/corporate');
+    if (_corp.plan) { renderCorpDash(); go('corp-dash'); }
+    else { renderCorpChips(); go('corp-plan'); }
+  } catch (e) { toast('❌ ' + e.message); }
+}
+function renderCorpChips() {
+  var box = document.getElementById('corp-svc-chips'); if (!box) return;
+  box.innerHTML = serviceNames().map(function (sv) {
+    var on = _corpSel.indexOf(sv.name) !== -1;
+    return '<button type="button" class="search-chip' + (on ? ' on' : '') + '" onclick="toggleCorpSvc(this,' + attrJson(sv.name) + ')">' + sv.ico + ' ' + escapeHtml(sv.name) + '</button>';
+  }).join('');
+}
+function toggleCorpSvc(el, name) {
+  var i = _corpSel.indexOf(name);
+  if (i === -1) _corpSel.push(name); else _corpSel.splice(i, 1);
+  el.classList.toggle('on', i === -1);
+  setText('corp-svc-hint', _corpSel.length + ' selected — Basic covers up to 3, Standard up to 6, VIP Annual covers every service.');
+}
+function choosePlan(key) {
+  var p = _corp && _corp.plans && _corp.plans[key]; if (!p) { openCorporate(); return; }
+  if (p.maxCategories && !_corpSel.length) { toast('Select the services your business needs first'); return; }
+  if (p.maxCategories && _corpSel.length > p.maxCategories) { toast('The ' + p.label + ' plan covers up to ' + p.maxCategories + ' services — remove some or choose a bigger plan'); return; }
+  _corpPlanKey = key;
+  setText('fe-name', p.label + ' Plan');
+  setText('fe-price', fmtNaira(p.priceKobo) + '/' + p.period);
+  setText('fe-amount', fmtNaira(p.priceKobo));
+  setText('fe-wallet', 'Balance: …');
+  apiFetch('/wallet').then(function (d) { setText('fe-wallet', 'Balance: ' + fmtNaira(d.wallet.balanceKobo)); }).catch(function () {});
+  go('corp-escrow');
+}
+async function fundEscrow(btn) {
+  if (!_corpPlanKey) { go('corp-plan'); return; }
+  if (btn) btn.disabled = true;
+  try {
+    await apiFetch('/corporate/plan', { method: 'POST', body: { plan: _corpPlanKey, categories: _corpSel } });
+    toast('✅ Plan activated — your corporate escrow is funded');
+    _corpSel = [];
+    await openCorporate();
+  } catch (e) {
+    toast('❌ ' + e.message);
+    if (/insufficient/i.test(e.message)) setTimeout(openWallet, 900);
+  } finally { if (btn) btn.disabled = false; }
+}
+var CORP_STATUS = { REQUESTED: 'Waiting for artisans', ACCEPTED: 'Artisan booked', PAID: 'Artisan booked', IN_PROGRESS: 'In progress', COMPLETED: 'Confirm payment', CONFIRMED: 'Done', CANCELLED: 'Cancelled', DECLINED: 'Declined', DISPUTED: 'Under review' };
+function renderCorpDash() {
+  var c = _corp, p = c && c.plan; if (!p) return;
+  var total = p.escrowKobo + c.spentKobo + c.reservedKobo, pct = total ? Math.round(p.escrowKobo / total * 100) : 0;
+  setText('dash-plan', p.label + ' Plan');
+  setText('dash-period', p.daysLeft + ' day' + (p.daysLeft === 1 ? '' : 's') + ' remaining');
+  setText('dash-bal', fmtNaira(p.escrowKobo));
+  var bar = document.getElementById('dash-bar'); if (bar) bar.style.width = pct + '%';
+  setText('dash-used', 'Used: ' + fmtNaira(c.spentKobo) + (c.reservedKobo ? ' · Reserved: ' + fmtNaira(c.reservedKobo) : ''));
+  setText('dash-total', 'Funded: ' + fmtNaira(total));
+  setText('dash-jobs', String(c.jobs.filter(function (j) { return j.status === 'CONFIRMED'; }).length));
+  setText('dash-calls', p.callsLeft == null ? '∞' : String(p.callsLeft));
+  setText('dash-days', String(p.daysLeft));
+  var warn = document.getElementById('low-warn'); if (warn) warn.hidden = p.escrowKobo >= p.priceKobo * 0.25;
+  setText('corp-cats', p.categories.length ? 'Services on your plan: ' + p.categories.join(', ') : 'Your plan covers every service.');
+  setHTML('jobs-list', c.jobs.length ? c.jobs.map(function (j) {
+    _historyCache[j.id] = j;
+    return '<div class="corp-job" onclick="openBookingDetail(' + attrJson(j.id) + ')"><div><b>' + categoryLook(j.category)[0] + ' ' + escapeHtml(j.category) + '</b><small>' + escapeHtml(j.address) + ' · ' + escapeHtml(CORP_STATUS[j.status] || j.status) + '</small></div><span>' + fmtNaira(j.agreedPriceKobo || j.priceKobo) + '</span></div>';
+  }).join('') : '<div class="empty-note">No jobs raised yet. Tap above to get started.</div>');
+}
+function openCorpRaise() {
+  var p = _corp && _corp.plan; if (!p) { openCorporate(); return; }
+  var sel = document.getElementById('job-svc');
+  var names = p.categories.length ? p.categories : serviceNames().map(function (s) { return s.name; });
+  sel.innerHTML = '<option value="">Select service...</option>' + names.map(function (n) { return '<option value="' + escapeHtml(n) + '">' + categoryLook(n)[0] + ' ' + escapeHtml(n) + '</option>'; }).join('');
+  sel.dataset.filled = '1';
+  setText('job-escrow-note', 'Taken from your corporate escrow (' + fmtNaira(p.escrowKobo) + ' available). Artisans can accept it or send their own price.');
+  go('corp-raise');
+}
+async function corpSubmitJob(btn) {
+  var svc = document.getElementById('job-svc').value, loc = document.getElementById('job-loc').value.trim();
+  var desc = document.getElementById('job-desc').value.trim(), budget = Number(document.getElementById('job-budget').value);
+  var pr = document.getElementById('job-priority').value;
+  if (!svc) { toast('Please select a service type'); return; }
+  if (!loc) { toast('Please enter a location / office'); return; }
+  if (!desc) { toast('Please describe the job'); return; }
+  if (!budget || budget < 500) { toast('Enter a budget of at least ₦500'); return; }
+  btn.disabled = true;
+  try {
+    var d = await apiFetch('/bookings', { method: 'POST', body: { category: svc, issue: (/^Normal/.test(pr) ? '' : '[' + pr.split(' —')[0] + '] ') + desc, address: loc, priceKobo: Math.round(budget * 100), corporate: true } });
+    ['job-loc', 'job-desc', 'job-budget'].forEach(function (id) { setValue(id, ''); });
+    toast(d.notified ? '📣 Sent to ' + d.notified + ' artisan' + (d.notified > 1 ? 's' : '') + ' nearby' : 'Request is open — artisans will see it as they come online');
+    showCustomerBooking(d.booking);
+  } catch (e) {
+    toast('❌ ' + e.message);
+  } finally { btn.disabled = false; }
+}
+function pickTopUp(el, amt) {
+  _corpTopAmt = parseInt(amt, 10);
+  document.querySelectorAll('#corp-topup [id^="tu"]').forEach(function (b) { if (b.tagName === 'BUTTON') { b.style.background = '#F2F5F8'; b.style.color = '#0B1A2E'; } });
+  el.style.background = '#0B1A2E'; el.style.color = '#fff';
+  setValue('custom-topup', '');
+}
+async function confirmTopUp(btn) {
+  var amt = Number(document.getElementById('custom-topup').value) || _corpTopAmt;
+  if (!amt || amt < 1000) { toast('Please select or enter an amount (min ₦1,000)'); return; }
+  btn.disabled = true;
+  try {
+    await apiFetch('/corporate/topup', { method: 'POST', body: { amountKobo: Math.round(amt * 100) } });
+    toast('✅ Corporate escrow topped up with ' + fmtNaira(amt * 100));
+    _corpTopAmt = 0; setValue('custom-topup', '');
+    await openCorporate();
+  } catch (e) {
+    toast('❌ ' + e.message);
+    if (/insufficient/i.test(e.message)) setTimeout(openWallet, 900);
+  } finally { btn.disabled = false; }
+}
+async function cancelCorpPlan(btn) {
+  if (btn.dataset.sure !== '1') { btn.dataset.sure = '1'; btn.textContent = 'Tap again to end the plan'; return; }
+  try {
+    var d = await apiFetch('/corporate/cancel', { method: 'POST', body: {} });
+    toast('Plan ended — ' + fmtNaira(d.refundedKobo) + ' returned to your wallet');
+    _corp = null; go('home');
+  } catch (e) { toast('❌ ' + e.message); }
+  btn.dataset.sure = ''; btn.innerHTML = 'End Plan &amp; Refund Unused Escrow';
+}
+
 function fillCorporateServices() {
   var sel = document.getElementById('job-svc');
   if (!sel || sel.dataset.filled) return;
@@ -6602,20 +7128,6 @@ function fillCorporateServices() {
   sel.innerHTML = opts;
   sel.dataset.filled = '1';
 }
-
-// Evidence photos show on whichever report screen is open.
-var _origRenderPreviews = renderPreviews;
-renderPreviews = function () {
-  _origRenderPreviews();
-  ['report-previews', 'cust-report-previews'].forEach(function (id) {
-    var box = document.getElementById(id);
-    if (!box) return;
-    box.innerHTML = mediaFiles.map(function (m, i) {
-      return '<div style="position:relative;width:64px;height:64px;border-radius:12px;overflow:hidden"><img src="' + m.url + '" style="width:100%;height:100%;object-fit:cover" alt="Evidence photo ' + (i + 1) + '">' +
-        '<button onclick="removeMedia(' + i + ')" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.65);border:none;color:#fff;cursor:pointer;font-size:10px" aria-label="Remove photo">x</button></div>';
-    }).join('');
-  });
-};
 
 /* ---------------- Promote My Page (real) ---------------- */
 var PROMO_PLAN_KEYS = { 'Basic Boost': 'basic', 'Standard Boost': 'standard', 'VIP Annual': 'vip' };
@@ -6635,6 +7147,7 @@ async function confirmPromoPayment() {
 
 /* ---------------- Boot ---------------- */
 (function boot() {
+  loadAppConfig();
   // Resume a stored session only if the server still accepts it, so an
   // expired or revoked login lands on the splash screen instead of a
   // half-loaded account.
@@ -6654,10 +7167,11 @@ async function confirmPromoPayment() {
   window.go = function (id) {
     origGo(id);
     if (id === 'messages') loadChatThreads('chat-thread-list');
-    if (id === 'artisan-messages' && document.body.classList.contains('fresh-acct')) loadChatThreads('artisan-chat-thread-list');
+    if (id === 'artisan-messages') loadChatThreads('artisan-chat-thread-list');
     if (id === 'history' || id === 'profile') loadBookingHistory('history-real', false);
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
-    if (id === 'corp-raise') fillCorporateServices();
+    if (id === 'corp-plan') renderCorpChips();
+    if (id === 'corp-topup') apiFetch('/wallet').then(function (d) { setText('tu-wallet', 'balance ' + fmtNaira(d.wallet.balanceKobo)); }).catch(function () {});
     // the request pop-up stays on top of every artisan screen except the job itself
     if (isArtisanUser()) renderRequests();
   };
