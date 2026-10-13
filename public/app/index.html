@@ -2313,6 +2313,7 @@ body{background:#fff}
     <div style="color:rgba(255,255,255,.4);font-size:13px;line-height:1.6">Featured artisans appear in the Featured Artisans section on every customer’s home page, where customers can open your profile and book you directly. Paid from your FixMi wallet.</div>
   </div>
   <div style="padding:18px">
+    <div id="promo-status"></div>
     <div style="background:#fff;border:2px solid var(--border);border-radius:17px;padding:18px;margin-bottom:13px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
         <div style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--navy)">Basic Boost</div>
@@ -2485,6 +2486,7 @@ body{background:#fff}
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Payments and money <span class="faq-arr">›</span></div><div class="faq-a">Never accept payment outside the FixMi app unless the customer selects Cash as their payment method. If asked to use another payment platform, refuse and report it.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Reporting an incident <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in Job History or contact support directly. All reports are confidential and reviewed by FixMi.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Police: 199 | FixMi Emergency: tap the Support button. Always trust your instincts — your safety comes first, before any job.</div></div>
+    <button onclick="openSafetyCenter()" class="btn btn-g" style="margin-top:16px">🛡️ Safety Centre: ID, contacts &amp; SOS</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2633,16 +2635,65 @@ body{background:#fff}
 <!-- ████ ARTISAN AVAILABILITY ████ -->
 <!-- ████ ARTISAN PORTFOLIO ████ -->
 <!-- ████ ARTISAN SETTINGS ████ -->
+
+<!-- ████ SAFETY CENTRE ████ -->
+<div class="s" id="safety-center">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Safety Centre</div><div class="tb-space"></div></div>
+  <div style="padding:16px">
+    <button class="btn" style="background:#DC2626;color:#fff;margin-bottom:6px" onclick="sendSos(this)">🚨 SOS: I need help now</button>
+    <div class="job-hint" style="text-align:left;margin-bottom:20px">Alerts FixMi with your location and shows your emergency contacts. For immediate danger also call 112 or 199.</div>
+    <div class="sec-title" style="margin-bottom:10px">ID Verification</div>
+    <div id="sf-docs" style="margin-bottom:10px"></div>
+    <div class="card" style="margin-bottom:22px">
+      <div class="fg"><label class="label" for="sf-idtype">ID type</label><select class="input" id="sf-idtype"><option value="NIN">NIN</option><option value="DRIVERS_LICENSE">Driver’s License</option><option value="INTL_PASSPORT">Int’l Passport</option><option value="VOTERS_CARD">Voter’s Card</option></select></div>
+      <div class="fg"><label class="label" for="sf-idnum">ID number</label><input class="input" id="sf-idnum" maxlength="40"></div>
+      <div class="fg"><label class="label" for="sf-file">Photo of the ID</label><input class="input" id="sf-file" type="file" accept="image/*"></div>
+      <button class="btn btn-g" onclick="uploadIdDoc(this)">Submit for Review</button>
+    </div>
+    <div class="sec-title" style="margin-bottom:10px">Emergency Contacts</div>
+    <div id="sf-contacts" style="margin-bottom:10px"></div>
+    <div class="card" style="margin-bottom:22px">
+      <div class="fg"><label class="label" for="sf-cname">Name</label><input class="input" id="sf-cname" maxlength="80"></div>
+      <div class="fg"><label class="label" for="sf-cphone">Phone</label><input class="input" id="sf-cphone" type="tel" placeholder="+234..."></div>
+      <button class="btn btn-g" onclick="addContact(this)">Add Contact</button>
+    </div>
+    <div class="sec-title" style="margin-bottom:10px">Report a Problem</div>
+    <div class="card">
+      <div class="fg"><label class="label" for="sf-rtype">What happened?</label><select class="input" id="sf-rtype"><option value="UNSAFE_BEHAVIOUR">Unsafe behaviour</option><option value="HARASSMENT">Harassment</option><option value="FRAUD">Fraud or scam</option><option value="OTHER">Something else</option></select></div>
+      <div class="fg"><label class="label" for="sf-rdesc">Details</label><textarea class="input" id="sf-rdesc" style="min-height:90px;resize:vertical"></textarea></div>
+      <button class="btn btn-g" onclick="sendSafetyReport(this)">Send Report</button>
+    </div>
+    <div id="sf-reports" style="margin-top:14px"></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ████ SAVED ARTISANS ████ -->
+<div class="s" id="saved-artisans">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Saved Artisans</div><div class="tb-space"></div></div>
+  <div style="padding:16px" id="fav-list"></div>
+</div>
+
 <div class="s" id="artisan-settings">
   <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Settings</div><div class="tb-space"></div></div>
   <div style="padding:16px">
+    <div class="sec-title" style="margin-bottom:10px">Notifications</div>
+    <div id="set-notifs" class="card" style="margin-bottom:20px"></div>
+    <div class="sec-title" style="margin-bottom:10px">Saved Addresses</div>
+    <div id="set-addrs"></div>
+    <div class="card" style="margin:10px 0 24px">
+      <div class="fg"><label class="label" for="addr-label">Label</label><input class="input" id="addr-label" maxlength="40" placeholder="Home, Office..."></div>
+      <div class="fg"><label class="label" for="addr-text">Address</label><input class="input" id="addr-text" maxlength="300" placeholder="Street, area, city"></div>
+      <button class="btn btn-g" onclick="addAddress(this)">Save Address</button>
+    </div>
     <div class="sec-title" style="margin-bottom:10px">Change Password</div>
     <div class="fg"><label class="label" for="pw-current">Current password</label><input class="input" id="pw-current" type="password" autocomplete="current-password"></div>
     <div class="fg"><label class="label" for="pw-new">New password</label><input class="input" id="pw-new" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
     <button class="btn btn-g" onclick="changePassword(this)">Update Password</button>
     <div class="sec-title" style="margin:24px 0 10px">Close Account</div>
-    <div class="job-hint" style="text-align:left;margin-bottom:10px">To close your account, send a request to FixMi support. Any money in your wallet is settled first.</div>
-    <button class="btn" style="background:#FEE2E2;color:#DC2626" onclick="openSupport('Close my account')">Request Account Closure</button>
+    <div class="job-hint" style="text-align:left;margin-bottom:10px">Withdraw your wallet balance and finish open jobs first. Closing signs you out.</div>
+    <div class="fg"><label class="label" for="close-pw">Password</label><input class="input" id="close-pw" type="password" autocomplete="current-password"></div>
+    <button class="btn" style="background:#FEE2E2;color:#DC2626" onclick="closeAccount(this)">Close My Account</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2661,7 +2712,8 @@ body{background:#fff}
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Communication safety <span class="faq-arr">›</span></div><div class="faq-a">All communication must happen through FixMi's in-app chat only. Calls are disabled for your protection. Never share personal contact details outside the app.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">If you feel unsafe <span class="faq-arr">›</span></div><div class="faq-a">End the job immediately. You will not be charged if cancelled before work begins. Contact FixMi support and authorities if necessary.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Nigeria Police: 199 | Emergency: 112 | FixMi: use Contact Support in Help &amp; Support.</div></div>
-    <button onclick="openSupport()" class="btn btn-g" style="margin-top:16px">💬 Contact Support</button>
+    <button onclick="openSafetyCenter()" class="btn btn-g" style="margin-top:16px">🛡️ Safety Centre: ID, contacts &amp; SOS</button>
+    <button onclick="openSupport()" class="btn" style="margin-top:10px;background:var(--gray);color:var(--navy)">💬 Contact Support</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -6600,6 +6652,7 @@ function toggleFav() {
   if (i === -1) favs.push(id); else favs.splice(i, 1);
   try { localStorage.setItem(favKey(), JSON.stringify(favs)); } catch (e) {}
   renderFavBtn();
+  if (getAccess()) apiFetch('/favourites/' + id, { method: i === -1 ? 'POST' : 'DELETE' }).catch(function (e) { toast('❌ ' + e.message); });
   toast(i === -1 ? '❤️ Saved to favourites' : 'Removed from favourites');
 }
 function renderFavBtn() {
@@ -6607,6 +6660,7 @@ function renderFavBtn() {
   setText('ap-fav', on ? '♥' : '♡');
 }
 async function openArtisanProfile(id) {
+  syncFavs();
   try {
     var a = (await apiFetch('/artisans/' + id)).artisan;
     window._profileArtisan = a;
@@ -6640,7 +6694,7 @@ async function openArtisanProfile(id) {
 
 /* ---------------- Menu (phone & tablet) ---------------- */
 var MENU_ITEMS = {
-  customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['🔔', 'Notifications', 'openNotifications()'],
+  customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['❤️', 'Saved Artisans', 'openSavedArtisans()'], ['🔔', 'Notifications', 'openNotifications()'],
     ['🏢', 'Corporate Plan', "openCorporate()"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
   artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'My Jobs', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
     ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"]]
@@ -6998,6 +7052,8 @@ async function confirmPromoPayment() {
     if (id === 'history' || id === 'profile') loadBookingHistory('history-real', false);
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
     if (id === 'corp-plan') renderCorpChips();
+    if (id === 'artisan-settings') loadSettings();
+    if (id === 'artisan-promote') loadPromoStatus();
     if (id === 'edit-profile') fillProfileForms();
     if (id === 'artisan-dash') setWdPeriod(_wdPeriod);
     if (id === 'corp-topup') apiFetch('/wallet').then(function (d) { setText('tu-wallet', 'balance ' + fmtNaira(d.wallet.balanceKobo)); }).catch(function () {});
@@ -7006,6 +7062,150 @@ async function confirmPromoPayment() {
   };
 })();
 
+
+/* ---------------- Settings, Safety Centre, Promotions (live) ---------------- */
+async function loadSettings() {
+  if (!getAccess()) return;
+  try {
+    var d = await apiFetch('/settings');
+    var n = d.notifications;
+    var rows = [['pushEnabled', 'Push notifications'], ['emailEnabled', 'Email'], ['smsEnabled', 'SMS'], ['marketingEnabled', 'Promotions and tips']];
+    setHTML('set-notifs', rows.map(function (r) {
+      return '<label style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px"><span>' + r[1] + '</span><input type="checkbox" ' + (n[r[0]] ? 'checked' : '') + ' onchange="setNotifPref(\'' + r[0] + '\',this.checked)"></label>';
+    }).join(''));
+    renderAddresses(d.addresses);
+  } catch (e) { toast('❌ ' + e.message); }
+}
+async function setNotifPref(key, val) {
+  var body = {}; body[key] = val;
+  try { await apiFetch('/settings/notifications', { method: 'PATCH', body: body }); toast('✅ Saved'); } catch (e) { toast('❌ ' + e.message); loadSettings(); }
+}
+function renderAddresses(list) {
+  setHTML('set-addrs', list.length ? list.map(function (a) {
+    return '<div class="card" style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:10px"><b style="font-size:14px">' + escapeHtml(a.label) + (a.isDefault ? ' · default' : '') + '</b>' +
+      '<span>' + (a.isDefault ? '' : '<a href="#" onclick="event.preventDefault();makeDefaultAddress(\'' + a.id + '\')" style="font-size:12px;color:var(--g)">Make default</a>') +
+      ' <a href="#" onclick="event.preventDefault();deleteAddress(\'' + a.id + '\')" style="font-size:12px;color:#DC2626;margin-left:8px">Delete</a></span></div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-top:4px">' + escapeHtml(a.address) + '</div></div>';
+  }).join('') : '<div class="empty-note">No saved addresses yet.</div>');
+}
+async function addAddress(btn) {
+  var label = document.getElementById('addr-label').value.trim(), address = document.getElementById('addr-text').value.trim();
+  if (!label || !address) { toast('Enter a label and an address'); return; }
+  btn.disabled = true;
+  try { await apiFetch('/settings/addresses', { method: 'POST', body: { label: label, address: address } }); setValue('addr-label', ''); setValue('addr-text', ''); toast('✅ Address saved'); loadSettings(); }
+  catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+async function makeDefaultAddress(id) {
+  try { await apiFetch('/settings/addresses/' + id, { method: 'PATCH', body: { isDefault: true } }); loadSettings(); } catch (e) { toast('❌ ' + e.message); }
+}
+async function deleteAddress(id) {
+  try { await apiFetch('/settings/addresses/' + id, { method: 'DELETE' }); loadSettings(); } catch (e) { toast('❌ ' + e.message); }
+}
+async function closeAccount(btn) {
+  if (!confirm('Close your FixMi account? This cannot be undone from the app.')) return;
+  btn.disabled = true;
+  try { await apiFetch('/settings/deactivate', { method: 'POST', body: { password: document.getElementById('close-pw').value } }); toast('Account closed'); await signOut(); }
+  catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+var DOC_STATUS = { PENDING: '⏳ Under review', APPROVED: '✅ Approved', REJECTED: '❌ Declined' };
+async function openSafetyCenter() {
+  if (!requireLogin()) return;
+  go('safety-center');
+  try {
+    var d = await apiFetch('/safety');
+    var head = d.idVerified ? '<div class="info blue" style="margin-bottom:10px"><span>✅</span><span>Your ID is verified.</span></div>' : '';
+    setHTML('sf-docs', head + (d.documents.length ? d.documents.map(function (x) {
+      return '<div class="card" style="margin-bottom:8px;display:flex;justify-content:space-between;gap:10px"><span style="font-size:13px"><b>' + escapeHtml(x.docType.replace(/_/g, ' ').toLowerCase()) + '</b>' + (x.idType ? ' · ' + escapeHtml(x.idType.replace(/_/g, ' ')) : '') +
+        (x.rejectionReason ? '<br><span style="color:#DC2626">' + escapeHtml(x.rejectionReason) + '</span>' : '') + '</span><span style="font-size:12px;white-space:nowrap">' + DOC_STATUS[x.status] + '</span></div>';
+    }).join('') : '<div class="empty-note">No ID submitted yet.</div>'));
+    var c = (await apiFetch('/safety/contacts')).contacts;
+    setHTML('sf-contacts', c.length ? c.map(function (x) {
+      return '<div class="card" style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px"><b>' + escapeHtml(x.name) + '</b><br><span style="color:var(--muted);font-size:13px">' + escapeHtml(x.phone) + '</span></span><a href="#" onclick="event.preventDefault();deleteContact(\'' + x.id + '\')" style="font-size:12px;color:#DC2626">Remove</a></div>';
+    }).join('') : '<div class="empty-note">Add someone we can tell if you need help.</div>');
+    var r = (await apiFetch('/safety/reports')).reports;
+    setHTML('sf-reports', r.length ? '<div class="sec-title" style="margin-bottom:8px">Your Reports</div>' + r.map(function (x) {
+      return '<div class="card" style="margin-bottom:8px;font-size:13px"><b>' + escapeHtml(x.type.replace(/_/g, ' ').toLowerCase()) + '</b> · ' + x.status.toLowerCase() + (x.adminNote ? '<br>' + escapeHtml(x.adminNote) : '') + '</div>';
+    }).join('') : '');
+  } catch (e) { toast('❌ ' + e.message); }
+}
+async function uploadIdDoc(btn) {
+  var f = document.getElementById('sf-file').files[0], num = document.getElementById('sf-idnum').value.trim();
+  if (!f) { toast('Choose a photo of your ID'); return; }
+  if (!num) { toast('Enter the ID number'); return; }
+  var fd = new FormData();
+  fd.append('docType', 'GOVERNMENT_ID'); fd.append('idType', document.getElementById('sf-idtype').value); fd.append('idNumber', num); fd.append('file', f);
+  btn.disabled = true;
+  try { await apiFetch('/safety/documents', { method: 'POST', body: fd }); toast('✅ Submitted for review'); setValue('sf-idnum', ''); document.getElementById('sf-file').value = ''; openSafetyCenter(); }
+  catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+async function addContact(btn) {
+  var name = document.getElementById('sf-cname').value.trim(), phone = document.getElementById('sf-cphone').value.trim();
+  if (!name || !phone) { toast('Enter a name and phone number'); return; }
+  btn.disabled = true;
+  try { await apiFetch('/safety/contacts', { method: 'POST', body: { name: name, phone: phone } }); setValue('sf-cname', ''); setValue('sf-cphone', ''); openSafetyCenter(); }
+  catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+async function deleteContact(id) {
+  try { await apiFetch('/safety/contacts/' + id, { method: 'DELETE' }); openSafetyCenter(); } catch (e) { toast('❌ ' + e.message); }
+}
+function getPosition() {
+  return new Promise(function (resolve) {
+    if (!navigator.geolocation) return resolve({});
+    navigator.geolocation.getCurrentPosition(function (p) { resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); }, function () { resolve({}); }, { timeout: 6000 });
+  });
+}
+async function sendSos(btn) {
+  if (!confirm('Send an SOS alert to FixMi now?')) return;
+  btn.disabled = true;
+  try {
+    var pos = await getPosition();
+    var active = (typeof _booking !== 'undefined' && _booking && _booking.id) ? _booking.id : undefined;
+    var d = await apiFetch('/safety/reports', { method: 'POST', body: Object.assign({ type: 'SOS', bookingId: active }, pos) });
+    var names = (d.emergencyContacts || []).map(function (c) { return c.name + ' ' + c.phone; }).join(', ');
+    toast('🚨 FixMi has been alerted' + (names ? '. Call: ' + names : '. Call 112 if you are in danger.'));
+    openSafetyCenter();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+async function sendSafetyReport(btn) {
+  var desc = document.getElementById('sf-rdesc').value.trim();
+  if (!desc) { toast('Tell us what happened'); return; }
+  btn.disabled = true;
+  try { await apiFetch('/safety/reports', { method: 'POST', body: { type: document.getElementById('sf-rtype').value, description: desc } }); setValue('sf-rdesc', ''); toast('✅ Report sent'); openSafetyCenter(); }
+  catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+async function loadPromoStatus() {
+  if (!getAccess() || !isArtisanUser()) return;
+  try {
+    var d = await apiFetch('/users/me/promotions');
+    var el = document.getElementById('promo-status'); if (!el) return;
+    el.innerHTML = d.active
+      ? '<div class="info blue" style="margin-bottom:14px"><span>🚀</span><span>You’re featured until <b>' + new Date(d.featuredUntil).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) + '</b>. Buying again adds time on top.</span></div>'
+      : (d.history.length ? '<div class="job-hint" style="text-align:left;margin-bottom:12px">Your last boost has ended.</div>' : '');
+  } catch (e) {}
+}
+
+async function syncFavs() {
+  if (!getAccess()) return;
+  try {
+    var list = (await apiFetch('/favourites')).favourites || [];
+    localStorage.setItem(favKey(), JSON.stringify(list.map(function (a) { return a.id; })));
+    renderFavBtn();
+  } catch (e) {}
+}
+async function openSavedArtisans() {
+  if (!requireLogin()) return;
+  go('saved-artisans');
+  try {
+    var list = (await apiFetch('/favourites')).favourites || [];
+    try { localStorage.setItem(favKey(), JSON.stringify(list.map(function (a) { return a.id; }))); } catch (e) {}
+    setHTML('fav-list', list.length ? list.map(function (a) {
+      return '<div class="card" style="margin-bottom:10px;cursor:pointer" onclick="openArtisanProfile(\'' + a.id + '\')"><b style="font-size:15px">' + escapeHtml(a.user.name) + '</b>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:3px">' + escapeHtml(a.category) + (a.user.state ? ' · ' + escapeHtml(a.user.state) : '') + ' · ' + (a.ratingCount ? a.ratingAvg.toFixed(1) + '★' : 'New') + '</div></div>';
+    }).join('') : '<div class="empty-note">You haven’t saved any artisans yet. Tap ♡ on a profile to save one.</div>');
+  } catch (e) { toast('❌ ' + e.message); }
+}
 </script>
 </body>
 </html>
