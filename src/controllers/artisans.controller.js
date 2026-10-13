@@ -61,7 +61,15 @@ async function getArtisan(req, res, next) {
   try {
     const artisan = await prisma.artisanProfile.findUnique({ where: { id: req.params.id }, select: PUBLIC_SELECT });
     if (!artisan) return res.status(404).json({ error: "Artisan not found." });
-    res.json({ artisan });
+    const reviews = await prisma.rating.findMany({
+      where: { rateeUserId: artisan.user.id, rateeRole: "ARTISAN" },
+      select: { stars: true, comment: true, createdAt: true, rater: { select: { name: true } }, booking: { select: { category: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
+    // Reviewers are shown by first name and initial only.
+    const shortName = (n) => { const p = String(n || "").trim().split(/\s+/); return p[0] + (p[1] ? " " + p[1][0] + "." : ""); };
+    res.json({ artisan: { ...artisan, reviews: reviews.map((r) => ({ stars: r.stars, comment: r.comment, createdAt: r.createdAt, category: r.booking.category, by: shortName(r.rater.name) })) } });
   } catch (err) {
     next(err);
   }
@@ -69,6 +77,33 @@ async function getArtisan(req, res, next) {
 
 // Distinct category names currently offered, for the home screen's service
 // grid to be data-driven instead of hardcoded.
+// Live numbers for the home screen: verified artisans, how many are online,
+// their average rating, and how long artisans actually take to arrive.
+async function publicStats(req, res, next) {
+  try {
+    const verified = { isVerified: true, kycStatus: "APPROVED", user: { status: "ACTIVE" } };
+    const [artisans, online, rated, arrival] = await Promise.all([
+      prisma.artisanProfile.count({ where: verified }),
+      prisma.artisanProfile.count({ where: { ...verified, isAvailable: true } }),
+      prisma.artisanProfile.findMany({ where: { ...verified, ratingCount: { gt: 0 } }, select: { ratingAvg: true, ratingCount: true } }),
+      prisma.$queryRaw`SELECT AVG(EXTRACT(EPOCH FROM ("arrivedAt" - "acceptedAt")) / 60)::float AS minutes, COUNT(*)::int AS n
+        FROM "Booking" WHERE "arrivedAt" IS NOT NULL AND "acceptedAt" IS NOT NULL
+        AND "arrivedAt" > "acceptedAt" AND "arrivedAt" - "acceptedAt" < interval '6 hours'`,
+    ]);
+    const votes = rated.reduce((n, a) => n + a.ratingCount, 0);
+    const avgRating = votes ? rated.reduce((n, a) => n + a.ratingAvg * a.ratingCount, 0) / votes : null;
+    const row = arrival[0] || {};
+    res.json({
+      artisans,
+      online,
+      avgRating: avgRating == null ? null : Math.round(avgRating * 10) / 10,
+      avgArrivalMinutes: row.n ? Math.max(1, Math.round(row.minutes)) : null,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function listCategories(req, res, next) {
   try {
     const rows = await prisma.artisanProfile.findMany({
@@ -82,4 +117,5 @@ async function listCategories(req, res, next) {
   }
 }
 
-module.exports = { listArtisans, getArtisan, listCategories };
+module.exports = {
+  publicStats, listArtisans, getArtisan, listCategories };

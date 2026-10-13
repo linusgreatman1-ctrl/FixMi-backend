@@ -6,7 +6,7 @@ async function listThreads(req, res, next) {
     const threads = await prisma.chatThread.findMany({
       where: { participants: { some: { userId: req.user.id } } },
       include: {
-        participants: { include: { user: { select: { id: true, name: true, avatarUrl: true } } } },
+        participants: { include: { user: { select: { id: true, name: true, avatarUrl: true, phone: true, role: true } } } },
         messages: { orderBy: { createdAt: "desc" }, take: 1 },
         booking: { select: { id: true, category: true, status: true } },
       },

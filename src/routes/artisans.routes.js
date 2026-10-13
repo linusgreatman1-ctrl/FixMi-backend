@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/", ctrl.listArtisans);
 router.get("/categories", ctrl.listCategories);
+router.get("/stats", ctrl.publicStats);
 router.get("/:id", ctrl.getArtisan);
 
 module.exports = router;
