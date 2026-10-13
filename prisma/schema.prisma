@@ -104,6 +104,7 @@ model ArtisanProfile {
   updatedAt   DateTime  @updatedAt
 
   bookings      Booking[]
+  offers        BookingOffer[]
   commissionPeriods CommissionPeriod[]
 
   @@index([category])
@@ -136,8 +137,19 @@ model Booking {
   lat         Float?
   lng         Float?
 
-  priceKobo   Int
+  priceKobo   Int // the customer's budget / offered price
   status      BookingStatus @default(REQUESTED)
+
+  // Escrow-first: the customer's budget is taken from their wallet when the
+  // request is posted and held here (topped up or partly refunded once a
+  // price is agreed). Moves into payout EscrowHolds when the job is done.
+  escrowKobo      Int     @default(0)
+  agreedPriceKobo Int?
+  // Price on Hold: the artisan assesses at the customer's place first and
+  // submits the agreed price there (onsitePriceKobo) for the customer to accept.
+  priceOnHold     Boolean @default(false)
+  onsitePriceKobo Int?
+  arrivedAt       DateTime?
 
   scheduledAt DateTime?
   acceptedAt  DateTime?
@@ -154,10 +166,40 @@ model Booking {
   escrowHolds EscrowHold[]
   chatThread  ChatThread?
   ratings     Rating[]
+  offers      BookingOffer[]
 
   @@index([customerId])
   @@index([artisanId])
   @@index([status])
+}
+
+enum OfferStatus {
+  PENDING // waiting on the other side
+  ACCEPTED // this artisan got the job
+  DECLINED // artisan declined the request
+  REJECTED // customer turned this artisan's offer down
+  CLOSED // the request went to someone else or was cancelled
+}
+
+// One row per artisan responding to an open request: their price (or Price
+// on Hold), the customer's counter, and who spoke last. Also records an
+// artisan's decline so the request never comes back to them.
+model BookingOffer {
+  id                String         @id @default(uuid())
+  bookingId         String
+  booking           Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  artisanId         String
+  artisan           ArtisanProfile @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  priceKobo         Int?
+  isHold            Boolean        @default(false)
+  customerPriceKobo Int?
+  lastBy            String         @default("ARTISAN")
+  status            OfferStatus    @default(PENDING)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([bookingId, artisanId])
+  @@index([artisanId])
 }
 
 model Wallet {
