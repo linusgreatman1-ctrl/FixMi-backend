@@ -1,5 +1,8 @@
 const express = require("express");
 
+const { commissionPercent } = require("../config/money");
+const { autoReleaseMinutes } = require("../services/escrow.service");
+
 const router = express.Router();
 
 // Public — ICE server info (including TURN credentials, if configured) is
@@ -15,6 +18,12 @@ router.get("/ice-servers", (req, res) => {
     });
   }
   res.json({ iceServers });
+});
+
+// Numbers the app shows to people: the platform's cut and how long a
+// customer has to confirm before escrow releases on its own.
+router.get("/app", (req, res) => {
+  res.json({ commissionPercent: commissionPercent(), autoReleaseMinutes: autoReleaseMinutes() });
 });
 
 module.exports = router;

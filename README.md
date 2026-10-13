@@ -36,7 +36,7 @@ radar screen, live job status, and chat — instead of client-side
    | `JWT_REFRESH_SECRET` | a different long random string |
    | `JWT_ACCESS_EXPIRES_IN` | `15m` |
    | `JWT_REFRESH_EXPIRES_IN` | `30d` |
-   | `ESCROW_AUTO_RELEASE_HOURS` | `24` |
+   | `ESCROW_AUTO_RELEASE_MINUTES` | `5` |
    | `PLATFORM_COMMISSION_PERCENT` | `10` |
    | `DEV_BYPASS_PAYMENTS` | `true` (turn off once this is real) |
    | `AUTO_APPROVE_ARTISANS` | `true` during testing — new artisans are verified on sign-up; remove before launch |
@@ -152,7 +152,18 @@ Escrow first, like Handa's shopper requests. No cash anywhere.
    cancellation.
 6. **Work** — `/start` → `IN_PROGRESS` → `/complete` (escrow moves into
    payout holds: artisan share + commission) → customer `/confirm` releases
-   it (`CONFIRMED`), or it auto-releases after `ESCROW_AUTO_RELEASE_HOURS`.
+   it (`CONFIRMED`), or it auto-releases after `ESCROW_AUTO_RELEASE_MINUTES` (default 5).
+7. **Job not completed** — before it releases, the customer can
+   `POST /:id/dispute` instead of confirming. The payout holds freeze
+   (`DISPUTED`) and stop counting down, the artisan adds their side with
+   `POST /:id/dispute/respond`, and an admin decides at `/admin`: pay the
+   artisan, refund the customer, or split (the artisan's part still pays
+   the 10% commission). Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` on the server
+   to sign in there.
+
+Corporate plans (`/api/corporate`) hold their own escrow, funded from the
+wallet; `POST /bookings` with `corporate: true` takes the job's budget from
+that plan instead of the wallet.
 
 `GET /bookings/active` returns the booking to resume after a refresh; `GET
 /bookings/open` is an online artisan's list of requests they can answer.
@@ -170,7 +181,9 @@ multiple tabs/devices can hold independent sessions).
 | Users | `PATCH /users/me`, `/me/artisan-profile`, `/me/availability` (go online/offline), `POST /me/promote` (featured listing), `POST /me/avatar`, `/me/bank-account`, `GET /users/banks` |
 | Artisans | `GET /artisans` (filter by `category`, `onlyAvailable`, sorted by distance if `lat`/`lng` given), `GET /artisans/:id`, `GET /artisans/categories` |
 | Search | `GET /search?q=` |
-| Bookings | `POST /bookings`, `GET /bookings` (mine), `/bookings/active`, `/bookings/open` (online artisan's requests), `POST /:id/respond` (artisan), `/:id/offers/:offerId` (customer), `/:id/cancel`, `/arrive`, `/onsite-price`, `/onsite-respond`, `/start`, `/complete`, `/confirm` |
+| Bookings | `POST /bookings`, `GET /bookings` (mine), `/bookings/active`, `/bookings/open` (online artisan's requests), `POST /:id/respond` (artisan), `/:id/offers/:offerId` (customer), `/:id/cancel`, `/arrive`, `/onsite-price`, `/onsite-respond`, `/start`, `/complete`, `/confirm`, `/:id/dispute` (POST/GET), `/:id/dispute/respond` |
+| Corporate | `GET /corporate`, `POST /corporate/plan`, `/corporate/topup`, `/corporate/cancel` |
+| Config | `GET /config/app` (commission, release window), `GET /config/ice-servers` (in-app calls) |
 | Wallet | `GET /wallet`, `/wallet/transactions`, `POST /wallet/withdraw`, `GET /wallet/withdrawals` |
 | Payments | `POST /payments/wallet-deposit` (Paystack), `/payments/wallet-deposit/dev` (DEV_BYPASS only), `GET /payments/verify/:reference`, `POST /payments/webhook` |
 | Ratings | `POST /ratings` (one row per side per booking — customer rates artisan and vice versa) |

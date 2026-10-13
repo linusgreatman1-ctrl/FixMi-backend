@@ -1,7 +1,7 @@
 {
-  "name": "fixme-mobile",
+  "name": "fixmi-mobile",
   "version": "1.0.0",
-  "description": "FixMe mobile app — a thin Capacitor shell around the real web app served at /app by fixmi-backend.",
+  "description": "FixMi mobile app — a thin Capacitor shell around the real web app served at /app by fixmi-backend.",
   "scripts": {
     "add:android": "cap add android",
     "add:ios": "cap add ios",

@@ -1,9 +1,9 @@
 {
-  "appId": "com.fixme.app",
-  "appName": "FixMe",
+  "appId": "com.fixmi.app",
+  "appName": "FixMi",
   "webDir": "www",
   "server": {
-    "url": "https://YOUR-DEPLOYED-BACKEND.example.com/app",
+    "url": "https://fixmi-backend-production.up.railway.app/app",
     "cleartext": false
   }
 }
