@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
+const { UPLOAD_DIR } = require("./config/paths");
 
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
 const { attachLiveSocket } = require("./realtime/live");
@@ -78,7 +79,7 @@ app.use(
 const globalLimiter = rateLimit({ windowMs: 60 * 1000, max: 300, standardHeaders: true, legacyHeaders: false });
 app.use("/api", globalLimiter);
 
-app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+app.use("/uploads", express.static(UPLOAD_DIR));
 app.use("/app", express.static(path.join(__dirname, "..", "public", "app")));
 app.use("/admin", express.static(path.join(__dirname, "..", "public", "admin")));
 

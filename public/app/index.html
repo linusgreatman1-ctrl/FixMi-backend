@@ -7163,7 +7163,7 @@ async function sendSos(btn) {
     var active = (typeof _booking !== 'undefined' && _booking && _booking.id) ? _booking.id : undefined;
     var d = await apiFetch('/safety/reports', { method: 'POST', body: Object.assign({ type: 'SOS', bookingId: active }, pos) });
     var names = (d.emergencyContacts || []).map(function (c) { return c.name + ' ' + c.phone; }).join(', ');
-    toast('🚨 FixMi has been alerted' + (names ? '. Call: ' + names : '. Call 112 if you are in danger.'));
+    toast('🚨 FixMi has been alerted' + (d.smsSent ? '. ' + d.smsSent + ' contact(s) texted.' : (names ? '. Call: ' + names : '. Call 112 if you are in danger.')));
     openSafetyCenter();
   } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
 }

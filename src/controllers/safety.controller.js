@@ -1,5 +1,6 @@
 const prisma = require("../config/db");
 const { notifyAllAdmins, notify } = require("../services/notifications.service");
+const sms = require("../services/sms.service");
 
 const DOC_TYPES = ["GOVERNMENT_ID", "PROOF_OF_ADDRESS", "TRADE_CERTIFICATE"];
 const ID_TYPES = ["NIN", "DRIVERS_LICENSE", "INTL_PASSPORT", "VOTERS_CARD"];
@@ -153,7 +154,15 @@ async function createReport(req, res, next) {
     notifyAllAdmins(io, isSos ? "🚨 SOS alert" : "🛡️ Safety report", `${req.user.name}: ${isSos ? "needs urgent help" : description}`.slice(0, 200), { safetyReportId: report.id, bookingId: bookingId || null, lat: report.lat, lng: report.lng }).catch(() => {});
     if (isSos) io?.to("admins").emit("safety:sos", { reportId: report.id, reporter: req.user.name, lat: report.lat, lng: report.lng });
     const contacts = isSos ? await prisma.emergencyContact.findMany({ where: { userId: req.user.id }, select: { name: true, phone: true } }) : [];
-    res.status(201).json({ report, emergencyContacts: contacts });
+    // Text each emergency contact when SMS is configured; the app still shows their numbers either way.
+    let smsSent = 0;
+    if (isSos && sms.isConfigured()) {
+      const where = report.lat != null ? ` Location: https://www.google.com/maps/search/?api=1&query=${report.lat},${report.lng}` : "";
+      const text = `FixMi SOS: ${req.user.name} has sent an emergency alert and may need help.${where}${req.user.phone ? ` Call them on ${req.user.phone}.` : ""}`;
+      const results = await Promise.allSettled(contacts.map((c) => sms.sendSms(c.phone, text)));
+      smsSent = results.filter((r) => r.status === "fulfilled").length;
+    }
+    res.status(201).json({ report, emergencyContacts: contacts, smsSent });
   } catch (err) {
     next(err);
   }

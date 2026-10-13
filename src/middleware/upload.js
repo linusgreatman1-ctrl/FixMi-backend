@@ -1,13 +1,14 @@
 const multer = require("multer");
 const path = require("path");
 const crypto = require("crypto");
+const { UPLOAD_DIR } = require("../config/paths");
 
 // Local disk storage for dev/small deployments. Swap the storage engine
 // for an S3/Cloudinary one in production — every controller here only
 // reads req.file.filename / builds a URL from it, so that's the only
 // thing that would need to change.
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, "..", "..", "uploads"),
+  destination: UPLOAD_DIR,
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || "";
     cb(null, `${crypto.randomUUID()}${ext}`);
