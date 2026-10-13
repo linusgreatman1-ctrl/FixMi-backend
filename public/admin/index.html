@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FixMi Disputes</title>
+<title>FixMi Admin</title>
 <style>
 :root{--g:#00C65E;--navy:#0B1A2E;--muted:#7A8EA8;--line:#E4EAF0;--bg:#F2F5F8;--red:#DC2626;--card:#fff;--text:#0B1A2E}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0B1A2E;--card:#13263F;--line:#22385A;--text:#E8EEF5;--muted:#9AB0C8}}
@@ -30,7 +30,7 @@ label{font-size:13px;font-weight:600;display:block;margin:10px 0 5px}
 </style>
 </head>
 <body>
-<header><b>Fix<span>Mi</span></b><small>Disputes</small><button class="l" id="out" hidden onclick="signOut()">Sign out</button></header>
+<header><b>Fix<span>Mi</span></b><small>Admin</small><button class="l" id="out" hidden onclick="signOut()">Sign out</button></header>
 <main>
   <div id="login" class="card" hidden>
     <h3 style="margin-top:0">Admin sign in</h3>
@@ -40,7 +40,10 @@ label{font-size:13px;font-weight:600;display:block;margin:10px 0 5px}
     <button class="g" onclick="signIn()">Sign in</button>
   </div>
   <div id="app" hidden>
-    <div class="row" style="margin-bottom:12px"><button class="n" onclick="load(true)">Open disputes</button><button class="l" onclick="load(false)">All disputes</button></div>
+    <div class="row" style="margin-bottom:12px">
+      <button class="n" onclick="tab('disputes')">Disputes</button><button class="n" onclick="tab('kyc')">IDs</button><button class="n" onclick="tab('safety')">Safety</button><button class="n" onclick="tab('announce')">Announcements</button><button class="n" onclick="tab('audit')">Audit log</button>
+    </div>
+    <div id="sub" class="row" style="margin-bottom:12px"></div>
     <div id="list"></div>
   </div>
 </main>
@@ -48,11 +51,11 @@ label{font-size:13px;font-weight:600;display:block;margin:10px 0 5px}
 var tok = null; try { tok = sessionStorage.getItem('fixmi_admin'); } catch (e) {}
 function naira(k){ return '₦' + Math.round((k||0)/100).toLocaleString('en-NG'); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function api(path, body){
-  return fetch('/api' + path, { method: body ? 'POST' : 'GET', headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: body ? JSON.stringify(body) : undefined })
+function api(path, body, method){
+  return fetch('/api' + path, { method: method || (body ? 'POST' : 'GET'), headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: body ? JSON.stringify(body) : undefined })
     .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Request failed'); return d; }); });
 }
-function show(){ document.getElementById('login').hidden = !!tok; document.getElementById('app').hidden = !tok; document.getElementById('out').hidden = !tok; if (tok) load(true); }
+function show(){ document.getElementById('login').hidden = !!tok; document.getElementById('app').hidden = !tok; document.getElementById('out').hidden = !tok; if (tok) tab('disputes'); }
 function signIn(){
   var e = document.getElementById('lerr'); e.textContent = '';
   api('/auth/login', { email: document.getElementById('em').value.trim().toLowerCase(), password: document.getElementById('pw').value })
@@ -101,6 +104,81 @@ function resolve(id, outcome){
   if (!confirm(outcome === 'RELEASE' ? 'Pay the artisan?' : outcome === 'REFUND' ? 'Refund the customer in full?' : 'Split as entered?')) return;
   api('/admin/disputes/' + id + '/resolve', body).then(function(){ load(openOnly); })
     .catch(function(err){ document.getElementById('err-' + id).textContent = err.message; });
+}
+
+function setList(h){ document.getElementById('list').innerHTML = h; }
+function fail(err){ if (/token|auth/i.test(err.message)) signOut(); setList('<div class="card err">' + esc(err.message) + '</div>'); }
+function tab(name){
+  var sub = document.getElementById('sub'); sub.innerHTML = '';
+  setList('<div class="muted">Loading…</div>');
+  if (name === 'disputes') { sub.innerHTML = '<button class="l" onclick="load(true)">Open disputes</button><button class="l" onclick="load(false)">All disputes</button>'; load(true); }
+  else if (name === 'kyc') loadKyc();
+  else if (name === 'safety') loadSafety();
+  else if (name === 'announce') loadAnnounce();
+  else if (name === 'audit') loadAudit();
+}
+function when(d){ return new Date(d).toLocaleString(); }
+
+function loadKyc(){
+  api('/admin/kyc/documents?status=PENDING').then(function(d){
+    if (!d.documents.length) return setList('<div class="card muted">No IDs waiting for review.</div>');
+    setList(d.documents.map(function(x){
+      return '<div class="card"><b>' + esc(x.user.name) + '</b> <span class="muted">' + esc(x.user.role) + ' · ' + esc(x.user.phone || x.user.email || '') + '</span>' +
+        '<div class="muted">' + esc(x.docType.replace(/_/g,' ').toLowerCase()) + (x.idType ? ' · ' + esc(x.idType.replace(/_/g,' ')) + ' ' + esc(x.idNumber || '') : '') + ' · ' + when(x.createdAt) + '</div>' +
+        '<a href="' + esc(x.fileUrl) + '" target="_blank" rel="noopener"><img src="' + esc(x.fileUrl) + '" alt="ID" style="max-width:260px;border-radius:8px;margin:8px 0"></a>' +
+        '<label>Reason (needed to decline)</label><input id="kr-' + x.id + '"><div class="err" id="ke-' + x.id + '"></div>' +
+        '<div class="row"><button class="g" onclick="reviewKyc(\'' + x.id + '\',\'APPROVED\')">Approve</button><button class="r" onclick="reviewKyc(\'' + x.id + '\',\'REJECTED\')">Decline</button></div></div>';
+    }).join(''));
+  }).catch(fail);
+}
+function reviewKyc(id, decision){
+  api('/admin/kyc/documents/' + id + '/review', { decision: decision, reason: document.getElementById('kr-' + id).value }).then(loadKyc)
+    .catch(function(err){ document.getElementById('ke-' + id).textContent = err.message; });
+}
+
+function loadSafety(){
+  api('/admin/safety/reports').then(function(d){
+    if (!d.reports.length) return setList('<div class="card muted">No safety reports.</div>');
+    var order = { OPEN: 0, REVIEWING: 1, RESOLVED: 2 };
+    d.reports.sort(function(a,b){ return (order[a.status]-order[b.status]) || ((a.type==='SOS'?0:1)-(b.type==='SOS'?0:1)) || (new Date(b.createdAt)-new Date(a.createdAt)); });
+    setList(d.reports.map(function(x){
+      var map = x.lat != null ? ' · <a href="https://www.google.com/maps/search/?api=1&query=' + x.lat + ',' + x.lng + '" target="_blank" rel="noopener">map</a>' : '';
+      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + (x.type === 'SOS' ? '🚨 SOS' : esc(x.type.replace(/_/g,' '))) + ' — ' + esc(x.reporter.name) + '</b><span class="tag' + (x.status === 'RESOLVED' ? ' ok' : '') + '">' + x.status + '</span></div>' +
+        '<div class="muted">' + esc(x.reporter.phone || '') + ' · ' + when(x.createdAt) + map + (x.bookingId ? ' · job ' + esc(x.bookingId.slice(0,8)) : '') + '</div>' +
+        (x.description ? '<div class="side">' + esc(x.description) + '</div>' : '') +
+        '<label>Note</label><textarea id="sn-' + x.id + '">' + esc(x.adminNote || '') + '</textarea><div class="err" id="se-' + x.id + '"></div>' +
+        '<div class="row"><button class="n" onclick="setReport(\'' + x.id + '\',\'REVIEWING\')">Reviewing</button><button class="g" onclick="setReport(\'' + x.id + '\',\'RESOLVED\')">Resolve</button></div></div>';
+    }).join(''));
+  }).catch(fail);
+}
+function setReport(id, status){
+  api('/admin/safety/reports/' + id, { status: status, adminNote: document.getElementById('sn-' + id).value }, 'PATCH').then(loadSafety)
+    .catch(function(err){ document.getElementById('se-' + id).textContent = err.message; });
+}
+
+function loadAnnounce(){
+  api('/admin/announcements').then(function(d){
+    setList('<div class="card"><h3 style="margin-top:0">New announcement</h3><div class="muted">Super admin only. Sent as an in-app notification.</div>' +
+      '<label>Title</label><input id="an-t" maxlength="120"><label>Message</label><textarea id="an-b" maxlength="1000"></textarea>' +
+      '<label>Send to</label><select id="an-r"><option value="">Everyone</option><option value="CUSTOMER">Customers</option><option value="ARTISAN">Artisans</option></select>' +
+      '<div class="err" id="an-e"></div><button class="g" onclick="sendAnnounce()">Send</button></div>' +
+      d.announcements.map(function(a){ return '<div class="card"><b>' + esc(a.title) + '</b><div>' + esc(a.body) + '</div><div class="muted">' + when(a.createdAt) + ' · ' + a.recipientCount + ' people · ' + esc(a.sentByName) + '</div></div>'; }).join(''));
+  }).catch(fail);
+}
+function sendAnnounce(){
+  var r = document.getElementById('an-r').value;
+  if (!confirm('Send this to ' + (r ? r.toLowerCase() + 's' : 'everyone') + '?')) return;
+  api('/admin/announcements', { title: document.getElementById('an-t').value, body: document.getElementById('an-b').value, roles: r ? [r] : [] }).then(loadAnnounce)
+    .catch(function(err){ document.getElementById('an-e').textContent = err.message; });
+}
+
+function loadAudit(){
+  api('/admin/audit-log').then(function(d){
+    if (!d.logs.length) return setList('<div class="card muted">Nothing logged yet.</div>');
+    setList('<div class="card">' + d.logs.map(function(l){
+      return '<div class="side"><b>' + esc(l.action) + '</b> <span class="muted">' + esc(l.actorName) + ' · ' + when(l.createdAt) + '</span>' + (l.details ? '<div class="muted">' + esc(l.details) + '</div>' : '') + '</div>';
+    }).join('') + '</div>');
+  }).catch(fail);
 }
 show();
 </script>
