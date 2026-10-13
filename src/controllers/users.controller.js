@@ -82,14 +82,23 @@ async function uploadAvatar(req, res, next) {
 // account.
 async function linkBankAccount(req, res, next) {
   try {
-    const { bankName, bankCode, bankAccountNumber } = req.body;
-    if (!bankCode || !bankAccountNumber) {
-      return res.status(400).json({ error: "Bank code and account number are required." });
+    const { bankName, bankCode, bankAccountNumber, bankAccountName } = req.body;
+    if (!bankName || !/^\d{10}$/.test(String(bankAccountNumber || ""))) {
+      return res.status(400).json({ error: "Choose your bank and enter your 10-digit account number." });
     }
-    const resolved = await paystack.resolveBankAccount(bankAccountNumber, bankCode);
+    let accountName;
+    if (process.env.PAYSTACK_SECRET_KEY) {
+      if (!bankCode) return res.status(400).json({ error: "Choose your bank from the list." });
+      accountName = (await paystack.resolveBankAccount(bankAccountNumber, bankCode)).account_name;
+    } else {
+      // Testing period without Paystack: the account name can't be looked
+      // up, so the artisan types it as it appears on their bank account.
+      accountName = String(bankAccountName || "").trim();
+      if (accountName.length < 3) return res.status(400).json({ error: "Enter the account name as it appears at your bank." });
+    }
     const user = await prisma.user.update({
       where: { id: req.user.id },
-      data: { bankName, bankAccountNumber, bankAccountName: resolved.account_name },
+      data: { bankName, bankAccountNumber: String(bankAccountNumber), bankAccountName: accountName },
     });
     res.json({ user: publicUser(user) });
   } catch (err) {
@@ -97,10 +106,14 @@ async function linkBankAccount(req, res, next) {
   }
 }
 
+// Used when Paystack isn't configured yet (testing period).
+const FALLBACK_BANKS = ["Access Bank", "Citibank Nigeria", "Ecobank Nigeria", "Fidelity Bank", "First Bank of Nigeria", "First City Monument Bank", "Globus Bank", "Guaranty Trust Bank", "Jaiz Bank", "Keystone Bank", "Kuda Bank", "Moniepoint MFB", "OPay", "PalmPay", "Polaris Bank", "Providus Bank", "Stanbic IBTC Bank", "Standard Chartered Bank", "Sterling Bank", "SunTrust Bank", "Titan Trust Bank", "Union Bank of Nigeria", "United Bank For Africa", "Unity Bank", "VFD Microfinance Bank", "Wema Bank", "Zenith Bank"].map((name) => ({ name, code: null }));
+
 async function listBanks(req, res, next) {
   try {
-    const banks = await paystack.listBanks();
-    res.json({ banks });
+    if (!process.env.PAYSTACK_SECRET_KEY) return res.json({ banks: FALLBACK_BANKS, needsAccountName: true });
+    const banks = (await paystack.listBanks()).map((b) => ({ name: b.name, code: b.code }));
+    res.json({ banks, needsAccountName: false });
   } catch (err) {
     next(err);
   }

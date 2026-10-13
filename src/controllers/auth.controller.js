@@ -273,4 +273,19 @@ async function me(req, res, next) {
   }
 }
 
-module.exports = { register, login, guestLogin, refresh, logout, me };
+async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!newPassword || String(newPassword).length < 6) return res.status(400).json({ error: "The new password must be at least 6 characters." });
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (!user.passwordHash || !(await comparePassword(String(currentPassword || ""), user.passwordHash))) {
+      return res.status(400).json({ error: "Your current password is not correct." });
+    }
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(String(newPassword)) } });
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { register, login, guestLogin, refresh, logout, me, changePassword };

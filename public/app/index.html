@@ -418,6 +418,8 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .corp-chips{display:flex;flex-wrap:wrap;gap:6px;max-height:260px;overflow:auto;margin-bottom:6px}
 .corp-job{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:13px;margin-bottom:8px;cursor:pointer}
 .corp-job b{display:block;font-size:14px;color:var(--navy)}.corp-job small{font-size:12px;color:var(--muted)}.corp-job span{font-weight:800;white-space:nowrap}
+.loc-btn{background:none;border:none;padding:0;color:inherit;font:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.wallet-line{display:block;margin-top:4px}
 .fee-note{background:#EFF6FF;border-radius:13px;padding:12px 14px;font-size:13px;color:#1E40AF;line-height:1.5;margin:0 0 14px}
 .bcall-ov{position:fixed;inset:0;z-index:9970;background:rgba(8,16,28,.97);display:flex;align-items:center;justify-content:center;padding:16px}
 .bcall-ov[hidden]{display:none}
@@ -687,7 +689,7 @@ body{background:#fff}
     <div class="fg"><label class="label">Phone Number</label><input class="input" type="tel" id="reg-c-phone" placeholder="+234 800 000 0000"></div>
     <div class="fg"><label class="label">Email (optional)</label><input class="input" type="email" id="reg-c-email" placeholder="you@email.com"></div>
     <div class="fg"><label class="label">Password</label><input class="input" type="password" id="reg-c-password" placeholder="At least 6 characters"></div>
-    <div class="fg"><label class="label">Your Location</label><input class="input" id="reg-c-location" value="📍 Ikeja, Lagos"></div>
+    <div class="fg"><label class="label">Your Location</label><input class="input" id="reg-c-location" placeholder="e.g. 12 Allen Avenue, Ikeja, Lagos" autocomplete="street-address"></div>
     <div class="fg"><label class="label">Account Type</label><select class="input"><option>Homeowner</option><option>Renter</option><option>Business Owner</option><option>School / Institution</option></select></div>
     <button class="btn btn-g" onclick="realRegisterCustomer()">Create Account →</button>
     <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:13px;line-height:1.6">By continuing you agree to our <span style="color:var(--g);cursor:pointer">Terms</span> and <span style="color:var(--g);cursor:pointer">Privacy Policy</span></p>
@@ -705,7 +707,7 @@ body{background:#fff}
     <div class="fg"><label class="label">Email (optional)</label><input class="input" type="email" id="reg-a-email" placeholder="you@email.com"></div>
     <div class="fg"><label class="label">Password</label><input class="input" type="password" id="reg-a-password" placeholder="At least 6 characters"></div>
     <div class="fg"><label class="label">Home Address</label><input class="input" id="reg-a-address" placeholder="Full address including street & area"></div>
-    <div class="fg"><label class="label">State of Operation</label><select class="input" id="reg-a-state"><option>Lagos</option><option>Abuja (FCT)</option><option>Rivers</option><option>Kano</option><option>Oyo</option></select></div>
+    <div class="fg"><label class="label">State of Operation</label><select class="input" id="reg-a-state"><option value="">Select state…</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select></div>
     <button class="btn btn-g" onclick="go('reg-a2')">Next — Skills & Experience →</button>
   </div>
 </div>
@@ -716,7 +718,6 @@ body{background:#fff}
     <div class="steps"><div class="step done"></div><div class="step cur"></div><div class="step"></div><div class="step"></div></div>
     <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Step 2 of 4 — Your Skills</p>
     <div class="fg"><label class="label">Primary Skill</label><select class="input" id="reg-a-category"><option>Electrician</option><option>Plumber</option><option>Painter</option><option>Carpenter</option><option>Cleaner</option><option>Bricklayer</option><option>POP Installer</option><option>Tiler</option><option>Welder</option><option>Waterproofer</option><option>Blacksmith</option><option>Drywall Installer</option><option>Scaffolder</option><option>Interlock Layer</option><option>Construction Worker</option><option>General Labourer</option><option>Aluminum Roofer</option><option>Window Installer</option><option>Security Door Installer</option><option>Cabinet Maker</option><option>AC Technician</option><option>CCTV Installer</option><option>Solar Panel Installer</option><option>Generator Mechanic</option><option>Car Electrician</option><option>Smart Home Installer</option><option>Automation Technician</option><option>Elevator Mechanic</option><option>Phone Repairer</option><option>TV Repairer</option><option>Appliance Repairer</option><option>Fridge Technician</option><option>Gas Technician</option><option>Laptop Repairer</option><option>Mechanic</option><option>Driver</option><option>Truck Loader/Offloader</option><option>Borehole Sinker</option><option>Furniture/Upholsterer</option><option>Home/Office Decorator</option><option>Event Decorator</option><option>Landscaper</option><option>Sign Maker</option><option>Artist/Drawing</option><option>Pool/Spa Technician</option><option>Barber</option><option>Hairdresser</option><option>Fashion Designer</option><option>Shoemaker</option><option>Goldsmith/Jeweler</option><option>Dyer</option><option>Pet Groomer</option><option>Laundry Service</option><option>Security Personnel</option><option>DJ</option><option>Trumpeter/Musician</option><option>Event Usher</option></select></div>
-    <div class="fg"><label class="label">Secondary Skill (optional)</label><select class="input"><option>None</option><option>Electrician</option><option>Plumber</option><option>Carpenter</option></select></div>
     <div class="fg"><label class="label">Years of Experience</label><select class="input" id="reg-a-years"><option value="0">Less than 1 year</option><option value="1">1 – 2 years</option><option value="4">3 – 5 years</option><option value="7">5 – 10 years</option><option value="12">10+ years</option></select></div>
     <div class="fg"><label class="label">About You</label><textarea class="input" id="reg-a-bio" placeholder="Tell customers about your experience..."></textarea></div>
     <button class="btn btn-g" onclick="go('reg-a3')">Next — Upload ID & Photo →</button>
@@ -768,16 +769,16 @@ body{background:#fff}
   </div>
 
   <div class="hero-band">
-    <div class="greeting">Good morning,</div>
-    <div class="hero-name" id="home-user-name">Chukwuemeka 👋</div>
+    <div class="greeting" id="home-greeting">Hello,</div>
+    <div class="hero-name" id="home-user-name"></div>
     <label class="search-bar" for="home-search"><span>🔍</span><input id="home-search" type="search" autocomplete="off" placeholder="Search for a service or artisan..." oninput="homeSearch(this.value)"></label>
-    <div class="loc">📍 <b>Ikeja, Lagos</b> &nbsp;·&nbsp; <span id="home-online-count">14</span> artisans online now</div>
+    <div class="loc"><button type="button" class="loc-btn" onclick="go('edit-profile')" aria-label="Change your location">📍 <b id="home-location">Add your location</b></button> &nbsp;·&nbsp; <span id="home-online-count">–</span> <span id="home-online-lbl">artisans online now</span></div>
   </div>
 
   <div class="strip">
-    <div class="strip-item"><div class="strip-num">389</div><div class="strip-lbl">Artisans</div></div>
-    <div class="strip-item"><div class="strip-num">4.8★</div><div class="strip-lbl">Avg Rating</div></div>
-    <div class="strip-item"><div class="strip-num">8 min</div><div class="strip-lbl">Avg Arrival</div></div>
+    <div class="strip-item"><div class="strip-num" id="home-stat-artisans">–</div><div class="strip-lbl">Verified Artisans</div></div>
+    <div class="strip-item"><div class="strip-num" id="home-stat-rating">–</div><div class="strip-lbl">Avg Rating</div></div>
+    <div class="strip-item"><div class="strip-num" id="home-stat-arrival">–</div><div class="strip-lbl">Avg Arrival</div></div>
   </div>
 
   <div class="active-banner" id="home-active-banner" hidden onclick="resumeBooking()">
@@ -793,7 +794,7 @@ body{background:#fff}
   </div>
 
   <div class="sec">
-    <div class="sec-hdr"><div class="sec-title">Our Services</div><div class="see-all" onclick="go('all-services')">See all 60+</div></div>
+    <div class="sec-hdr"><div class="sec-title">Our Services</div><div class="see-all" onclick="go('all-services')">See all <span id="svc-count"></span></div></div>
     <div class="svc-grid home-svc">
       <div class="svc-item" onclick="bookSvc('Electrician','⚡','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">⚡</div><div class="svc-lbl">Electrician</div></div>
       <div class="svc-item" onclick="bookSvc('Plumber','🔩','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">🔩</div><div class="svc-lbl">Plumber</div></div>
@@ -890,7 +891,7 @@ body{background:#fff}
 
 <!-- ████ ALL SERVICES ████ -->
 <div class="s" id="all-services">
-  <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">All Services (60+)</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">All Services</div><div class="tb-space"></div></div>
   <div style="padding:14px 18px">
 
     <p style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border)">🏠 Home &amp; Building</p>
@@ -1024,9 +1025,10 @@ body{background:#fff}
     </div>
   </div>
   <div style="padding:18px">
-    <div class="info blue"><span id="ap-online">💡 Emeka is currently online and can take a job within 30 minutes.</span></div>
+    <div class="info blue"><span id="ap-online"></span></div>
     <h3 style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:9px">About</h3>
     <p id="ap-about" style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:16px">Certified electrician with 5+ years experience. I handle residential wiring, fan/AC installation, fault diagnosis, generator maintenance, and more. Neat, safe, done right first time.</p>
+    <div id="ap-reviews"></div>
     <h3 data-static-reviews style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px">Recent Reviews</h3>
     <div data-static-reviews class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">Blessing O.</b><span style="color:var(--yellow);font-weight:700;font-size:13px">⭐⭐⭐⭐⭐</span></div><p style="font-size:13px;color:var(--muted);line-height:1.5">Very professional and neat. Fixed our wiring issue quickly. Will use again!</p></div>
     <div data-static-reviews class="card" style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">Tunde M.</b><span style="color:var(--yellow);font-weight:700;font-size:13px">⭐⭐⭐⭐⭐</span></div><p style="font-size:13px;color:var(--muted);line-height:1.5">Arrived on time, very respectful. Excellent work!</p></div>
@@ -1092,14 +1094,14 @@ body{background:#fff}
       </div>
     </div>
 
-    <div class="fg"><label class="label">Your Location</label><input class="input" id="req-location" value="📍 14 Awolowo Rd, Ikeja, Lagos"></div>
-    <div class="fg"><label class="label">Your Budget (₦)</label><input class="input" id="req-budget" type="number" min="500" step="100" value="5000" placeholder="e.g. 5000"></div>
-    <div class="fg"><label class="label">When Do You Need This?</label><select class="input"><option>As soon as possible</option><option>Today — Morning</option><option>Today — Afternoon</option><option>Tomorrow</option><option>This weekend</option></select></div>
+    <div class="fg"><label class="label">Your Location</label><input class="input" id="req-location" placeholder="Street, area and city where the job is" autocomplete="street-address"></div>
+    <div class="fg"><label class="label">Your Budget (₦)</label><input class="input" id="req-budget" type="number" min="500" step="100" inputmode="numeric" placeholder="What you’re willing to pay, min ₦500"></div>
+    <div class="fg"><label class="label" for="req-when">When Do You Need This?</label><select class="input" id="req-when"><option>As soon as possible</option><option>Today — Morning</option><option>Today — Afternoon</option><option>Tomorrow</option><option>This weekend</option></select></div>
     <div id="req-artisan-banner" style="display:none;background:var(--g3);border-radius:12px;padding:12px 15px;margin-bottom:14px;display:none;align-items:center;gap:10px">
       <div style="font-size:22px" id="req-artisan-ico">⚡</div>
       <div><div style="font-size:13px;font-weight:700;color:var(--g2)" id="req-artisan-name">Artisan Name</div><div style="font-size:12px;color:var(--g2)">Your selected artisan — booking directly</div></div>
     </div>
-    <div class="info green" id="req-escrow-note"><span>🔒 Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. If no deal is made, it comes straight back.</span></div>
+    <div class="info green" id="req-escrow-note"><span>🔒</span><span>Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. If no deal is made, it comes straight back.</span></div>
     <div class="info yellow"><span>💡</span><span>Artisans can accept your budget, send their own price, or put the price <b>On Hold</b> to see the job first. You accept, counter or decline each offer.</span></div>
     <button class="btn btn-g" id="req-find-btn" onclick="startFindingOrDirect()">🔒 Pay into Escrow &amp; Find Artisans</button>
     <div style="height:16px"></div>
@@ -1486,7 +1488,7 @@ body{background:#fff}
 <!-- ████ MESSAGES ████ -->
 <div class="s" id="messages">
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Messages</div><div class="tb-space"></div></div>
-  <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">🔒</span><span>For safety, calls are disabled. All chats happen here on FixMi only.</span></div>
+  <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">💬</span><span>Chat and call the artisan on your job from here — open a conversation and tap 📞 to call. Keep every payment inside FixMi escrow.</span></div>
   <div class="chat-list" id="chat-thread-list">
     <div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Loading conversations…</div>
   </div>
@@ -1501,8 +1503,7 @@ body{background:#fff}
 
 <!-- ████ CHAT ████ -->
 <div class="s" id="chat">
-  <div class="topbar"><button class="back" onclick="goBack()">←</button><div class="chat-ava" style="width:36px;height:36px;background:#FEF9C3;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:6px" id="chat-header-ico">⚡</div><div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)" id="chat-header-name">Select a conversation</div><div style="font-size:12px;color:var(--g);font-weight:500" id="chat-header-role">&nbsp;</div></div></div>
-  <div style="background:#FFF3ED;border-radius:9px;padding:8px 14px;margin:8px 14px;font-size:12px;color:var(--orange);text-align:center;font-weight:500">🔒 Calls disabled. Chat only for everyone's safety.</div>
+  <div class="topbar"><button class="back" onclick="goBack()">←</button><div class="chat-ava" style="width:36px;height:36px;background:#FEF9C3;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:6px" id="chat-header-ico">⚡</div><div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)" id="chat-header-name">Select a conversation</div><div style="font-size:12px;color:var(--g);font-weight:500" id="chat-header-role">&nbsp;</div></div><button class="ct-btn" id="chat-call-btn" hidden onclick="callFromChat()" aria-label="Call">📞</button></div>
   <div class="msg-area" id="msg-area">
     <div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">No messages yet</div>
   </div>
@@ -1567,9 +1568,8 @@ body{background:#fff}
   </div>
   <div class="menu">
     <div class="mi" onclick="go('edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="go('artisan-settings')"><div class="mi-ico">⚙️</div><div class="mi-txt">Settings</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('saved-addresses')"><div class="mi-ico">📍</div><div class="mi-txt">Saved Addresses</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('payment-methods')"><div class="mi-ico">💳</div><div class="mi-txt">Payment Methods</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="openCorporate()"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('history')"><div class="mi-ico">📋</div><div class="mi-txt">Job History</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge" data-demo>3</div></div>
@@ -1633,7 +1633,7 @@ body{background:#fff}
 <div class="s" id="report-issue">
   <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Report an Issue</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span id="report-issue-note">Reports are reviewed within 24 hours. Provide as much detail as possible to help us resolve your issue quickly.</span></div>
+    <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span id="report-issue-note">FixMi reviews every report and replies in your notifications. Add as much detail as you can.</span></div>
     <div class="fg"><label class="label">Issue Type</label>
       <select class="input" id="report-type">
         <option>Select issue type...</option>
@@ -1779,26 +1779,18 @@ body{background:#fff}
 
 <!-- ████ ARTISAN WITHDRAW ████ -->
 <div class="s" id="artisan-withdraw">
-  <div class="topbar"><button class="back" onclick="go('artisan-dash')">←</button><div class="tb-title">Withdraw Earnings</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Withdraw Earnings</div><div class="tb-space"></div></div>
   <div style="padding:18px">
     <div style="background:var(--navy);border-radius:14px;padding:18px;margin-bottom:16px;text-align:center">
-      <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:4px">Available Balance</div>
-      <div id="wd-balance" style="font-family:'AppFont',sans-serif;font-size:36px;font-weight:800;color:var(--g);margin-bottom:4px">₦127,450</div>
-      <div id="wd-bank" style="font-size:12px;color:rgba(255,255,255,.4)">Access Bank · 0987654321</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:4px">Available Balance</div>
+      <div id="wd-balance" style="font-family:'AppFont',sans-serif;font-size:34px;font-weight:800;color:var(--g);margin-bottom:4px">–</div>
+      <div id="wd-bank" style="font-size:12px;color:rgba(255,255,255,.55)"></div>
     </div>
-    <div data-demo style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px">Choose Withdrawal Period</div>
-    <div data-demo style="display:flex;gap:7px;margin-bottom:16px">
-      <button id="wdp-daily" onclick="pickWdPeriod('daily',this)" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:10px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Daily<br><span style="font-size:11px;font-weight:400">₦4,250</span></button>
-      <button id="wdp-weekly" onclick="pickWdPeriod('weekly',this)" style="flex:1;background:var(--gray);color:var(--muted);border:none;border-radius:9px;padding:10px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Weekly<br><span style="font-size:11px;font-weight:400">₦18,200</span></button>
-      <button id="wdp-monthly" onclick="pickWdPeriod('monthly',this)" style="flex:1;background:var(--gray);color:var(--muted);border:none;border-radius:9px;padding:10px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Monthly<br><span style="font-size:11px;font-weight:400">₦68,900</span></button>
-    </div>
-    <div style="background:var(--g3);border-radius:13px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
-      <div style="font-size:14px;font-weight:700;color:var(--g2)">Amount to Withdraw</div>
-      <div id="wd-display" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:20px;color:var(--navy)">₦4,250</div>
-    </div>
-    <div class="info blue" style="margin-bottom:16px"><span>ℹ️</span><span>Funds arrive in your bank account within 30 minutes (GTBank, Access, Zenith, UBA) or up to 2 hours for other banks.</span></div>
-    <button onclick="confirmWithdraw()" class="btn btn-g">Confirm Withdrawal →</button>
-    <div style="height:20px"></div>
+    <div class="fg"><label class="label" for="wd-input">Amount to Withdraw (₦)</label><input class="input" id="wd-input" type="number" min="100" step="100" inputmode="numeric" placeholder="Amount"></div>
+    <button class="btn btn-g" onclick="confirmWithdraw(this)">Confirm Withdrawal →</button>
+    <div class="job-hint">FixMi sends each withdrawal to your bank account. Its status shows below.</div>
+    <div class="sec-title" style="margin:20px 0 10px">Withdrawals</div>
+    <div id="wd-list"></div>
   </div>
 </div>
 
@@ -1867,7 +1859,7 @@ body{background:#fff}
 <div class="s" id="report-customer">
   <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Report Customer</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span>Reports are reviewed within 24 hours. Only report genuine issues. False reports may affect your account.</span></div>
+    <div class="info yellow" style="margin-bottom:16px"><span>⚠️</span><span>FixMi reviews every report and replies in your notifications. Only report genuine issues — false reports may affect your account.</span></div>
     <div class="fg"><label class="label">Issue Type</label>
       <select class="input" id="cust-report-type">
         <option>Select issue type...</option>
@@ -1902,7 +1894,7 @@ body{background:#fff}
 <div class="s" id="help">
   <div class="topbar"><button class="back" onclick="go('profile')">←</button><div class="tb-title">Help & Support</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div style="background:var(--navy);border-radius:17px;padding:20px;text-align:center;margin-bottom:18px"><div style="font-size:34px;margin-bottom:9px">🤝</div><div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">How can we help?</div><div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:13px">Available 8am–10pm every day</div><button class="btn btn-g" onclick="go('user-chat-support')">Chat with Support</button></div>
+    <div style="background:var(--navy);border-radius:17px;padding:20px;text-align:center;margin-bottom:18px"><div style="font-size:34px;margin-bottom:9px">🤝</div><div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">How can we help?</div><div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:13px">Send us a message and we’ll reply in your notifications</div><button class="btn btn-g" onclick="openSupport()">Chat with Support</button></div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs</div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I book an artisan? <span class="faq-arr">›</span></div><div class="faq-a">Select the service you need, describe your issue, set your location, and tap "Find Nearby Artisans". Verified artisans near you will be notified and can accept your request.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How does payment work? <span class="faq-arr">›</span></div><div class="faq-a">When you request a job, your budget goes into FixMi escrow from your wallet. Once you and an artisan agree a price, the escrow is topped up or the difference refunded. The artisan is paid from escrow only after you confirm the job is done — never pay cash.</div></div>
@@ -1957,15 +1949,15 @@ body{background:#fff}
 
   <!-- WITHDRAWAL -->
   <div style="margin:4px 16px 12px;background:#fff;border:1.5px solid var(--border);border-radius:17px;padding:17px;box-shadow:0 2px 14px rgba(11,26,46,.06)">
-    <div style="font-family:'AppFont',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:11px">💸 Withdraw Earnings</div>
+    <div style="font-family:'AppFont',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:11px">💸 Your Earnings</div>
     <div style="display:flex;gap:7px;margin-bottom:11px">
       <button id="wd-btn-daily" onclick="setWdPeriod('daily')" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Daily</button>
       <button id="wd-btn-weekly" onclick="setWdPeriod('weekly')" style="flex:1;background:var(--gray);color:var(--muted);border:none;border-radius:9px;padding:9px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Weekly</button>
       <button id="wd-btn-monthly" onclick="setWdPeriod('monthly')" style="flex:1;background:var(--gray);color:var(--muted);border:none;border-radius:9px;padding:9px 4px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Monthly</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
-      <span style="font-size:13px;color:var(--muted)">Available to withdraw:</span>
-      <span id="wd-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--navy)">₦4,250</span>
+      <span style="font-size:13px;color:var(--muted)" id="wd-amount-lbl">Earned today:</span>
+      <span id="wd-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--navy)">–</span>
     </div>
     <button onclick="artisanWithdrawNow()" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:13px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer">Withdraw Now →</button>
   </div>
@@ -1987,7 +1979,7 @@ body{background:#fff}
     <div style="background:var(--g3);border-radius:15px;padding:15px;display:flex;justify-content:space-between;align-items:center">
       <div>
         <div style="font-family:'AppFont',sans-serif;font-size:14px;font-weight:700;color:var(--g2)">🌟 Promote My Page</div>
-        <div style="font-size:12px;color:var(--g2);margin-top:2px">Get featured at the top of search results</div>
+        <div style="font-size:12px;color:var(--g2);margin-top:2px">Get featured on the customer home page</div>
       </div>
       <button onclick="go('artisan-promote')" style="background:var(--g);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'AppFont',sans-serif">Promote</button>
     </div>
@@ -2318,7 +2310,7 @@ body{background:#fff}
   <div style="background:var(--navy);padding:24px 18px 28px;text-align:center">
     <div style="font-size:40px;margin-bottom:10px">🚀</div>
     <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:20px;font-weight:800;margin-bottom:5px">Get More Jobs Faster</div>
-    <div style="color:rgba(255,255,255,.4);font-size:13px;line-height:1.6">Featured artisans appear at the top of customer searches and receive 3× more job requests.</div>
+    <div style="color:rgba(255,255,255,.4);font-size:13px;line-height:1.6">Featured artisans appear in the Featured Artisans section on every customer’s home page, where customers can open your profile and book you directly. Paid from your FixMi wallet.</div>
   </div>
   <div style="padding:18px">
     <div style="background:#fff;border:2px solid var(--border);border-radius:17px;padding:18px;margin-bottom:13px">
@@ -2327,8 +2319,8 @@ body{background:#fff}
         <div style="font-family:'AppFont',sans-serif;font-weight:800;font-size:18px;color:var(--g)">₦1,500</div>
       </div>
       <div style="background:var(--gray);border-radius:8px;padding:5px 10px;display:inline-block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:11px">1 Week</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.8">✓ Profile boosted on search results<br>✓ Priority job notifications<br>✓ "Boosted" badge on profile</div>
-      <button onclick="selectPromo('Basic Boost','1 Week','₦1,500','Profile boosted on search results')" style="width:100%;background:var(--navy);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select Basic →</button>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">✓ Featured on the customer home page for 7 days<br>✓ Customers can book you directly from your card</div>
+      <button onclick="selectPromo('Basic Boost','1 Week','₦1,500','Featured on the home page for 7 days')" style="width:100%;background:var(--navy);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select Basic →</button>
     </div>
     <div style="background:#fff;border:2px solid var(--g);border-radius:17px;padding:18px;margin-bottom:13px;position:relative">
       <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700">🔥 MOST POPULAR</div>
@@ -2337,8 +2329,8 @@ body{background:#fff}
         <div style="font-family:'AppFont',sans-serif;font-weight:800;font-size:18px;color:var(--g)">₦4,500</div>
       </div>
       <div style="background:var(--g3);border-radius:8px;padding:5px 10px;display:inline-block;font-size:12px;font-weight:600;color:var(--g2);margin-bottom:11px">1 Month</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.8">✓ All Basic features<br>✓ Top 3 in category search<br>✓ Expanded radius up to 10km<br>✓ Profile views analytics</div>
-      <button onclick="selectPromo('Standard Boost','1 Month','₦4,500','Top 3 in category search')" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select Standard →</button>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8">✓ Featured on the customer home page for 30 days<br>✓ Customers can book you directly from your card</div>
+      <button onclick="selectPromo('Standard Boost','1 Month','₦4,500','Featured on the home page for 30 days')" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select Standard →</button>
     </div>
     <div style="background:var(--navy);border-radius:17px;padding:18px;margin-bottom:20px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
@@ -2346,8 +2338,8 @@ body{background:#fff}
         <div style="font-family:'AppFont',sans-serif;font-weight:800;font-size:18px;color:var(--g)">₦40,000</div>
       </div>
       <div style="background:rgba(0,198,94,.2);border-radius:8px;padding:5px 10px;display:inline-block;font-size:12px;font-weight:600;color:var(--g);margin-bottom:11px">1 Year — Save 26%</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.8">✓ All Standard features<br>✓ #1 featured in category<br>✓ Dedicated account manager<br>✓ Citywide unlimited job alerts<br>✓ Gold VIP badge on profile</div>
-      <button onclick="selectPromo('VIP Annual','1 Year','₦40,000','#1 Featured & Gold VIP badge')" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select VIP Annual →</button>
+      <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.8">✓ Featured on the customer home page for a full year<br>✓ Customers can book you directly from your card</div>
+      <button onclick="selectPromo('VIP Annual','1 Year','₦40,000','Featured on the home page for 1 year')" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select VIP Annual →</button>
     </div>
   </div>
 </div>
@@ -2385,11 +2377,9 @@ body{background:#fff}
     </div>
   </div>
   <div class="menu">
-    <div class="mi" onclick="go('artisan-edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile &amp; Skills</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openArtisanEdit()"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile &amp; Skills</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('artisan-bank-account')"><div class="mi-ico">🏦</div><div class="mi-txt">Bank Account (Payouts)</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('artisan-availability')"><div class="mi-ico">🕐</div><div class="mi-txt">Availability Schedule</div><div class="mi-arr">›</div></div>
-    <div class="mi" onclick="go('artisan-portfolio')"><div class="mi-ico">📸</div><div class="mi-txt">My Portfolio</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openBankAccount()"><div class="mi-ico">🏦</div><div class="mi-txt">Bank Account (Payouts)</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-history')"><div class="mi-ico">📋</div><div class="mi-txt">Job History</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge" data-demo>2</div></div>
     <div class="menu-div"></div>
@@ -2468,14 +2458,14 @@ body{background:#fff}
     <div style="background:var(--navy);border-radius:17px;padding:20px;text-align:center;margin-bottom:18px">
       <div style="font-size:34px;margin-bottom:9px">🔧</div>
       <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">Artisan Support</div>
-      <div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:13px">We're here to help you earn more. Available 8am–10pm daily.</div>
-      <button class="btn btn-g" onclick="go('artisan-chat-support')">Chat with Support</button>
+      <div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:13px">Send us a message and we’ll reply in your notifications.</div>
+      <button class="btn btn-g" onclick="openSupport()">Chat with Support</button>
     </div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs for Artisans</div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I receive payments? <span class="faq-arr">›</span></div><div class="faq-a">After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 5 minutes after you mark the job done. Withdraw from your wallet to your bank account.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What is FixMi's commission? <span class="faq-arr">›</span></div><div class="faq-a">FixMi keeps 10% of every job as its platform fee and you receive 90%. Every job is paid through escrow — there are no cash jobs. Set your price so the 90% you take home covers your materials, transport and profit. Example: quote ₦10,000 and you receive ₦9,000.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I get more job requests? <span class="faq-arr">›</span></div><div class="faq-a">Stay online, maintain a high rating, respond quickly, and consider boosting your profile under Promote My Page. Artisans with 4.5+ ratings receive 3x more requests.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if a customer is difficult? <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in your Job History. Provide details and our team will review within 24 hours. Never engage in arguments — complete the job or contact support.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I get more job requests? <span class="faq-arr">›</span></div><div class="faq-a">Stay online, maintain a high rating, respond quickly, and consider boosting your profile under Promote My Page. Customers see your rating on every offer, so good reviews help you win more jobs.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if a customer is difficult? <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in your Job History. Provide details and FixMi will review it. Never engage in arguments — complete the job or contact support.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I cancel a job? <span class="faq-arr">›</span></div><div class="faq-a">Cancellations affect your rating. Only cancel via the app with a valid reason. Repeated cancellations may result in account suspension.</div></div>
     <div style="height:20px"></div>
   </div>
@@ -2493,7 +2483,7 @@ body{background:#fff}
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Before you arrive <span class="faq-arr">›</span></div><div class="faq-a">Always verify the customer's address matches what's in the app before travelling. If anything seems suspicious, contact support before proceeding.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">At the customer's location <span class="faq-arr">›</span></div><div class="faq-a">Never enter a location that feels unsafe. Always keep your app open and active. If you feel threatened, leave immediately and contact support and the police.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Payments and money <span class="faq-arr">›</span></div><div class="faq-a">Never accept payment outside the FixMi app unless the customer selects Cash as their payment method. If asked to use another payment platform, refuse and report it.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Reporting an incident <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in Job History or contact support directly. All reports are confidential and reviewed within 24 hours.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Reporting an incident <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in Job History or contact support directly. All reports are confidential and reviewed by FixMi.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Police: 199 | FixMi Emergency: tap the Support button. Always trust your instincts — your safety comes first, before any job.</div></div>
     <div style="height:20px"></div>
   </div>
@@ -2507,23 +2497,13 @@ body{background:#fff}
       <div style="font-family:'AppFont',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:13px">Promotion Summary</div>
       <div class="pay-row"><span class="pay-lbl">Package</span><span class="pay-val" id="promo-pkg">Standard Boost</span></div>
       <div class="pay-row"><span class="pay-lbl">Duration</span><span class="pay-val" id="promo-dur">1 Month</span></div>
-      <div class="pay-row"><span class="pay-lbl">Benefit</span><span class="pay-val" id="promo-benefit" style="text-align:right;max-width:55%;font-size:12px">Top 3 in category search</span></div>
+      <div class="pay-row"><span class="pay-lbl">Benefit</span><span class="pay-val" id="promo-benefit" style="text-align:right;max-width:55%;font-size:12px"></span></div>
       <div style="display:flex;justify-content:space-between;padding:12px 0">
         <span style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px">Amount</span>
         <span id="promo-price" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:18px;color:var(--g)">₦4,500</span>
       </div>
     </div>
-    <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px">Payment Method</div>
-    <div style="border:2px solid var(--g);background:var(--g3);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer">
-      <span style="font-size:22px">🏦</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--navy)">Bank Transfer</div><div style="font-size:11px;color:var(--muted)">Transfer to FixMi Promotions account</div></div>
-      <span style="color:var(--g);font-size:18px;font-weight:700">✓</span>
-    </div>
-    <div style="border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer">
-      <span style="font-size:22px">💳</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--navy)">Card Payment</div><div style="font-size:11px;color:var(--muted)">Debit / Credit via Paystack</div></div>
-    </div>
-    <div class="info green" style="margin-bottom:14px"><span>🚀</span><span>Your boost activates immediately after payment confirmation. You'll appear in top results within 5 minutes.</span></div>
+    <div class="info green" style="margin-bottom:14px"><span>👛</span><span>Paid from your FixMi wallet. Your card shows in Featured Artisans as soon as it’s paid.</span></div>
     <button onclick="confirmPromoPayment()" class="btn btn-g">Confirm Payment &amp; Activate →</button>
     <div style="height:20px"></div>
   </div>
@@ -2577,7 +2557,7 @@ body{background:#fff}
 <!-- ████ ARTISAN MESSAGES ████ -->
 <div class="s" id="artisan-messages">
   <div class="topbar"><button class="back" onclick="go('artisan-dash')">←</button><div class="tb-title">Messages</div><div class="tb-space"></div></div>
-  <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">🔒</span><span>All chats happen here on FixMi only. Calls are disabled for your safety.</span></div>
+  <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">💬</span><span>Chat and call the customer on your job from here — open a conversation and tap 📞 to call. Keep every payment inside FixMi escrow.</span></div>
   <div class="chat-list" id="artisan-chat-thread-list"></div>
   <div class="chat-list" data-demo>
     <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div><div style="flex:1;min-width:0"><div class="chat-name">Chukwuemeka Obi</div><div class="chat-prev">I'm near your location now</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0"><div style="font-size:11px;color:var(--muted)">5m ago</div><div class="unread">1</div></div></div>
@@ -2596,7 +2576,7 @@ body{background:#fff}
 
 <!-- ████ EDIT PROFILE (User) ████ -->
 <div class="s" id="edit-profile">
-  <div class="topbar"><button class="back" onclick="go('profile')">←</button><div class="tb-title">Edit Profile</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Edit Profile</div><div class="tb-space"></div></div>
   <div style="padding:16px">
     <div style="text-align:center;margin-bottom:20px">
       <div style="position:relative;width:80px;margin:0 auto 8px;cursor:pointer" onclick="uploadProfilePic()">
@@ -2605,214 +2585,67 @@ body{background:#fff}
       </div>
       <div style="font-size:12px;color:var(--muted)">Tap to change photo</div>
     </div>
-    <div class="fg"><label class="label">Full Name</label><input class="input" value="Chukwuemeka Obi" id="ep-name"></div>
-    <div class="fg"><label class="label">Phone Number</label><input class="input" value="+234 812 345 6789" id="ep-phone" type="tel"></div>
-    <div class="fg"><label class="label">Email Address</label><input class="input" value="chukwu@email.com" id="ep-email" type="email"></div>
-    <div class="fg"><label class="label">State</label>
-      <select class="input" id="ep-state"><option>Lagos</option><option>Abuja</option><option>Rivers</option><option>Oyo</option><option>Kano</option></select>
-    </div>
-    <div class="fg"><label class="label">Gender</label>
-      <select class="input"><option>Male</option><option>Female</option><option>Prefer not to say</option></select>
-    </div>
-    <button class="btn btn-g" onclick="saveProfile()">Save Changes</button>
+    <div class="fg"><label class="label" for="ep-name">Full Name</label><input class="input" id="ep-name" autocomplete="name"></div>
+    <div class="fg"><label class="label" for="ep-phone">Phone Number</label><input class="input" id="ep-phone" type="tel" readonly style="background:var(--gray)"></div>
+    <div class="fg"><label class="label" for="ep-email">Email Address</label><input class="input" id="ep-email" type="email" readonly style="background:var(--gray)" placeholder="Not added"></div>
+    <div class="fg"><label class="label" for="ep-address">Home or Office Address</label><input class="input" id="ep-address" placeholder="Street and number" autocomplete="street-address"></div>
+    <div class="fg"><label class="label" for="ep-lga">Area / LGA</label><input class="input" id="ep-lga" placeholder="e.g. Ikeja"></div>
+    <div class="fg"><label class="label" for="ep-state">State</label><select class="input" id="ep-state"><option value="">Select state…</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select></div>
+    <div class="job-hint" style="text-align:left;margin:-4px 0 14px">Your address fills in automatically when you book, and your area shows on the home screen.</div>
+    <button class="btn btn-g" onclick="saveProfile(this)">Save Changes</button>
     <div style="height:20px"></div>
   </div>
 </div>
 
 <!-- ████ SAVED ADDRESSES ████ -->
-<div class="s" id="saved-addresses">
-  <div class="topbar"><button class="back" onclick="go('profile')">←</button><div class="tb-title">Saved Addresses</div><div class="tb-space"></div></div>
-  <div style="padding:16px">
-    <div data-demo class="card" style="margin-bottom:11px;cursor:pointer">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:40px;height:40px;background:var(--g3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏠</div>
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:14px;color:var(--navy)">Home</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">12 Akin Street, Ikeja, Lagos</div>
-        </div>
-        <button onclick="toast('✏️ Edit address')" style="background:var(--gray);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--navy)">Edit</button>
-      </div>
-    </div>
-    <div data-demo class="card" style="margin-bottom:11px;cursor:pointer">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:40px;height:40px;background:#EFF6FF;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🏢</div>
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:14px;color:var(--navy)">Office</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">45 Broad Street, Lagos Island</div>
-        </div>
-        <button onclick="toast('✏️ Edit address')" style="background:var(--gray);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--navy)">Edit</button>
-      </div>
-    </div>
-    <div data-fresh class="empty-state"><b>No saved addresses yet</b>Add your home or office to book faster.</div>
-    <button class="btn" style="background:var(--gray);color:var(--navy)" onclick="go('add-address')">+ Add New Address</button>
-    <div style="height:20px"></div>
-  </div>
-</div>
-
 <!-- ████ PAYMENT METHODS ████ -->
-<div class="s" id="payment-methods">
-  <div class="topbar"><button class="back" onclick="go('profile')">←</button><div class="tb-title">Payment Methods</div><div class="tb-space"></div></div>
-  <div style="padding:16px">
-    <div class="info blue" style="margin-bottom:16px"><span>🔒</span><span>Your payment details are encrypted and never shared. FixMi holds funds in escrow until you confirm jobs are complete.</span></div>
-    <div data-demo class="card" style="margin-bottom:11px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;background:#EFF6FF;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏦</div>
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:14px;color:var(--navy)">GTBank — 0123456789</div>
-          <div style="font-size:12px;color:var(--g);font-weight:600;margin-top:2px">✓ Verified · Primary</div>
-        </div>
-        <button onclick="toast('✓ Already primary')" style="background:var(--g3);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--g2)">Primary</button>
-      </div>
-    </div>
-    <div data-demo class="card" style="margin-bottom:11px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;background:#F0F9FF;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">💳</div>
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:14px;color:var(--navy)">Visa •••• 4521</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">Expires 09/27</div>
-        </div>
-        <button onclick="toast('Set as primary?')" style="background:var(--gray);border:none;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--navy)">Set Primary</button>
-      </div>
-    </div>
-    <div data-fresh class="empty-state"><b>No payment methods yet</b>Add a bank account or card to pay for jobs.</div>
-    <button class="btn btn-g" onclick="go('add-payment-method')">+ Add Bank Account or Card</button>
-    <div style="height:20px"></div>
-  </div>
-</div>
-
 <!-- ████ ARTISAN EDIT PROFILE ████ -->
 <div class="s" id="artisan-edit-profile">
-  <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">Edit Profile</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Edit Profile</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="position:relative;width:80px;margin:0 auto 8px;cursor:pointer" onclick="uploadArtisanPic()">
-        <div class="prof-ava" style="background:#FEF9C3">⚡</div>
-        <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-size:12px">📷</div>
-      </div>
-    </div>
-    <div class="fg"><label class="label">Full Name</label><input class="input" value="Emeka Okafor" id="aep-name"></div>
-    <div class="fg"><label class="label">Phone Number</label><input class="input" value="+234 803 456 7890" id="aep-phone" type="tel"></div>
-    <div class="fg"><label class="label">Primary Skill</label>
-      <select class="input"><option>Electrician</option><option>Plumber</option><option>AC Technician</option><option>Mechanic</option><option>Carpenter</option><option>Painter</option></select>
-    </div>
-    <div class="fg"><label class="label">Years of Experience</label>
-      <select class="input"><option>1-2 years</option><option>3-5 years</option><option>5-10 years</option><option>10+ years</option></select>
-    </div>
-    <div class="fg"><label class="label">Bio / About You</label>
-      <textarea class="input" style="min-height:80px;resize:none">Certified electrician with 5 years of hands-on experience across Lagos.</textarea>
-    </div>
-    <div class="fg"><label class="label">Operating Area</label><input class="input" value="Ikeja, Lagos Island, Lekki"></div>
-    <button class="btn btn-g" onclick="saveArtisanProfile()">Save Changes</button>
+    <div class="fg"><label class="label" for="aep-name">Full Name</label><input class="input" id="aep-name" autocomplete="name"></div>
+    <div class="fg"><label class="label" for="aep-phone">Phone Number</label><input class="input" id="aep-phone" type="tel" readonly style="background:var(--gray)"></div>
+    <div class="fg"><label class="label" for="aep-category">Primary Skill</label><select class="input" id="aep-category"></select></div>
+    <div class="fg"><label class="label" for="aep-years">Years of Experience</label><input class="input" id="aep-years" type="number" min="0" max="60" inputmode="numeric" placeholder="e.g. 5"></div>
+    <div class="fg"><label class="label" for="aep-bio">About You</label><textarea class="input" id="aep-bio" style="min-height:90px;resize:vertical" placeholder="What you do, what you’re good at, the areas you cover"></textarea></div>
+    <div class="fg"><label class="label" for="aep-lga">Area / LGA</label><input class="input" id="aep-lga" placeholder="e.g. Ikeja"></div>
+    <div class="fg"><label class="label" for="aep-state">State</label><select class="input" id="aep-state"><option value="">Select state…</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select></div>
+    <div class="job-hint" style="text-align:left;margin:-4px 0 14px">Changing your skill changes which job requests you receive.</div>
+    <button class="btn btn-g" onclick="saveArtisanProfile(this)">Save Changes</button>
     <div style="height:20px"></div>
   </div>
 </div>
 
 <!-- ████ ARTISAN BANK ACCOUNT ████ -->
 <div class="s" id="artisan-bank-account">
-  <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">Bank Account</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Bank Account</div><div class="tb-space"></div></div>
   <div style="padding:16px">
     <div class="info green" style="margin-bottom:16px"><span>💰</span><span>Your earnings (the agreed price less FixMi’s 10%) land in your FixMi wallet after each job. Withdraw them to this bank account.</span></div>
-    <div data-demo class="card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <div style="width:44px;height:44px;background:var(--g3);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏦</div>
-        <div>
-          <div style="font-weight:700;font-size:14px;color:var(--navy)">Access Bank</div>
-          <div style="font-size:13px;color:var(--muted)">0987654321 · Emeka Okafor</div>
-          <div style="font-size:12px;color:var(--g);font-weight:600;margin-top:2px">✓ Verified · Active</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button onclick="toast('✏️ Edit bank details')" style="flex:1;background:var(--gray);border:none;border-radius:10px;padding:10px;font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:var(--navy)">Edit</button>
-        <button onclick="toast('🔄 Test payout of ₦10 sent!')" style="flex:1;background:var(--g);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;cursor:pointer">Test Payout</button>
-      </div>
-    </div>
-    <div class="fg"><label class="label">Bank Name</label>
-      <select class="input"><option>Access Bank</option><option>GTBank</option><option>Zenith Bank</option><option>First Bank</option><option>UBA</option><option>FCMB</option></select>
-    </div>
-    <div class="fg"><label class="label">Account Number</label><input class="input" placeholder="Enter 10-digit account number" type="tel" maxlength="10"></div>
-    <div class="fg"><label class="label">Account Name</label><input class="input" placeholder="Auto-filled after verification" readonly style="background:var(--gray)"></div>
-    <button class="btn btn-g" onclick="artisanSaveBankDetails()">Save Bank Details</button>
+    <div id="bank-current"></div>
+    <div class="fg"><label class="label" for="bank-name">Bank</label><select class="input" id="bank-name"><option value="">Loading banks…</option></select></div>
+    <div class="fg"><label class="label" for="bank-acct">Account Number</label><input class="input" id="bank-acct" placeholder="10-digit account number" type="tel" inputmode="numeric" maxlength="10"></div>
+    <div class="fg" id="bank-acctname-wrap"><label class="label" for="bank-acctname">Account Name</label><input class="input" id="bank-acctname" placeholder="As it appears at your bank"></div>
+    <button class="btn btn-g" onclick="saveBankAccount(this)">Save Bank Details</button>
     <div style="height:20px"></div>
   </div>
 </div>
 
 <!-- ████ ARTISAN AVAILABILITY ████ -->
-<div class="s" id="artisan-availability">
-  <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">Availability Schedule</div><div class="tb-space"></div></div>
-  <div style="padding:16px">
-    <div class="info blue" style="margin-bottom:16px"><span>ℹ️</span><span>Set your working hours. Customers can only book you during these times. You can toggle online/offline anytime from your dashboard.</span></div>
-    <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px">Working Hours</div>
-    <div id="avail-days">
-      <!-- Days -->
-    </div>
-    <div class="fg" style="margin-top:4px"><label class="label">Quick Set</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button onclick="setAllDays('08:00','18:00')" style="background:var(--g3);color:var(--g2);border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">Mon–Fri 8am–6pm</button>
-        <button onclick="setAllDays('07:00','20:00')" style="background:var(--gray);color:var(--navy);border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">All week 7am–8pm</button>
-        <button onclick="setAllDays('00:00','23:59')" style="background:var(--gray);color:var(--navy);border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer">24/7</button>
-      </div>
-    </div>
-    <button class="btn btn-g" onclick="artisanSaveSchedule()">Save Schedule</button>
-    <div style="height:20px"></div>
-  </div>
-</div>
-
 <!-- ████ ARTISAN PORTFOLIO ████ -->
-<div class="s" id="artisan-portfolio">
-  <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">My Portfolio</div><div class="tb-space"></div></div>
-  <div style="padding:16px">
-    <div class="info green" style="margin-bottom:16px"><span>📸</span><span>Upload photos of your best work. Customers can see your portfolio before booking. Good photos increase bookings by 3x.</span></div>
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <div onclick="openCamera()" style="width:80px;height:80px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1.5px dashed var(--border)">
-        <span style="font-size:26px">📷</span><span style="font-size:9px;color:var(--muted)">Camera</span>
-      </div>
-      <div onclick="openGalleryPicker()" style="width:80px;height:80px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1.5px dashed var(--border)">
-        <span style="font-size:26px">🖼️</span><span style="font-size:9px;color:var(--muted)">Gallery</span>
-      </div>
-    </div>
-    <div data-fresh class="empty-state"><b>No photos yet</b>Add photos of your best work with the buttons above.</div>
-    <div data-demo style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px" id="portfolio-grid">
-      <div style="aspect-ratio:1;background:var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
-      <div style="aspect-ratio:1;background:var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">⚙️</div>
-      <div style="aspect-ratio:1;background:var(--gray);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">🔧</div>
-    </div>
-    <button class="btn btn-g" onclick="artisanSavePortfolio()">Save Portfolio</button>
-    <div style="height:20px"></div>
-  </div>
-</div>
-
 <!-- ████ ARTISAN SETTINGS ████ -->
 <div class="s" id="artisan-settings">
-  <div class="topbar"><button class="back" onclick="go('artisan-profile-self')">←</button><div class="tb-title">Settings</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Settings</div><div class="tb-space"></div></div>
   <div style="padding:16px">
-    <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding:0 4px">Notifications</div>
-    <div class="card" style="margin-bottom:14px">
-      <div id="settings-rows"></div>
-    </div>
-    <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding:0 4px">Account</div>
-    <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy)">Change Password</div>
-          <div style="font-size:11px;color:var(--muted)">Last changed 30 days ago</div>
-        </div>
-        <button onclick="toast('🔒 Change password flow')" style="background:var(--gray);border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;color:var(--navy)">Change</button>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--navy)">Two-Factor Auth</div>
-          <div style="font-size:11px;color:var(--muted)">SMS verification enabled</div>
-        </div>
-        <div onclick="toast('🔒 2FA is active')" style="width:42px;height:24px;background:var(--g);border-radius:12px;cursor:pointer;position:relative">
-          <div style="position:absolute;right:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%"></div>
-        </div>
-      </div>
-    </div>
-    <button class="btn" style="background:#FEE2E2;color:#DC2626" onclick="toast('Account deactivation requires contacting support')">Deactivate Account</button>
+    <div class="sec-title" style="margin-bottom:10px">Change Password</div>
+    <div class="fg"><label class="label" for="pw-current">Current password</label><input class="input" id="pw-current" type="password" autocomplete="current-password"></div>
+    <div class="fg"><label class="label" for="pw-new">New password</label><input class="input" id="pw-new" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+    <button class="btn btn-g" onclick="changePassword(this)">Update Password</button>
+    <div class="sec-title" style="margin:24px 0 10px">Close Account</div>
+    <div class="job-hint" style="text-align:left;margin-bottom:10px">To close your account, send a request to FixMi support. Any money in your wallet is settled first.</div>
+    <button class="btn" style="background:#FEE2E2;color:#DC2626" onclick="openSupport('Close my account')">Request Account Closure</button>
     <div style="height:20px"></div>
   </div>
 </div>
-
 
 <!-- ████ USER SAFETY ████ -->
 <div class="s" id="user-safety">
@@ -2827,107 +2660,28 @@ body{background:#fff}
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Verifying your artisan <span class="faq-arr">›</span></div><div class="faq-a">Every artisan has submitted a government ID (NIN or Voter Card) verified by our admin team. Look for the ✓ Verified badge before booking.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Communication safety <span class="faq-arr">›</span></div><div class="faq-a">All communication must happen through FixMi's in-app chat only. Calls are disabled for your protection. Never share personal contact details outside the app.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">If you feel unsafe <span class="faq-arr">›</span></div><div class="faq-a">End the job immediately. You will not be charged if cancelled before work begins. Contact FixMi support and authorities if necessary.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Nigeria Police: 199 | Emergency: 112 | FixMi Support: live chat 8am–10pm daily.</div></div>
-    <button onclick="go('user-chat-support')" class="btn btn-g" style="margin-top:16px">💬 Contact Support</button>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Nigeria Police: 199 | Emergency: 112 | FixMi: use Contact Support in Help &amp; Support.</div></div>
+    <button onclick="openSupport()" class="btn btn-g" style="margin-top:16px">💬 Contact Support</button>
     <div style="height:20px"></div>
   </div>
 </div>
 
 <!-- ████ USER CHAT SUPPORT ████ -->
-<div class="s flex-screen" id="user-chat-support" style="flex-direction:column">
-  <div class="topbar"><button class="back" onclick="goBack()">←</button><div class="tb-title">Live Support Chat</div><div class="tb-space"></div></div>
-  <div id="support-msgs" style="flex:1;padding:14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto">
-    <div style="background:var(--gray);border-radius:14px 14px 14px 4px;padding:12px 14px;max-width:85%;font-size:13px;color:var(--navy);line-height:1.5">👋 Hello! Welcome to FixMi Support. How can I help you today?</div>
-    <div style="font-size:11px;color:var(--muted);padding-left:4px">Support Agent · Just now</div>
-  </div>
-  <div id="support-quick-replies" style="display:flex;flex-wrap:wrap;gap:7px;padding:10px 14px">
-    <button onclick="sendSupportMsg('I have a payment issue')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Payment issue</button>
-    <button onclick="sendSupportMsg('My artisan did not arrive')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Artisan did not arrive</button>
-    <button onclick="sendSupportMsg('I want a refund')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Request refund</button>
-    <button onclick="sendSupportMsg('Poor quality work')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Poor quality</button>
-  </div>
-  <div style="border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;background:#fff">
-    <input id="support-inp" class="inp" style="flex:1;border-radius:24px;background:var(--gray);border:none;padding:10px 16px" placeholder="Type your message...">
-    <div onclick="sendSupportChat()" style="width:42px;height:42px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;cursor:pointer;flex-shrink:0">&#10148;</div>
+<div class="s" id="support">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Contact Support</div><div class="tb-space"></div></div>
+  <div style="padding:16px">
+    <div class="info blue" style="margin-bottom:14px"><span>🤝</span><span>Send FixMi a message. Replies and updates come to your notifications, and your requests are listed below.</span></div>
+    <div class="fg"><label class="label" for="sup-subject">Subject</label><input class="input" id="sup-subject" placeholder="e.g. Payment question"></div>
+    <div class="fg"><label class="label" for="sup-message">Message</label><textarea class="input" id="sup-message" style="min-height:110px;resize:vertical" placeholder="Tell us what you need help with"></textarea></div>
+    <button class="btn btn-g" onclick="sendSupportTicket(this)">Send to Support</button>
+    <div class="sec-title" style="margin:22px 0 10px">Your Requests</div>
+    <div id="sup-list"></div>
   </div>
 </div>
 
 <!-- ████ ARTISAN CHAT SUPPORT ████ -->
-<div class="s flex-screen" id="artisan-chat-support" style="flex-direction:column">
-  <div class="topbar"><button class="back" onclick="go('artisan-help')">←</button><div class="tb-title">Artisan Support</div><div class="tb-space"></div></div>
-  <div id="artisan-support-msgs" style="flex:1;padding:14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto">
-    <div style="background:var(--gray);border-radius:14px 14px 14px 4px;padding:12px 14px;max-width:85%;font-size:13px;color:var(--navy);line-height:1.5">👋 Hello Emeka! Welcome to FixMi Artisan Support. How can we help you earn more?</div>
-    <div style="font-size:11px;color:var(--muted);padding-left:4px">Artisan Support · Just now</div>
-  </div>
-  <div id="artisan-quick-replies" style="display:flex;flex-wrap:wrap;gap:7px;padding:10px 14px">
-    <button onclick="sendArtisanSupportMsg('I have not received my payment')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Payment not received</button>
-    <button onclick="sendArtisanSupportMsg('A customer was abusive')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Abusive customer</button>
-    <button onclick="sendArtisanSupportMsg('I want to dispute a commission charge')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Commission dispute</button>
-    <button onclick="sendArtisanSupportMsg('How do I boost my profile?')" style="background:var(--gray);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer">Boost profile</button>
-  </div>
-  <div style="border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;background:#fff">
-    <input id="artisan-support-inp" class="inp" style="flex:1;border-radius:24px;background:var(--gray);border:none;padding:10px 16px" placeholder="Type your message...">
-    <div onclick="sendArtisanSupportChat()" style="width:42px;height:42px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;cursor:pointer;flex-shrink:0">&#10148;</div>
-  </div>
-</div>
-
 <!-- ████ ADD ADDRESS ████ -->
-<div class="s" id="add-address">
-  <div class="topbar"><button class="back" onclick="go('saved-addresses')">←</button><div class="tb-title">Add New Address</div><div class="tb-space"></div></div>
-  <div style="padding:16px">
-    <div class="fg">
-      <label class="label">Address Label</label>
-      <div style="display:flex;gap:8px;margin-bottom:4px">
-        <button id="addr-type-home" onclick="selectAddrType('home',this)" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:10px;font-family:'AppFont',sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#127968; Home</button>
-        <button id="addr-type-office" onclick="selectAddrType('office',this)" style="flex:1;background:var(--gray);color:var(--navy);border:none;border-radius:10px;padding:10px;font-family:'AppFont',sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#127970; Office</button>
-        <button id="addr-type-other" onclick="selectAddrType('other',this)" style="flex:1;background:var(--gray);color:var(--navy);border:none;border-radius:10px;padding:10px;font-family:'AppFont',sans-serif;font-size:13px;font-weight:700;cursor:pointer">&#128205; Other</button>
-      </div>
-    </div>
-    <div class="fg"><label class="label">Street Address</label><input class="input" id="new-addr-street" placeholder="e.g. 12 Akin Street"></div>
-    <div class="fg"><label class="label">Area / Landmark</label><input class="input" id="new-addr-area" placeholder="e.g. Near Ikeja City Mall"></div>
-    <div class="fg"><label class="label">State</label>
-      <select class="input" id="new-addr-state"><option>Lagos</option><option>Abuja</option><option>Rivers</option><option>Oyo</option><option>Kano</option><option>Delta</option></select>
-    </div>
-    <div class="fg"><label class="label">Additional Instructions (optional)</label>
-      <textarea class="input" id="new-addr-note" placeholder="e.g. Blue gate, 2nd floor..." style="min-height:70px;resize:none"></textarea>
-    </div>
-    <button onclick="saveNewAddress()" class="btn btn-g">Save Address</button>
-    <div style="height:20px"></div>
-  </div>
-</div>
-
 <!-- ████ ADD PAYMENT METHOD ████ -->
-<div class="s" id="add-payment-method">
-  <div class="topbar"><button class="back" onclick="go('payment-methods')">←</button><div class="tb-title">Add Payment Method</div><div class="tb-space"></div></div>
-  <div style="padding:16px">
-    <div style="display:flex;gap:8px;margin-bottom:18px">
-      <button id="pmt-tab-bank" onclick="selectPmtTab('bank',this)" style="flex:1;background:var(--navy);color:#fff;border:none;border-radius:11px;padding:11px;font-family:'AppFont',sans-serif;font-size:14px;font-weight:700;cursor:pointer">&#127974; Bank Account</button>
-      <button id="pmt-tab-card" onclick="selectPmtTab('card',this)" style="flex:1;background:var(--gray);color:var(--navy);border:none;border-radius:11px;padding:11px;font-family:'AppFont',sans-serif;font-size:14px;font-weight:700;cursor:pointer">&#128179; Card</button>
-    </div>
-    <div id="pmt-bank-form">
-      <div class="fg"><label class="label">Bank Name</label>
-        <select class="input" id="new-bank-name"><option value="">Select bank...</option><option>GTBank</option><option>Access Bank</option><option>Zenith Bank</option><option>First Bank</option><option>UBA</option><option>FCMB</option><option>Opay</option><option>Kuda Bank</option></select>
-      </div>
-      <div class="fg"><label class="label">Account Number</label>
-        <input class="input" id="new-bank-acct" type="tel" maxlength="10" placeholder="10-digit account number" oninput="verifyBankAccount(this)">
-      </div>
-      <div id="bank-verify-result" style="display:none;background:var(--g3);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:13px;color:var(--g2);font-weight:600">&#10003; Chukwuemeka Obi — Verified</div>
-      <button onclick="saveNewBank()" class="btn btn-g">Add Bank Account</button>
-    </div>
-    <div id="pmt-card-form" style="display:none">
-      <div class="fg"><label class="label">Card Number</label><input class="input" id="new-card-num" type="tel" maxlength="19" placeholder="0000 0000 0000 0000"></div>
-      <div style="display:flex;gap:12px">
-        <div class="fg" style="flex:1"><label class="label">Expiry</label><input class="input" id="new-card-exp" placeholder="MM/YY" maxlength="5"></div>
-        <div class="fg" style="flex:1"><label class="label">CVV</label><input class="input" id="new-card-cvv" type="password" maxlength="3" placeholder="..."></div>
-      </div>
-      <div class="fg"><label class="label">Name on Card</label><input class="input" id="new-card-name" placeholder="As it appears on card"></div>
-      <button onclick="saveNewCard()" class="btn btn-g">Add Card</button>
-    </div>
-    <div style="height:20px"></div>
-  </div>
-</div>
-
-
 <!-- ████ CORPORATE PLAN FLOW ████ -->
 <div class="s" id="corp-plan" style="background:#fff">
 
@@ -2962,10 +2716,10 @@ body{background:#fff}
         <div style="text-align:right"><div style="font-size:16px;font-weight:800;color:#00C65E">₦25,000</div><div style="font-size:10px;color:#7A8EA8">per week</div></div>
       </div>
       <div style="font-size:12px;color:#7A8EA8;line-height:1.8;margin-bottom:12px">
-        ✓ Up to 5 service calls per week<br>
-        ✓ Choose up to 3 service categories<br>
+        ✓ Up to 5 jobs per week<br>
+        ✓ Up to 3 service categories<br>
         ✓ Verified artisans only<br>
-        ✓ 24-hour response guarantee
+        ✓ ₦25,000 corporate escrow, refundable if unused
       </div>
       <button onclick="choosePlan('basic')" style="width:100%;background:#0B1A2E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose Basic — Fund Escrow →</button>
     </div>
@@ -2978,11 +2732,10 @@ body{background:#fff}
         <div style="text-align:right"><div style="font-size:16px;font-weight:800;color:#00C65E">₦80,000</div><div style="font-size:10px;color:#7A8EA8">per month</div></div>
       </div>
       <div style="font-size:12px;color:#7A8EA8;line-height:1.8;margin-bottom:12px">
-        ✓ Up to 20 service calls per month<br>
-        ✓ Choose up to 6 service categories<br>
-        ✓ Priority same-day response<br>
-        ✓ Dedicated account manager<br>
-        ✓ Up to 3 office locations
+        ✓ Up to 20 jobs per month<br>
+        ✓ Up to 6 service categories<br>
+        ✓ Verified artisans only<br>
+        ✓ ₦80,000 corporate escrow, refundable if unused
       </div>
       <button onclick="choosePlan('standard')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose Standard — Fund Escrow →</button>
     </div>
@@ -2994,11 +2747,10 @@ body{background:#fff}
         <div style="text-align:right"><div style="font-size:16px;font-weight:800;color:#00C65E">₦750,000</div><div style="font-size:10px;color:rgba(255,255,255,.4)">per year</div></div>
       </div>
       <div style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:12px">
-        ✓ Unlimited service calls<br>
-        ✓ All service categories included<br>
-        ✓ VIP emergency response within 1hr<br>
-        ✓ Up to 10 office/site locations<br>
-        ✓ Dedicated vetted artisan team
+        ✓ Unlimited jobs for a year<br>
+        ✓ Every service category<br>
+        ✓ Verified artisans only<br>
+        ✓ ₦750,000 corporate escrow, refundable if unused
       </div>
       <button onclick="choosePlan('vip')" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer">Choose VIP Annual — Fund Escrow →</button>
     </div>
@@ -3196,9 +2948,9 @@ body{background:#fff}
     <div style="margin-bottom:20px">
       <label style="font-size:13px;font-weight:600;color:#0B1A2E;margin-bottom:7px">Priority</label>
       <select id="job-priority" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:15px;outline:none;background:#fff;appearance:none;cursor:pointer">
-        <option>Normal — Within SLA window</option>
-        <option>Urgent — Same day response</option>
-        <option>Emergency — Within 1 hour (VIP only)</option>
+        <option>Normal</option>
+        <option>Urgent</option>
+        <option>Emergency</option>
       </select>
     </div>
 
@@ -3253,7 +3005,7 @@ body{background:#fff}
   <div style="padding:18px">
     <div style="background:#FFF3ED;border-radius:13px;padding:14px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start">
       <span style="font-size:22px;flex-shrink:0">⚠️</span>
-      <div><div style="font-size:13px;font-weight:700;color:#FF6B2B;margin-bottom:3px">Escrow Balance Low</div><div style="font-size:12px;color:#92400E;line-height:1.5">Add funds to continue raising jobs without interruption.</div></div>
+      <div><div style="font-size:13px;font-weight:700;color:#FF6B2B;margin-bottom:3px">Add to your corporate escrow</div><div style="font-size:12px;color:#92400E;line-height:1.5">Each job takes its budget from this escrow.</div></div>
     </div>
 
     <div style="font-size:14px;font-weight:700;color:#0B1A2E;margin-bottom:12px">Choose Amount</div>
@@ -3698,17 +3450,7 @@ function artisanPriceOnHold() {
   toast('Price on Hold sent. Customer notified you will assess the job first.');
 }
 
-var wdAmounts = { daily: '\u20a64,250', weekly: '\u20a618,200', monthly: '\u20a668,900' };
-function setWdPeriod(period) {
-  ['daily','weekly','monthly'].forEach(function(k) {
-    var btn = document.getElementById('wd-btn-' + k);
-    if (!btn) return;
-    btn.style.background = k === period ? '#0B1A2E' : '#F2F5F8';
-    btn.style.color = k === period ? '#fff' : '#7A8EA8';
-  });
-  var amt = document.getElementById('wd-amount');
-  if (amt) amt.textContent = wdAmounts[period];
-}
+
 
 function toggleCorpSvc(el, name) {
   var on = el.getAttribute('data-active') === '1';
@@ -4344,27 +4086,13 @@ function corpArtisanFound() {
 
 
 // ── PROFILE HELPERS ───────────────────────────────────────────
-function saveProfile() {
-  var name = document.getElementById('ep-name');
-  if(name && document.getElementById('prof-name-display')) {
-    document.getElementById('prof-name-display').textContent = name.value;
-  }
-  toast('✅ Profile updated successfully!');
-  setTimeout(function(){ go('profile'); }, 1400);
-}
 
-function saveArtisanProfile() {
-  toast('✅ Profile updated successfully!');
-  setTimeout(function(){ go('artisan-profile-self'); }, 1400);
-}
 
-function addAddress() {
-  toast('📍 Add new address form coming soon');
-}
 
-function addPaymentMethod() {
-  toast('💳 Add bank or card — linking to Paystack');
-}
+
+
+
+
 
 function hireArtisanAgain() {
   bookSvc('Electrical', '⚡', '#FEF9C3');
@@ -4671,24 +4399,9 @@ function artisanWithdrawNow() {
   go('artisan-withdraw');
 }
 
-function pickWdPeriod(period, btn) {
-  var amounts = { daily:'₦4,250', weekly:'₦18,200', monthly:'₦68,900' };
-  document.querySelectorAll('[id^="wdp-"]').forEach(function(b) {
-    b.style.background = 'var(--gray)';
-    b.style.color = 'var(--muted)';
-  });
-  btn.style.background = 'var(--navy)';
-  btn.style.color = '#fff';
-  var el = document.getElementById('wd-display');
-  if (el) el.textContent = amounts[period] || '₦4,250';
-}
 
-function confirmWithdraw() {
-  var amt = document.getElementById('wd-display');
-  var amtVal = amt ? amt.textContent : '₦4,250';
-  toast('🏦 Withdrawal of ' + amtVal + ' sent to Access Bank! Arrives within 30 minutes.');
-  setTimeout(function() { go('artisan-dash'); }, 1800);
-}
+
+
 
 function artisanPayCommission() {
   go('artisan-pay-commission');
@@ -4952,44 +4665,11 @@ function confirmPromoPayment() {
 
 
 // ── ARTISAN SAVE → go back to artisan-profile-self ──────────
-function artisanSaveBankDetails() {
-  toast('\u2705 Bank account saved!');
-  setTimeout(function() { go('artisan-profile-self'); }, 1200);
-}
-function artisanSaveSchedule() {
-  toast('\u2705 Schedule saved!');
-  setTimeout(function() { go('artisan-profile-self'); }, 1200);
-}
-function artisanSavePortfolio() {
-  toast('\u2705 Portfolio saved!');
-  setTimeout(function() { go('artisan-profile-self'); }, 1200);
-}
+
+
+
 
 // ── USER SUPPORT CHAT ────────────────────────────────────────
-var _supportReplies = {
-  'I have a payment issue': 'I understand you have a payment concern. Please share your Job ID (found in Job History) and I will look into it right away.',
-  'My artisan did not arrive': 'Sorry to hear that. Please share the job details and I will investigate and arrange a replacement or full refund.',
-  'I want a refund': 'Refund requests are processed within 24 hours if the job was not completed. Please share the Job ID and reason.',
-  'Poor quality work': 'I apologise for the experience. Please share the Job ID and photos if available. We will review and take action within 24 hours.'
-};
-function sendSupportMsg(txt) {
-  var qr = document.getElementById('support-quick-replies');
-  if (qr) qr.style.display = 'none';
-  _appendMsg('support-msgs', txt, true);
-  setTimeout(function() {
-    var reply = _supportReplies[txt] || 'Thank you for reaching out. A support agent will respond shortly.';
-    _appendMsg('support-msgs', reply, false);
-  }, 1200);
-}
-function sendSupportChat() {
-  var inp = document.getElementById('support-inp');
-  if (!inp || !inp.value.trim()) return;
-  var msg = inp.value.trim(); inp.value = '';
-  _appendMsg('support-msgs', msg, true);
-  setTimeout(function() {
-    _appendMsg('support-msgs', 'Thank you! A FixMi agent will respond within 5 minutes. Ref: #SUP-' + (Math.floor(Math.random()*90000)+10000), false);
-  }, 1500);
-}
 function _appendMsg(containerId, txt, isUser) {
   var c = document.getElementById(containerId);
   if (!c) return;
@@ -5003,30 +4683,7 @@ function _appendMsg(containerId, txt, isUser) {
 }
 
 // ── ARTISAN SUPPORT CHAT ─────────────────────────────────────
-var _artisanReplies = {
-  'I have not received my payment': 'I will check your payment status now. Payments are released within 30 minutes of job confirmation. If it has been longer, I will escalate this immediately.',
-  'A customer was abusive': 'Sorry you experienced that. Please use the Report Customer button in your Job History. Our safety team reviews all reports within 24 hours.',
-  'I want to dispute a commission charge': 'Please share the Job ID for the commission you wish to dispute. I will review and respond within 2 hours.',
-  'How do I boost my profile?': 'Go to Profile then Promote My Page. Choose Basic at 1500 naira per week, Standard at 4500 naira per month, or VIP Annual at 40000 naira per year.'
-};
-function sendArtisanSupportMsg(txt) {
-  var qr = document.getElementById('artisan-quick-replies');
-  if (qr) qr.style.display = 'none';
-  _appendMsg('artisan-support-msgs', txt, true);
-  setTimeout(function() {
-    var reply = _artisanReplies[txt] || 'Thank you for contacting Artisan Support. An agent will respond shortly.';
-    _appendMsg('artisan-support-msgs', reply, false);
-  }, 1200);
-}
-function sendArtisanSupportChat() {
-  var inp = document.getElementById('artisan-support-inp');
-  if (!inp || !inp.value.trim()) return;
-  var msg = inp.value.trim(); inp.value = '';
-  _appendMsg('artisan-support-msgs', msg, true);
-  setTimeout(function() {
-    _appendMsg('artisan-support-msgs', 'Got it! A FixMi artisan agent will respond within 5 minutes. Ref: #ART-' + (Math.floor(Math.random()*90000)+10000), false);
-  }, 1500);
-}
+
 
 // ── ADD ADDRESS ──────────────────────────────────────────────
 function selectAddrType(type, btn) {
@@ -5035,52 +4692,16 @@ function selectAddrType(type, btn) {
     if (b) { b.style.background = t===type?'var(--navy)':'var(--gray)'; b.style.color = t===type?'#fff':'var(--navy)'; }
   });
 }
-function saveNewAddress() {
-  var street = document.getElementById('new-addr-street');
-  if (!street || !street.value.trim()) { toast('Please enter your street address'); return; }
-  toast('\u2705 Address saved!');
-  if (street) street.value = '';
-  setTimeout(function() { go('saved-addresses'); }, 1200);
-}
+
 
 // ── ADD PAYMENT METHOD ───────────────────────────────────────
-function selectPmtTab(tab, btn) {
-  var bf = document.getElementById('pmt-bank-form');
-  var cf = document.getElementById('pmt-card-form');
-  var bb = document.getElementById('pmt-tab-bank');
-  var cb = document.getElementById('pmt-tab-card');
-  if (tab === 'bank') {
-    if (bf) bf.style.display = 'block'; if (cf) cf.style.display = 'none';
-    if (bb) { bb.style.background='var(--navy)'; bb.style.color='#fff'; }
-    if (cb) { cb.style.background='var(--gray)'; cb.style.color='var(--navy)'; }
-  } else {
-    if (bf) bf.style.display = 'none'; if (cf) cf.style.display = 'block';
-    if (bb) { bb.style.background='var(--gray)'; bb.style.color='var(--navy)'; }
-    if (cb) { cb.style.background='var(--navy)'; cb.style.color='#fff'; }
-  }
-}
+
 function verifyBankAccount(inp) {
   var r = document.getElementById('bank-verify-result');
   if (r) r.style.display = inp.value.length === 10 ? 'block' : 'none';
 }
-function saveNewBank() {
-  var bank = document.getElementById('new-bank-name');
-  var acct = document.getElementById('new-bank-acct');
-  if (!bank || !bank.value) { toast('Please select your bank'); return; }
-  if (!acct || acct.value.length !== 10) { toast('Please enter a valid 10-digit account number'); return; }
-  toast('\u2705 Bank account added!');
-  setTimeout(function() { go('payment-methods'); }, 1200);
-}
-function saveNewCard() {
-  var num = document.getElementById('new-card-num');
-  var exp = document.getElementById('new-card-exp');
-  var cvv = document.getElementById('new-card-cvv');
-  if (!num || num.value.replace(/ /g,'').length < 16) { toast('Please enter a valid card number'); return; }
-  if (!exp || !exp.value) { toast('Please enter card expiry'); return; }
-  if (!cvv || cvv.value.length < 3) { toast('Please enter CVV'); return; }
-  toast('\u2705 Card added successfully!');
-  setTimeout(function() { go('payment-methods'); }, 1200);
-}
+
+
 </script>
 <script>
 
@@ -5423,9 +5044,34 @@ var CATEGORY_LOOK = {
 function categoryLook(cat) { return CATEGORY_LOOK[cat] || ['🔧', '#EFF6FF']; }
 function firstName(name) { return String(name || '').trim().split(/\s+/)[0] || 'artisan'; }
 
+function greetingText() {
+  var h = new Date().getHours();
+  return h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,';
+}
+function userLocationText(u) {
+  if (!u) return '';
+  var parts = [u.lga, u.state].filter(function (x) { return x && String(x).trim(); });
+  if (parts.length) return parts.join(', ');
+  return String(u.address || '').replace(/^\s*\u{1F4CD}\s*/u, '').trim();
+}
+async function loadHomeStats() {
+  try {
+    var st = await apiFetch('/artisans/stats');
+    setText('home-online-count', String(st.online));
+    setText('home-online-lbl', st.online === 1 ? 'artisan online now' : 'artisans online now');
+    setText('home-stat-artisans', st.artisans.toLocaleString('en-NG'));
+    setText('home-stat-rating', st.avgRating != null ? st.avgRating.toFixed(1) + '★' : 'New');
+    setText('home-stat-arrival', st.avgArrivalMinutes != null ? st.avgArrivalMinutes + ' min' : '–');
+  } catch (e) {}
+}
+setInterval(function () { var on = document.querySelector('.s.on'); if (on && on.id === 'home' && getAccess()) loadHomeStats(); }, 60000);
 async function loadHomeFeed() {
   var nameEl = document.getElementById('home-user-name');
   if (nameEl && window.currentUser) nameEl.textContent = firstName(window.currentUser.name) + ' 👋';
+  setText('home-greeting', window.currentUser ? greetingText() : 'Hello,');
+  setText('home-location', userLocationText(window.currentUser) || 'Add your location');
+  setText('svc-count', String(serviceNames().length));
+  loadHomeStats();
   var list = document.getElementById('nearby-artisans-list');
   if (!list) return;
   try {
@@ -5560,11 +5206,14 @@ function escrowNote(priceKobo, escrowKobo) {
 function bookingIsLive(b) { return !!b && TERMINAL.indexOf(b.status) === -1; }
 
 async function refreshRequestWallet() {
+  var loc = document.getElementById('req-location');
+  if (loc && !loc.value.trim() && window.currentUser && window.currentUser.address) loc.value = String(window.currentUser.address).replace(/^\s*\u{1F4CD}\s*/u, '');
   var note = document.getElementById('req-escrow-note');
   if (!note || !getAccess()) return;
   try {
     var w = await apiFetch('/wallet');
-    note.innerHTML = '🔒 Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. Wallet balance: <b>' + fmtNaira(w.wallet.balanceKobo) + '</b>. If no deal is made, it comes straight back.';
+    note.innerHTML = '<span>🔒</span><span>Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. If no deal is made, it comes straight back.' +
+      '<span class="wallet-line">Wallet balance: <b>' + fmtNaira(w.wallet.balanceKobo) + '</b>' + (w.wallet.balanceKobo < 50000 ? ' · <a href="#" onclick="openWallet();return false">Top up</a>' : '') + '</span></span>';
   } catch (e) {}
 }
 
@@ -5577,6 +5226,8 @@ async function startFindingOrDirect() {
   if (!address.trim()) { toast('Enter your location'); return; }
   if (!budgetKobo) { toast('Enter your budget'); return; }
 
+  var when = (document.getElementById('req-when') || {}).value || '';
+  if (when && !/soon/i.test(when)) issue = issue.trim() + ' (Needed: ' + when + ')';
   var body = { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: budgetKobo };
   if (directArtisan && directArtisan.id) body.artisanId = directArtisan.id;
   var btn = document.getElementById('req-find-btn');
@@ -6295,8 +5946,8 @@ async function loadChatThreads(listId) {
       var name = other ? escapeHtml(other.name) : 'Conversation';
       var last = t.messages && t.messages[0] ? escapeHtml(t.messages[0].body) : 'No messages yet';
       return (
-        '<div class="chat-item" onclick="openChatThread(' + attrJson(t.id) + ',' + attrJson(other ? other.name : 'Conversation') + ')">' +
-        '<div class="chat-ava" style="background:#EFF6FF">🔧</div>' +
+        '<div class="chat-item" onclick="openChatThread(' + attrJson(t.id) + ',' + attrJson(other ? other.name : 'Conversation') + ',' + attrJson(other || null) + ',' + attrJson(t.booking || null) + ')">' +
+        '<div class="chat-ava" style="background:' + (t.booking ? categoryLook(t.booking.category)[1] : '#EFF6FF') + '">' + (t.booking ? categoryLook(t.booking.category)[0] : '💬') + '</div>' +
         '<div style="flex:1;min-width:0"><div class="chat-name">' + name + '</div><div class="chat-prev">' + last + '</div></div>' +
         '</div>'
       );
@@ -6315,7 +5966,7 @@ async function openChatForActiveBooking() {
     var thread = (data.threads || []).find(function (t) { return t.bookingId === window._activeBookingId; });
     if (thread) {
       var other = (thread.participants || []).map(function (p) { return p.user; }).filter(function (u) { return u && window.currentUser && u.id !== window.currentUser.id; })[0];
-      openChatThread(thread.id, other ? other.name : 'Conversation');
+      openChatThread(thread.id, other ? other.name : 'Conversation', other || null, thread.booking || null);
     } else {
       toast('Chat opens once an artisan accepts');
     }
@@ -6324,15 +5975,25 @@ async function openChatForActiveBooking() {
   }
 }
 
-async function openChatThread(threadId, name) {
+async function openChatThread(threadId, name, other, booking) {
   window._activeChatThreadId = threadId;
+  window._chatCtx = { other: other || null, booking: booking || null };
   document.getElementById('chat-header-name').textContent = name || 'Conversation';
-  document.getElementById('chat-header-role').textContent = '🟢 Online';
+  document.getElementById('chat-header-role').textContent = booking ? booking.category + ' job' : '\u00a0';
+  setText('chat-header-ico', booking ? categoryLook(booking.category)[0] : '💬');
+  document.getElementById('chat-call-btn').hidden = !(other && booking);
   if (_socket) _socket.emit('chat:join', { threadId: threadId });
   go('chat');
   await loadChatMessages(threadId);
 }
 
+// Chat and call go together: the call button in a conversation opens the
+// same call options as the job screen.
+function callFromChat() {
+  var c = window._chatCtx || {};
+  if (!c.other || !c.booking) return;
+  openCallSheet(c.other.name, c.other.phone || '', c.other.id, c.booking.id, c.booking ? categoryLook(c.booking.category)[0] : '👤');
+}
 async function loadChatMessages(threadId) {
   var area = document.getElementById('msg-area');
   area.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">Loading…</div>';
@@ -6402,8 +6063,7 @@ async function loadArtisanDash() {
     document.getElementById('ad-balance').textContent = fmtNaira(w.wallet.balanceKobo);
     if (!isDemoAccount(u)) {
       var bal = fmtNaira(w.wallet.balanceKobo);
-      wdAmounts = { daily: bal, weekly: bal, monthly: bal };
-      ['wd-amount', 'wd-balance', 'wd-display', 'art-stat-money'].forEach(function (id) { setText(id, bal); });
+      ['wd-balance', 'art-stat-money'].forEach(function (id) { setText(id, bal); });
       setText('art-stat-jobs', String(ap.jobsDone || 0));
       setText('art-stat-rating', ap.ratingCount ? ap.ratingAvg.toFixed(1) + '★' : '–');
     }
@@ -6960,12 +6620,18 @@ async function openArtisanProfile(id) {
     setText('ap-years', a.yearsExp ? a.yearsExp + ' yrs' : '—');
     setText('ap-rating', a.ratingCount ? a.ratingAvg.toFixed(1) + '★' : 'New');
     setText('ap-about', a.bio || (fn + ' is a verified ' + a.category.toLowerCase() + ' on FixMi.'));
-    setText('ap-online', a.isAvailable ? '💡 ' + fn + ' is online now and can take your job.' : '⏸ ' + fn + ' is offline right now — you can book once they’re back online.');
+    setText('ap-online', a.isAvailable ? '🟢 ' + fn + ' is online now and can take your job.' : '⏸ ' + fn + ' is offline right now — you can book once they’re back online.');
     var btn = document.getElementById('ap-book');
     btn.textContent = 'Book ' + fn + ' →';
     btn.onclick = function () { bookDirectArtisan(a.id, a.user.name, a.category); };
     renderFavBtn();
     document.querySelectorAll('#artisan-profile [data-static-reviews]').forEach(function (el) { el.hidden = true; });
+    var revs = a.reviews || [];
+    setHTML('ap-reviews', '<h3 class="sec-title" style="margin-bottom:10px">Reviews</h3>' + (revs.length ? revs.map(function (r) {
+      return '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">' + escapeHtml(r.by) + '</b><span style="color:var(--yellow);font-weight:700;font-size:13px">' + '⭐'.repeat(r.stars) + '</span></div>' +
+        (r.comment ? '<p style="font-size:13px;color:var(--muted);line-height:1.5">' + escapeHtml(r.comment) + '</p>' : '') +
+        '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + escapeHtml(r.category) + ' · ' + new Date(r.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) + '</div></div>';
+    }).join('') : '<div class="empty-note" style="margin-bottom:16px">No reviews yet.</div>'));
     go('artisan-profile');
   } catch (e) {
     toast('❌ ' + e.message);
@@ -6975,7 +6641,7 @@ async function openArtisanProfile(id) {
 /* ---------------- Menu (phone & tablet) ---------------- */
 var MENU_ITEMS = {
   customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['🔔', 'Notifications', 'openNotifications()'],
-    ['🏢', 'Corporate Plan', "openCorporate()"], ['📍', 'Saved Addresses', "go('saved-addresses')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
+    ['🏢', 'Corporate Plan', "openCorporate()"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
   artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'My Jobs', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
     ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"]]
 };
@@ -7081,7 +6747,7 @@ async function corpSubmitJob(btn) {
   if (!budget || budget < 500) { toast('Enter a budget of at least ₦500'); return; }
   btn.disabled = true;
   try {
-    var d = await apiFetch('/bookings', { method: 'POST', body: { category: svc, issue: (/^Normal/.test(pr) ? '' : '[' + pr.split(' —')[0] + '] ') + desc, address: loc, priceKobo: Math.round(budget * 100), corporate: true } });
+    var d = await apiFetch('/bookings', { method: 'POST', body: { category: svc, issue: (pr === 'Normal' ? '' : '[' + pr + '] ') + desc, address: loc, priceKobo: Math.round(budget * 100), corporate: true } });
     ['job-loc', 'job-desc', 'job-budget'].forEach(function (id) { setValue(id, ''); });
     toast(d.notified ? '📣 Sent to ' + d.notified + ' artisan' + (d.notified > 1 ? 's' : '') + ' nearby' : 'Request is open — artisans will see it as they come online');
     showCustomerBooking(d.booking);
@@ -7117,6 +6783,167 @@ async function cancelCorpPlan(btn) {
     _corp = null; go('home');
   } catch (e) { toast('❌ ' + e.message); }
   btn.dataset.sure = ''; btn.innerHTML = 'End Plan &amp; Refund Unused Escrow';
+}
+
+
+/* ---------------- Profile, bank, withdrawals, password, support (real) ---------------- */
+function fillProfileForms() {
+  var u = window.currentUser || {};
+  setValue('ep-name', u.name); setValue('ep-phone', u.phone); setValue('ep-email', u.email);
+  setValue('ep-address', u.address); setValue('ep-lga', u.lga); setValue('ep-state', u.state);
+  setValue('aep-name', u.name); setValue('aep-phone', u.phone); setValue('aep-lga', u.lga); setValue('aep-state', u.state);
+}
+async function saveProfile(btn) {
+  var name = document.getElementById('ep-name').value.trim();
+  if (name.length < 2) { toast('Please enter your full name'); return; }
+  btn.disabled = true;
+  try {
+    var d = await apiFetch('/users/me', { method: 'PATCH', body: { name: name, address: document.getElementById('ep-address').value.trim(), lga: document.getElementById('ep-lga').value.trim(), state: document.getElementById('ep-state').value } });
+    setSession(getAccess(), getRefresh(), Object.assign({}, window.currentUser, d.user));
+    setText('cust-prof-name', window.currentUser.name);
+    toast('✅ Profile saved');
+    loadHomeFeed();
+    goBack();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+async function openArtisanEdit() {
+  fillProfileForms();
+  var sel = document.getElementById('aep-category');
+  sel.innerHTML = serviceNames().map(function (x) { return '<option>' + escapeHtml(x.name) + '</option>'; }).join('');
+  go('artisan-edit-profile');
+  try {
+    var ap = (await apiFetch('/auth/me')).user.artisanProfile || {};
+    if (ap.category) { if (![].some.call(sel.options, function (o) { return o.value === ap.category; })) sel.insertAdjacentHTML('afterbegin', '<option>' + escapeHtml(ap.category) + '</option>'); sel.value = ap.category; }
+    setValue('aep-years', ap.yearsExp != null ? String(ap.yearsExp) : '');
+    setValue('aep-bio', ap.bio || '');
+  } catch (e) {}
+}
+async function saveArtisanProfile(btn) {
+  var name = document.getElementById('aep-name').value.trim();
+  if (name.length < 2) { toast('Please enter your full name'); return; }
+  btn.disabled = true;
+  try {
+    var d = await apiFetch('/users/me', { method: 'PATCH', body: { name: name, lga: document.getElementById('aep-lga').value.trim(), state: document.getElementById('aep-state').value } });
+    var years = document.getElementById('aep-years').value;
+    await apiFetch('/users/me/artisan-profile', { method: 'PATCH', body: { category: document.getElementById('aep-category').value, bio: document.getElementById('aep-bio').value.trim(), yearsExp: years === '' ? undefined : Number(years) } });
+    setSession(getAccess(), getRefresh(), Object.assign({}, window.currentUser, d.user));
+    toast('✅ Profile saved');
+    loadArtisanDash();
+    goBack();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+var _bankNeedsName = true;
+async function openBankAccount() {
+  go('artisan-bank-account');
+  var u = window.currentUser || {};
+  setHTML('bank-current', u.bankAccountNumber ? '<div class="card" style="margin-bottom:14px"><b>🏦 ' + escapeHtml(u.bankName || '') + '</b><div style="font-size:13px;color:var(--muted);margin-top:3px">' + escapeHtml(u.bankAccountNumber) + ' · ' + escapeHtml(u.bankAccountName || '') + '</div><div style="font-size:12px;color:var(--g2);margin-top:4px">Withdrawals go to this account. Save new details below to change it.</div></div>' : '<div class="job-hint" style="text-align:left;margin-bottom:12px">No bank account yet. Add one to withdraw your earnings.</div>');
+  try {
+    var d = await apiFetch('/users/banks');
+    _bankNeedsName = !!d.needsAccountName;
+    document.getElementById('bank-acctname-wrap').hidden = !_bankNeedsName;
+    setHTML('bank-name', '<option value="">Select your bank…</option>' + d.banks.map(function (b) { return '<option value="' + escapeHtml(b.name) + '" data-code="' + escapeHtml(b.code || '') + '">' + escapeHtml(b.name) + '</option>'; }).join(''));
+    if (u.bankName) setValue('bank-name', u.bankName);
+  } catch (e) { setHTML('bank-name', '<option value="">Could not load banks</option>'); }
+}
+async function saveBankAccount(btn) {
+  var sel = document.getElementById('bank-name'), opt = sel.options[sel.selectedIndex];
+  var acct = document.getElementById('bank-acct').value.trim();
+  if (!sel.value) { toast('Choose your bank'); return; }
+  if (!/^\d{10}$/.test(acct)) { toast('Enter your 10-digit account number'); return; }
+  btn.disabled = true;
+  try {
+    var d = await apiFetch('/users/me/bank-account', { method: 'POST', body: { bankName: sel.value, bankCode: opt && opt.getAttribute('data-code') || undefined, bankAccountNumber: acct, bankAccountName: _bankNeedsName ? document.getElementById('bank-acctname').value.trim() : undefined } });
+    setSession(getAccess(), getRefresh(), Object.assign({}, window.currentUser, d.user));
+    toast('✅ Bank account saved: ' + d.user.bankAccountName);
+    setValue('bank-acct', ''); setValue('bank-acctname', '');
+    openBankAccount();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+var WD_STATUS = { PENDING: '⏳ Pending', PROCESSING: '⏳ Processing', SUCCESS: '✓ Paid', COMPLETED: '✓ Paid', FAILED: '✕ Failed', REVERSED: '↩ Reversed' };
+async function openWithdraw() {
+  go('artisan-withdraw');
+  var u = window.currentUser || {};
+  setText('wd-bank', u.bankAccountNumber ? 'To ' + (u.bankName || '') + ' · ' + u.bankAccountNumber : 'No bank account linked yet');
+  try {
+    var w = (await apiFetch('/wallet')).wallet;
+    setText('wd-balance', fmtNaira(w.balanceKobo));
+    setValue('wd-input', w.balanceKobo >= 10000 ? String(Math.floor(w.balanceKobo / 100)) : '');
+    var l = (await apiFetch('/wallet/withdrawals')).withdrawals || [];
+    setHTML('wd-list', l.length ? l.map(function (x) {
+      return '<div class="tx-row"><div><b>' + fmtNaira(x.amountKobo) + '</b><small>' + new Date(x.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + '</small></div><span>' + (WD_STATUS[x.status] || x.status) + '</span></div>';
+    }).join('') : '<div class="empty-note">No withdrawals yet.</div>');
+  } catch (e) { toast('❌ ' + e.message); }
+}
+function artisanWithdrawNow() { openWithdraw(); }
+async function confirmWithdraw(btn) {
+  if (!(window.currentUser || {}).bankAccountNumber) { toast('Add your bank account first'); setTimeout(openBankAccount, 700); return; }
+  var amt = Number(document.getElementById('wd-input').value);
+  if (!amt || amt < 100) { toast('Enter at least ₦100'); return; }
+  btn.disabled = true;
+  try {
+    await apiFetch('/wallet/withdraw', { method: 'POST', body: { amountKobo: Math.round(amt * 100) } });
+    toast('✅ Withdrawal of ' + fmtNaira(amt * 100) + ' requested');
+    openWithdraw();
+    if (isArtisanUser()) loadArtisanDash();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+// Dashboard earnings card: what you actually earned today / this week / this month.
+var _wdPeriod = 'daily';
+async function setWdPeriod(period) {
+  _wdPeriod = period;
+  ['daily', 'weekly', 'monthly'].forEach(function (k) {
+    var b = document.getElementById('wd-btn-' + k); if (!b) return;
+    b.style.background = k === period ? '#0B1A2E' : '#F2F5F8'; b.style.color = k === period ? '#fff' : '#7A8EA8';
+  });
+  setText('wd-amount-lbl', { daily: 'Earned today:', weekly: 'Earned this week:', monthly: 'Earned this month:' }[period]);
+  try {
+    var since = new Date(); since.setHours(0, 0, 0, 0);
+    if (period === 'weekly') since.setDate(since.getDate() - 6);
+    if (period === 'monthly') since.setDate(since.getDate() - 29);
+    var tx = (await apiFetch('/wallet/transactions')).transactions || [];
+    var sum = tx.filter(function (t) { return t.type === 'PAYOUT' && new Date(t.createdAt) >= since; }).reduce(function (n, t) { return n + t.amountKobo; }, 0);
+    if (_wdPeriod === period) setText('wd-amount', fmtNaira(sum));
+  } catch (e) {}
+}
+
+async function changePassword(btn) {
+  var cur = document.getElementById('pw-current').value, nw = document.getElementById('pw-new').value;
+  if (!cur) { toast('Enter your current password'); return; }
+  if (nw.length < 6) { toast('The new password needs at least 6 characters'); return; }
+  btn.disabled = true;
+  try {
+    await apiFetch('/auth/change-password', { method: 'POST', body: { currentPassword: cur, newPassword: nw } });
+    setValue('pw-current', ''); setValue('pw-new', '');
+    toast('✅ Password updated');
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+var TICKET_STATUS = { OPEN: 'Open', IN_REVIEW: 'In review', RESOLVED: 'Resolved' };
+async function openSupport(subject) {
+  setValue('sup-subject', subject || ''); setValue('sup-message', '');
+  go('support');
+  try {
+    var t = (await apiFetch('/support/tickets')).tickets || [];
+    setHTML('sup-list', t.length ? t.map(function (x) {
+      return '<div class="card" style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:10px"><b style="font-size:14px">' + escapeHtml(x.subject) + '</b><span class="pill ' + (x.status === 'RESOLVED' ? 'pill-g' : 'pill-gray') + '">' + (TICKET_STATUS[x.status] || x.status) + '</span></div>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:5px">' + escapeHtml(x.message) + '</div>' + (x.resolution ? '<div style="font-size:13px;color:var(--g2);margin-top:6px"><b>FixMi:</b> ' + escapeHtml(x.resolution) + '</div>' : '') +
+        '<div style="font-size:11px;color:var(--muted);margin-top:6px">' + new Date(x.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</div></div>';
+    }).join('') : '<div class="empty-note">You haven’t contacted support yet.</div>');
+  } catch (e) {}
+}
+async function sendSupportTicket(btn) {
+  var subject = document.getElementById('sup-subject').value.trim(), message = document.getElementById('sup-message').value.trim();
+  if (!subject) { toast('Add a subject'); return; }
+  if (message.length < 5) { toast('Tell us a bit more'); return; }
+  btn.disabled = true;
+  try {
+    await apiFetch('/support/tickets', { method: 'POST', body: { subject: subject, message: message } });
+    toast('✅ Sent to FixMi support');
+    openSupport();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
 }
 
 function fillCorporateServices() {
@@ -7171,6 +6998,8 @@ async function confirmPromoPayment() {
     if (id === 'history' || id === 'profile') loadBookingHistory('history-real', false);
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
     if (id === 'corp-plan') renderCorpChips();
+    if (id === 'edit-profile') fillProfileForms();
+    if (id === 'artisan-dash') setWdPeriod(_wdPeriod);
     if (id === 'corp-topup') apiFetch('/wallet').then(function (d) { setText('tu-wallet', 'balance ' + fmtNaira(d.wallet.balanceKobo)); }).catch(function () {});
     // the request pop-up stays on top of every artisan screen except the job itself
     if (isArtisanUser()) renderRequests();
