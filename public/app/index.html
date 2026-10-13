@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FixMi - Trusted Artisans Near You</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300C65E'/%3E%3Cpath d='M22 14h24v8H31v7h13v8H31v13h-9z' fill='%23fff'/%3E%3C/svg%3E">
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js" defer></script>
+<script src="/socket.io/socket.io.js" defer></script>
 
 <style>
 @font-face {
@@ -114,7 +114,7 @@ textarea.input{min-height:88px;resize:none}
 .sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
 .sec-title{font-family:'AppFont',sans-serif;font-size:17px;font-weight:700;color:var(--navy)}
 .see-all{color:var(--g);font-size:13px;font-weight:600;cursor:pointer}
-.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.svc-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .svc-item{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer}
 .svc-ico{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px}
 .svc-lbl{font-size:11px;color:var(--text);font-weight:600;text-align:center}
@@ -307,7 +307,7 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .price-txt small{color:var(--muted);font-size:10px;display:block;font-weight:400}
 .loc{display:flex;align-items:center;gap:6px;margin-top:10px;color:rgba(255,255,255,.5);font-size:13px}
 .loc b{color:rgba(255,255,255,.8)}
-@keyframes sIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@keyframes sIn{from{opacity:0}to{opacity:1}}
 .s.on{animation:sIn .18s ease}
 
 /* ===== RESPONSIVE: mobile (default) / tablet / desktop =====
@@ -344,6 +344,164 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
   .device-frame{height:min(900px,92vh);max-height:900px}
 }
 
+/* ===== Live booking: offers, requests, job stages ===== */
+.feat-open{background:none;border:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;width:100%;font-family:inherit;color:inherit;min-width:0}
+.oc-btn{flex:1;border:none;border-radius:12px;padding:12px 10px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;cursor:pointer;min-width:0}
+.oc-btn.green{background:var(--g);color:#fff}
+.oc-btn.ghost{background:var(--gray);color:var(--navy)}
+.oc-btn.blue{background:#EFF6FF;color:#1E40AF;border:1.5px solid #93C5FD}
+.oc-btn.orange{background:#FFF3ED;color:var(--orange);border:1.5px solid #FDBA74}
+.oc-btn.navy{background:var(--navy);color:#fff;flex:0 0 auto;padding:12px 18px}
+.oc-btn.wide{display:block;width:100%;margin-top:8px}
+.oc-acts{display:flex;gap:9px;margin-top:10px}
+.oc-counter{display:flex;gap:8px;margin-top:10px}
+.oc-counter[hidden]{display:none}
+.oc-counter .input{flex:1;min-width:0;padding:11px 13px}
+.offer-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 14px rgba(11,26,46,.06)}
+.oc-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.oc-name{font-weight:700;font-size:15px;color:var(--navy)}
+.oc-meta{font-size:12px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.oc-price{font-family:'AppFont',sans-serif;font-size:26px;font-weight:800;color:var(--navy)}
+.oc-price small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
+.oc-hold{background:#FFF3ED;color:#92400E;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.55}
+.oc-wait{background:#EFF6FF;color:#1E40AF;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.55}
+.esc-note{font-size:12px;color:var(--muted);margin-top:6px}
+.esc-note.up{color:var(--orange);font-weight:600}
+.esc-note.down{color:var(--g2);font-weight:600}
+.co-hero{padding:4px 18px 22px;color:#fff}
+.co-cat{font-weight:800;font-size:20px;font-family:'AppFont',sans-serif}
+.co-issue{color:rgba(255,255,255,.7);font-size:14px;margin-top:6px}
+.co-addr{color:rgba(255,255,255,.55);font-size:13px;margin-top:4px}
+.co-escrow{display:inline-block;margin-top:12px;background:rgba(0,198,94,.18);color:var(--g);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700}
+.co-waiting{text-align:center;color:var(--navy);font-weight:700;font-size:15px;padding:8px 0 18px}
+.co-waiting[hidden]{display:none}
+.co-waiting-sub{font-weight:400;color:var(--muted);font-size:13px;line-height:1.6;margin-top:6px}
+.radar-wrap.mini{width:110px;height:110px;margin:0 auto 14px}
+.radar-wrap.mini .ring{animation-name:ringMini}
+@keyframes ringMini{0%{width:44px;height:44px;opacity:.9}100%{width:110px;height:110px;opacity:0}}
+.radar-wrap.mini .radar-core{width:44px;height:44px;font-size:20px}
+.job-hero{padding:6px 18px 20px;color:#fff}
+.job-tag{display:inline-block;background:rgba(0,198,94,.2);color:var(--g);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:8px}
+.job-tag:empty{display:none}
+.job-title{font-family:'AppFont',sans-serif;font-size:21px;font-weight:800;line-height:1.3}
+.job-steps{display:flex;gap:4px;margin-top:16px}
+.js-step{flex:1;font-size:10px;color:rgba(255,255,255,.4);text-align:center;min-width:0}
+.js-step span{display:block;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin-bottom:6px}
+.js-step.done{color:rgba(255,255,255,.85)}
+.js-step.done span{background:var(--g)}
+.job-person{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.job-person:empty{display:none}
+.job-money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.job-money:empty{display:none}
+.job-money > div{background:var(--gray);border-radius:12px;padding:10px 12px;min-width:0}
+.job-money small{display:block;font-size:11px;color:var(--muted)}
+.job-money b{display:block;font-size:14px;color:var(--navy);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.job-panel{border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.6;margin-bottom:12px}
+.job-panel.green{background:var(--g3);color:var(--g2)}
+.job-panel.blue{background:#EFF6FF;color:#1E40AF}
+.job-panel.orange{background:#FFF3ED;color:#92400E}
+.job-panel.grey{background:var(--gray);color:var(--muted)}
+.job-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.contact-btns{display:flex;gap:8px;flex-shrink:0}
+.ct-btn{width:42px;height:42px;border-radius:12px;border:none;background:var(--g3);font-size:19px;cursor:pointer}
+.rq-card{background:#fff;border:2px solid var(--g);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,198,94,.12)}
+.rq-card.current{border-color:var(--navy);box-shadow:none}
+.rq-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+.rq-tag{background:var(--g3);color:var(--g2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700}
+.rq-tag.green{background:var(--navy);color:#fff}
+.rq-time{font-size:12px;color:var(--muted)}
+.rq-title{font-family:'AppFont',sans-serif;font-size:19px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.rq-issue{color:var(--muted);font-size:13px;margin-bottom:4px}
+.rq-addr{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;overflow-wrap:anywhere}
+.rq-price{font-family:'AppFont',sans-serif;font-size:21px;font-weight:800;color:var(--orange)}
+.rq-help{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px}
+.rq-sent{background:#EFF6FF;color:#1E40AF;border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.5}
+.req-pop{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9000;max-height:72vh;overflow-y:auto;background:var(--navy);border-radius:22px;padding:10px 10px 2px;box-shadow:0 18px 60px rgba(0,0,0,.4);animation:popIn .25s ease}
+.req-pop[hidden],.req-pill[hidden]{display:none}
+@keyframes popIn{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.rp-bar{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;padding:0 4px 8px}
+.rp-nav{width:30px;height:30px;border-radius:9px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer}
+.rp-nav[hidden]{display:none}
+.rp-hide{margin-left:auto;background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:9px;padding:6px 12px;font-weight:700;font-size:12px;cursor:pointer}
+.req-pop .rq-card{margin-bottom:8px}
+.req-pill{position:fixed;right:14px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:9000;background:var(--orange);color:#fff;border:none;border-radius:30px;padding:12px 18px;font-weight:800;font-size:14px;box-shadow:0 10px 30px rgba(255,107,43,.45);cursor:pointer;font-family:inherit}
+.sheet-overlay{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet-overlay[hidden]{display:none}
+.sheet{background:#fff;border-radius:22px 22px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));width:100%;max-width:520px}
+.sheet-title{font-family:'AppFont',sans-serif;font-weight:800;font-size:18px;color:var(--navy)}
+.sheet-sub{font-size:13px;color:var(--muted);margin:2px 0 14px}
+.call-opt{display:flex;align-items:center;gap:14px;width:100%;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font-family:inherit;text-align:left}
+.call-opt:hover{border-color:var(--g)}
+.co-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.co-txt{flex:1;display:flex;flex-direction:column}
+.co-txt b{font-size:14px;color:var(--navy)}
+.co-txt small{font-size:12px;color:var(--muted);margin-top:2px}
+.co-arr{color:var(--muted);font-size:18px}
+.menu-overlay{justify-content:flex-end;align-items:stretch}
+.menu-panel{width:min(320px,86%);height:100%;background:var(--navy);padding:18px 14px;overflow-y:auto;animation:menuIn .2s ease}
+@keyframes menuIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.menu-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.menu-user{color:#fff;padding:0 6px 16px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}
+.menu-user b{display:block;font-size:16px}
+.menu-user small{display:block;color:rgba(255,255,255,.45);font-size:12px;margin-top:3px;overflow-wrap:anywhere}
+.menu-item{display:flex;align-items:center;gap:14px;width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;padding:13px 10px;border-radius:12px;cursor:pointer;font-family:inherit;text-align:left}
+.menu-item:hover{background:rgba(255,255,255,.07)}
+.menu-item span{width:24px;text-align:center;font-size:19px}
+.menu-item.danger{color:#FCA5A5}
+.tb-ico{position:relative}
+.notif-count{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff}
+.notif-count[hidden]{display:none}
+.notif-row{display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border)}
+.notif-row.unread{background:#F8FFF9}
+.notif-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.notif-title{font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px}
+.notif-body{font-size:13px;color:var(--muted);line-height:1.4}
+.notif-time{font-size:11px;color:var(--muted);margin-top:3px}
+.wallet-card{background:var(--navy);border-radius:18px;padding:20px;color:#fff}
+.wc-lbl{font-size:12px;color:rgba(255,255,255,.5)}
+.wc-bal{font-family:'AppFont',sans-serif;font-size:34px;font-weight:800;color:var(--g);margin:4px 0}
+.wc-note{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+.tx-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.tx-title{font-size:14px;font-weight:600;color:var(--navy)}
+.tx-time{font-size:11px;color:var(--muted);margin-top:2px}
+.tx-amt{font-weight:800;font-size:14px;white-space:nowrap}
+.tx-amt.plus{color:var(--g2)}
+.tx-amt.minus{color:var(--navy)}
+.hist-card{cursor:pointer;margin-bottom:11px}
+[data-status][hidden],.hist-empty[hidden]{display:none !important}
+.active-banner{display:flex;align-items:center;gap:12px;margin:14px 18px 0;background:#FFF3ED;border:1.5px solid #FDBA74;border-radius:16px;padding:13px 15px;cursor:pointer}
+.active-banner[hidden]{display:none}
+.ab-dot{width:12px;height:12px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 5px rgba(255,107,43,.2);flex-shrink:0;animation:glow 2s ease-in-out infinite}
+.ab-title{font-weight:700;font-size:14px;color:var(--navy)}
+.ab-sub{font-size:12px;color:#92400E;margin-top:2px}
+.ab-go{font-weight:800;color:var(--orange);font-size:13px;white-space:nowrap}
+.only-wide{display:none !important}
+/* Phone & tablet: the tab bar is pinned to the bottom of the screen so it
+   never jumps when a page is short (Messages, History, All Services). */
+.s > .bnav{position:fixed;left:0;right:0;bottom:0;z-index:40}
+.s:has(> .bnav){padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.s > div[style="height:78px"]{display:none}
+.feat-grid.featured .feat-card:nth-child(n+11){display:none}
+@media (max-width:420px){
+  .svc-ico{width:50px;height:50px;font-size:24px;border-radius:14px}
+  .svc-lbl{font-size:10px}
+}
+@media (min-width:640px){
+  .feat-grid.featured .feat-card:nth-child(n+11){display:flex}
+  .feat-grid.featured .feat-card:nth-child(n+16){display:none}
+  .req-pop{left:auto;right:20px;width:420px}
+}
+@media (min-width:1024px){
+  .feat-grid.featured .feat-card:nth-child(n+16){display:flex}
+  .only-wide{display:flex !important}
+  .only-narrow{display:none !important}
+  .s:has(> .bnav){padding-bottom:0}
+  .s > .bnav{right:auto}
+  .req-pop{bottom:24px;right:24px}
+  .req-pill{bottom:24px;right:24px}
+}
+
+
 /* ===== RESPONSIVE (full-screen): phone / tablet column / desktop sidebar ===== */
 :root{--col:760px;--rail:240px}
 html,body{height:100%;height:100dvh}
@@ -363,8 +521,8 @@ body{background:#fff}
   .auth-body{max-width:520px !important}
   .auth-hero{padding-top:28px;padding-bottom:40px}
   .match-card{max-width:560px !important}
-  .svc-grid{grid-template-columns:repeat(6,1fr);gap:16px}
-  .feat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .svc-grid{gap:16px}
+  .feat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .earn-grid{grid-template-columns:repeat(4,1fr)}
   .earn-card.full{grid-column:span 2}
   .admin-grid{grid-template-columns:repeat(6,1fr)}
@@ -392,7 +550,6 @@ body{background:#fff}
   .s > .bnav .bn.on .bn-lbl{color:var(--g)}
   .s > .bnav .bn-dot{top:14px;right:14px;border-color:var(--navy)}
   .s:has(> .bnav) > div[style="height:78px"]{display:none}
-  .svc-grid{grid-template-columns:repeat(8,1fr)}
   .feat-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
   .card:hover{box-shadow:0 6px 24px rgba(11,26,46,.12)}
   .btn,.qd-btn{max-width:520px;margin-left:auto;margin-right:auto}
@@ -564,8 +721,9 @@ body{background:#fff}
   <div class="topbar">
     <div class="tb-logo">Fix<span>Mi</span></div>
     <div style="display:flex;gap:9px">
-      <div class="tb-ico" onclick="go('notifications')">🔔<div class="badge-dot" data-demo></div></div>
-      <div class="tb-ico" onclick="go('profile')">👤</div>
+      <div class="tb-ico" onclick="openNotifications()" aria-label="Notifications">🔔<span class="notif-count" hidden></span></div>
+      <div class="tb-ico only-wide" onclick="go('profile')" aria-label="Profile">👤</div>
+      <div class="tb-ico only-narrow" onclick="openMenu()" aria-label="Menu">☰</div>
     </div>
   </div>
 
@@ -580,6 +738,12 @@ body{background:#fff}
     <div class="strip-item"><div class="strip-num">389</div><div class="strip-lbl">Artisans</div></div>
     <div class="strip-item"><div class="strip-num">4.8★</div><div class="strip-lbl">Avg Rating</div></div>
     <div class="strip-item"><div class="strip-num">8 min</div><div class="strip-lbl">Avg Arrival</div></div>
+  </div>
+
+  <div class="active-banner" id="home-active-banner" hidden onclick="resumeBooking()">
+    <div class="ab-dot"></div>
+    <div style="flex:1;min-width:0"><div class="ab-title" id="hab-title">Your request is open</div><div class="ab-sub" id="hab-sub">Tap to view</div></div>
+    <span class="ab-go">View ›</span>
   </div>
 
   <div class="sec" id="home-search-results" hidden>
@@ -625,7 +789,7 @@ body{background:#fff}
 
   <div class="sec">
     <div class="sec-hdr"><div class="sec-title">⭐ Featured Artisans</div></div>
-    <div id="nearby-artisans-list" class="feat-grid">
+    <div id="nearby-artisans-list" class="feat-grid featured">
       <div class="empty-note">Loading featured artisans…</div>
     </div>
   </div>
@@ -759,6 +923,14 @@ body{background:#fff}
       <div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)">Others</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Can't find your service? Describe it and we'll match you</div></div>
     </div>
   </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn" onclick="go('corp-plan')"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
+  </div>
 </div>
 
 <!-- ████ ARTISAN PROFILE ████ -->
@@ -767,36 +939,36 @@ body{background:#fff}
     <div style="display:flex;justify-content:space-between;margin-bottom:18px">
       <button class="back w" onclick="goBack()">←</button>
       <div style="display:flex;gap:8px">
-        <div style="background:rgba(255,255,255,.1);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="toast('🔗 Link copied!')">🔗</div>
-        <div style="background:rgba(255,255,255,.1);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="toast('❤️ Saved to favourites!')">♡</div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff" onclick="toast('🔗 Link copied!')">🔗</div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:20px" id="ap-fav" onclick="toggleFav()" role="button" aria-label="Save to favourites">♡</div>
       </div>
     </div>
     <div style="text-align:center">
-      <div style="width:80px;height:80px;background:#FEF9C3;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 13px;border:3px solid var(--g)">⚡</div>
-      <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:22px;font-weight:800">Emeka Okafor</div>
-      <div style="color:rgba(255,255,255,.45);font-size:14px;margin-top:4px">⚡ Electrician · Ikeja, Lagos</div>
-      <div style="display:flex;justify-content:center;gap:7px;margin-top:11px;flex-wrap:wrap">
+      <div id="ap-ava" style="width:80px;height:80px;background:#FEF9C3;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 13px;border:3px solid var(--g)">⚡</div>
+      <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:22px;font-weight:800" id="ap-name">Emeka Okafor</div>
+      <div style="color:rgba(255,255,255,.45);font-size:14px;margin-top:4px" id="ap-role">⚡ Electrician · Ikeja, Lagos</div>
+      <div style="display:flex;justify-content:center;gap:7px;margin-top:11px;flex-wrap:wrap" id="ap-pills">
         <span class="pill pill-g">⭐ 4.9 (147 reviews)</span>
         <span class="pill pill-g">✓ ID Verified</span>
         <span class="pill pill-o">🔥 Top Rated</span>
       </div>
     </div>
     <div style="display:flex;justify-content:space-around;margin-top:18px;border-top:1px solid rgba(255,255,255,.1);padding-top:15px">
-      <div style="text-align:center"><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:18px;font-weight:800">147</div><div style="color:rgba(255,255,255,.35);font-size:11px">Jobs Done</div></div>
-      <div style="text-align:center"><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:18px;font-weight:800">68%</div><div style="color:rgba(255,255,255,.35);font-size:11px">Repeat Rate</div></div>
-      <div style="text-align:center"><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:18px;font-weight:800">8 min</div><div style="color:rgba(255,255,255,.35);font-size:11px">Avg Arrival</div></div>
+      <div style="text-align:center"><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:18px;font-weight:800" id="ap-jobs">147</div><div style="color:rgba(255,255,255,.35);font-size:11px">Jobs Done</div></div>
+      <div style="text-align:center"><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:18px;font-weight:800" id="ap-years">68%</div><div style="color:rgba(255,255,255,.35);font-size:11px">Experience</div></div>
+      <div style="text-align:center"><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:18px;font-weight:800" id="ap-rating">8 min</div><div style="color:rgba(255,255,255,.35);font-size:11px">Rating</div></div>
     </div>
   </div>
   <div style="padding:18px">
-    <div class="info blue"><span>💡</span><span>Emeka is currently online and can take a job within 30 minutes.</span></div>
+    <div class="info blue"><span id="ap-online">💡 Emeka is currently online and can take a job within 30 minutes.</span></div>
     <h3 style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:9px">About</h3>
-    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:16px">Certified electrician with 5+ years experience. I handle residential wiring, fan/AC installation, fault diagnosis, generator maintenance, and more. Neat, safe, done right first time.</p>
-    <h3 style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px">Recent Reviews</h3>
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">Blessing O.</b><span style="color:var(--yellow);font-weight:700;font-size:13px">⭐⭐⭐⭐⭐</span></div><p style="font-size:13px;color:var(--muted);line-height:1.5">Very professional and neat. Fixed our wiring issue quickly. Will use again!</p></div>
-    <div class="card" style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">Tunde M.</b><span style="color:var(--yellow);font-weight:700;font-size:13px">⭐⭐⭐⭐⭐</span></div><p style="font-size:13px;color:var(--muted);line-height:1.5">Arrived on time, very respectful. Excellent work!</p></div>
+    <p id="ap-about" style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:16px">Certified electrician with 5+ years experience. I handle residential wiring, fan/AC installation, fault diagnosis, generator maintenance, and more. Neat, safe, done right first time.</p>
+    <h3 data-static-reviews style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px">Recent Reviews</h3>
+    <div data-static-reviews class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">Blessing O.</b><span style="color:var(--yellow);font-weight:700;font-size:13px">⭐⭐⭐⭐⭐</span></div><p style="font-size:13px;color:var(--muted);line-height:1.5">Very professional and neat. Fixed our wiring issue quickly. Will use again!</p></div>
+    <div data-static-reviews class="card" style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">Tunde M.</b><span style="color:var(--yellow);font-weight:700;font-size:13px">⭐⭐⭐⭐⭐</span></div><p style="font-size:13px;color:var(--muted);line-height:1.5">Arrived on time, very respectful. Excellent work!</p></div>
     <div style="display:flex;gap:10px">
-      <button class="btn-msg" style="flex:1;border:none;border-radius:12px;padding:14px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;cursor:pointer;background:var(--gray);color:var(--navy)" onclick="go('chat')">💬 Message</button>
-      <button class="btn btn-g" style="flex:2" onclick="bookSvc('Electrician','⚡','#FEF9C3')">Book Emeka →</button>
+      <button class="btn-msg" style="flex:1;border:none;border-radius:12px;padding:14px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;cursor:pointer;background:var(--gray);color:var(--navy)" onclick="toast('Chat opens once you book and the artisan accepts')">💬 Message</button>
+      <button class="btn btn-g" style="flex:2" id="ap-book" onclick="hireArtisanAgain(document.getElementById('ap-name').textContent)">Book Emeka →</button>
     </div>
   </div>
 </div>
@@ -863,8 +1035,9 @@ body{background:#fff}
       <div style="font-size:22px" id="req-artisan-ico">⚡</div>
       <div><div style="font-size:13px;font-weight:700;color:var(--g2)" id="req-artisan-name">Artisan Name</div><div style="font-size:12px;color:var(--g2)">Your selected artisan — booking directly</div></div>
     </div>
-    <div class="info yellow"><span>💡</span><span>You'll agree on the final price with the artisan. For complicated jobs, the artisan may put the price <b>On Hold</b> to assess the job at your location first before quoting.</span></div>
-    <button class="btn btn-g" id="req-find-btn" onclick="startFindingOrDirect()">🔍 Find Nearby Artisans</button>
+    <div class="info green" id="req-escrow-note"><span>🔒 Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. If no deal is made, it comes straight back.</span></div>
+    <div class="info yellow"><span>💡</span><span>Artisans can accept your budget, send their own price, or put the price <b>On Hold</b> to see the job first. You accept, counter or decline each offer.</span></div>
+    <button class="btn btn-g" id="req-find-btn" onclick="startFindingOrDirect()">🔒 Pay into Escrow &amp; Find Artisans</button>
     <div style="height:16px"></div>
   </div>
 </div>
@@ -883,8 +1056,8 @@ body{background:#fff}
     <div><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:26px;font-weight:800">5 km</div><div style="color:rgba(255,255,255,.35);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Radius</div></div>
     <div><div style="font-family:'AppFont',sans-serif;color:var(--g);font-size:26px;font-weight:800" id="f-responded">0</div><div style="color:rgba(255,255,255,.35);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-top:3px">Responded</div></div>
   </div>
-  <button class="btn btn-g" style="max-width:270px;margin-bottom:12px" onclick="checkBookingStatusNow()">🔄 Check Status</button>
-  <button style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:13px 32px;font-size:14px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif" onclick="cancelActiveBookingReal()">Cancel Request</button>
+  <button class="btn btn-g" style="max-width:270px;margin-bottom:12px" onclick="resumeBooking()">🔄 Check Status</button>
+  <button style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:13px 32px;font-size:14px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif" onclick="cancelActiveRequest(this)">Cancel Request</button>
 </div>
 
 <!-- ████ ARTISANS FOUND ████ -->
@@ -1206,8 +1379,6 @@ body{background:#fff}
     <div style="font-family:'AppFont',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:11px">Payment Method</div>
     <div class="pay-method sel" onclick="selectPayMethod(this,'bank')"><span style="font-size:22px">🏦</span><div><div style="font-weight:600;font-size:14px">Bank Transfer</div><div style="font-size:12px;color:var(--muted)">Transfer to FixMi, artisan paid after confirmation</div></div><span style="margin-left:auto;color:var(--g);font-size:18px">✓</span></div>
     <div class="pay-method" onclick="selectPayMethod(this,'card')"><span style="font-size:22px">💳</span><div><div style="font-weight:600;font-size:14px">Card Payment</div><div style="font-size:12px;color:var(--muted)">Debit / Credit via Paystack</div></div></div>
-    <div class="pay-method" onclick="selectPayMethod(this,'cash')"><span style="font-size:22px">💵</span><div><div style="font-weight:600;font-size:14px">Cash Payment</div><div style="font-size:12px;color:var(--muted)">Pay artisan directly — commission due to FixMi within 7 days</div></div></div>
-    <div id="cash-warning" style="display:none;background:#FFF3ED;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:13px;color:#92400E;line-height:1.6"><b>⚠️ Cash Payment Notice:</b> Artisan must remit FixMi commission within 7 days or face account suspension.</div>
     <div class="info yellow" style="margin-top:14px"><span>🔒</span><span>App payments are held by FixMi and released to the artisan only after you confirm the job is complete.</span></div>
     <button class="btn btn-g" id="pay-confirm-btn" onclick="confirmPayment()">Confirm Payment →</button>
   </div>
@@ -1280,16 +1451,17 @@ body{background:#fff}
 <div class="s" id="history">
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Job History</div><div class="tb-space"></div></div>
   <div class="hist-chips">
-    <button class="chip on">All</button>
-    <button class="chip" onclick="toast('🔍 Filtering...')">Completed</button>
-    <button class="chip" onclick="toast('🔍 Filtering...')">Pending</button>
-    <button class="chip" onclick="toast('🔍 Filtering...')">Cancelled</button>
+    <button class="chip on" onclick="filterHistory(this,'history','all')">All</button>
+    <button class="chip" onclick="filterHistory(this,'history','completed')">Completed</button>
+    <button class="chip" onclick="filterHistory(this,'history','pending')">Pending</button>
+    <button class="chip" onclick="filterHistory(this,'history','cancelled')">Cancelled</button>
   </div>
   <div data-fresh id="history-real" style="padding:8px 16px"></div>
   <div data-demo style="padding:8px 16px">
-    <div class="card" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Electrical Repair','⚡','Emeka Okafor','24 Feb 2026','₦5,500','✓ Completed','Lights tripping, bedroom switch not working')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Electrical Repair</div><div style="font-size:12px;color:var(--muted)">Emeka Okafor · 24 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 5.0</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Lights tripping, bedroom switch not working"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦5,500</span></div></div>
-    <div class="card" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Pipe Repair','🔩','Taiwo Adeleke','18 Feb 2026','₦7,000','✓ Completed','Leaking pipe under kitchen sink')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">🔩</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Pipe Repair</div><div style="font-size:12px;color:var(--muted)">Taiwo Adeleke · 18 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 4.8</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Leaking pipe under kitchen sink"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦7,000</span></div></div>
-    <div class="card" style="margin-bottom:11px"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#F0F9FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">❄️</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">AC Service</div><div style="font-size:12px;color:var(--muted)">Ibrahim Musa · 10 Feb 2026</div></div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"AC not cooling, needs servicing"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:#FFF3ED;color:var(--orange);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">⏳ Payment Pending</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦12,000</span></div></div>
+    <div class="empty-state hist-empty" hidden><b>No jobs here</b>Try another filter.</div>
+    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Electrical Repair','⚡','Emeka Okafor','24 Feb 2026','₦5,500','✓ Completed','Lights tripping, bedroom switch not working')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Electrical Repair</div><div style="font-size:12px;color:var(--muted)">Emeka Okafor · 24 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 5.0</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Lights tripping, bedroom switch not working"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦5,500</span></div></div>
+    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('Pipe Repair','🔩','Taiwo Adeleke','18 Feb 2026','₦7,000','✓ Completed','Leaking pipe under kitchen sink')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">🔩</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Pipe Repair</div><div style="font-size:12px;color:var(--muted)">Taiwo Adeleke · 18 Feb 2026</div></div><div style="margin-left:auto;color:var(--yellow);font-size:13px;font-weight:700">⭐ 4.8</div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"Leaking pipe under kitchen sink"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:var(--g3);color:var(--g2);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">✓ Completed</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦7,000</span></div></div>
+    <div class="card" data-status="COMPLETED" style="margin-bottom:11px;cursor:pointer" onclick="openJobDetail('AC Service','❄️','Ibrahim Musa','10 Feb 2026','₦12,000','💳 Payment Pending','AC not cooling, needs servicing')"><div style="display:flex;align-items:center;gap:11px;margin-bottom:11px"><div style="width:44px;height:44px;background:#F0F9FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">❄️</div><div><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">AC Service</div><div style="font-size:12px;color:var(--muted)">Ibrahim Musa · 10 Feb 2026</div></div></div><p style="font-size:13px;color:var(--muted);margin-bottom:11px">"AC not cooling, needs servicing"</p><div style="display:flex;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border)"><span style="background:#FFF3ED;color:var(--orange);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">⏳ Payment Pending</span><span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px">₦12,000</span></div></div>
   </div>
   <div style="height:78px"></div>
     <div class="bnav">
@@ -1304,12 +1476,13 @@ body{background:#fff}
 
 <!-- ████ NOTIFICATIONS ████ -->
 <div class="s" id="notifications">
-  <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Notifications</div><span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="toast('✓ All marked read')">Mark all read</span></div>
+  <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Notifications</div><span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="markAllNotifsRead()">Mark all read</span></div>
+  <div id="notif-real"></div>
   <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('match')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔧</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Artisan is on the way!</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Emeka Okafor accepted your job and is 12 minutes away.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 minutes ago</div></div></div>
   <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('chat')"><div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New message from Emeka</div><div style="font-size:13px;color:var(--muted);line-height:1.4">"I'm 5 minutes away, please open the gate"</div><div style="font-size:11px;color:var(--muted);margin-top:3px">5 minutes ago</div></div></div>
   <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('✅ Job receipt opened')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✅</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Job Completed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Pipe repair with Taiwo Adeleke is complete. Tap to pay.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Yesterday</div></div></div>
   <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('💰 Payment confirmed')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Confirmed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">₦7,000 payment for pipe repair was successful.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 days ago</div></div></div>
-  <div data-fresh class="empty-state"><b>No notifications yet</b>Updates about your bookings will show up here.</div>
+  
 </div>
 
 <!-- ████ PROFILE ████ -->
@@ -1329,6 +1502,7 @@ body{background:#fff}
   </div>
   <div class="menu">
     <div class="mi" onclick="go('edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('saved-addresses')"><div class="mi-ico">📍</div><div class="mi-txt">Saved Addresses</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('payment-methods')"><div class="mi-ico">💳</div><div class="mi-txt">Payment Methods</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('corp-plan')"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
@@ -1642,6 +1816,17 @@ body{background:#fff}
     <div class="fg"><label class="label">Describe the Issue</label>
       <textarea class="input" id="cust-report-desc" placeholder="Tell us exactly what happened..." style="min-height:100px;resize:none"></textarea>
     </div>
+    <div class="fg"><label class="label">Add Photos/Evidence (optional)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div onclick="openCamera()" role="button" style="width:64px;height:64px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:1.5px dashed var(--border)">
+          <span style="font-size:22px">📷</span><span style="font-size:9px;color:var(--muted)">Camera</span>
+        </div>
+        <div onclick="openGalleryPicker()" role="button" style="width:64px;height:64px;border-radius:12px;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:1.5px dashed var(--border)">
+          <span style="font-size:22px">🖼️</span><span style="font-size:9px;color:var(--muted)">Gallery</span>
+        </div>
+        <div id="cust-report-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+    </div>
     <button onclick="submitCustomerReport()" class="btn btn-g">Submit Report</button>
     <div style="height:20px"></div>
   </div>
@@ -1667,8 +1852,9 @@ body{background:#fff}
   <div class="topbar">
     <div class="tb-logo">Fix<span>Mi</span></div>
     <div style="display:flex;gap:9px">
-      <div class="tb-ico" onclick="go('artisan-notifications')">🔔<div class="badge-dot" data-demo></div></div>
-      <div class="tb-ico" onclick="go('artisan-profile-self')">👷</div>
+      <div class="tb-ico" onclick="openNotifications()" aria-label="Notifications">🔔<span class="notif-count" hidden></span></div>
+      <div class="tb-ico only-wide" onclick="go('artisan-profile-self')" aria-label="Profile">👷</div>
+      <div class="tb-ico only-narrow" onclick="openMenu()" aria-label="Menu">☰</div>
     </div>
   </div>
 
@@ -1719,13 +1905,6 @@ body{background:#fff}
     <button onclick="artisanWithdrawNow()" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:13px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer">Withdraw Now →</button>
   </div>
 
-  <!-- COMMISSION WARNING -->
-  <div data-demo style="margin:0 16px 12px;background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:14px;padding:14px">
-    <div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;color:#DC2626;margin-bottom:5px">⚠️ Commission Remittance Due</div>
-    <div style="font-size:13px;color:#991B1B;line-height:1.6;margin-bottom:10px">You have <b>₦950 commission</b> unpaid on cash job #FM-2841. <b>Accounts with commission unpaid for more than 7 days will be suspended.</b></div>
-    <button onclick="artisanPayCommission()" style="background:#DC2626;border:none;border-radius:9px;padding:9px 18px;font-family:'AppFont',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer">Pay Now ₦950</button>
-  </div>
-
   <!-- REAL JOBS: open requests to accept, or the artisan's current active job -->
   <div id="job-alert-section" style="margin:0 16px 16px">
     <div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Loading jobs…</div>
@@ -1760,8 +1939,9 @@ body{background:#fff}
   <div class="topbar">
     <button class="back" onclick="go('artisan-dash')">←</button>
     <div class="tb-title">Notifications</div>
-    <span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="toast('✓ All marked read')">Mark all read</span>
+    <span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="markAllNotifsRead()">Mark all read</span>
   </div>
+  <div id="art-notif-real"></div>
   <!-- New job request -->
   <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-job-request')">
     <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔔</div>
@@ -1790,14 +1970,6 @@ body{background:#fff}
     </div>
   </div>
   <!-- Commission due -->
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-commission-due')">
-    <div style="width:42px;height:42px;background:#FFF3ED;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚠️</div>
-    <div>
-      <div style="font-weight:600;font-size:14px;color:var(--orange);margin-bottom:2px">Commission Due</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.4">₦950 commission from cash job #FM-2841 due in 4 days. Tap to pay.</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">Yesterday</div>
-    </div>
-  </div>
   <!-- Rating received -->
   <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-rating-received')">
     <div style="width:42px;height:42px;background:#FFFBEB;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⭐</div>
@@ -1816,8 +1988,7 @@ body{background:#fff}
       <div style="font-size:11px;color:var(--muted);margin-top:3px">3 days ago</div>
     </div>
   </div>
-    <div data-fresh class="empty-state"><b>No notifications yet</b>New job requests and payments will show up here.</div>
-<div style="height:78px"></div>
+  <div style="height:78px"></div>
   <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn" onclick="go('artisan-messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
@@ -2033,14 +2204,15 @@ body{background:#fff}
 <div class="s" id="artisan-history">
   <div class="topbar"><button class="back" onclick="go('artisan-dash')">←</button><div class="tb-title">Job History</div><div class="tb-space"></div></div>
   <div class="hist-chips">
-    <button class="chip on">All</button>
-    <button class="chip" onclick="toast('Filtering...')">Completed</button>
-    <button class="chip" onclick="toast('Filtering...')">Commission Due</button>
-    <button class="chip" onclick="toast('Filtering...')">Cancelled</button>
+    <button class="chip on" onclick="filterHistory(this,'artisan-history','all')">All</button>
+    <button class="chip" onclick="filterHistory(this,'artisan-history','completed')">Completed</button>
+    <button class="chip" onclick="filterHistory(this,'artisan-history','pending')">Pending</button>
+    <button class="chip" onclick="filterHistory(this,'artisan-history','cancelled')">Cancelled</button>
   </div>
   <div data-fresh id="artisan-history-real" style="padding:8px 16px"></div>
   <div data-demo style="padding:8px 16px">
-    <div class="card" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Fan Installation','⚡','Blessing O.','Yesterday','+₦4,250','✓ Completed','Install ceiling fan in master bedroom')">
+    <div class="empty-state hist-empty" hidden><b>No jobs here</b>Try another filter.</div>
+    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Fan Installation','⚡','Blessing O.','Yesterday','+₦4,250','✓ Completed','Install ceiling fan in master bedroom')">
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
         <div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
         <div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Fan Installation</div><div style="font-size:12px;color:var(--muted)">Blessing O. · Yesterday</div></div>
@@ -2051,18 +2223,7 @@ body{background:#fff}
         <span style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--g)">+₦4,250</span>
       </div>
     </div>
-    <div class="card" style="margin-bottom:11px">
-      <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px">
-        <div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚙️</div>
-        <div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Generator Repair</div><div style="font-size:12px;color:var(--muted)">Tunde M. · 3 days ago · CASH PAID</div></div>
-      </div>
-      <div style="background:#FFF3ED;border-radius:9px;padding:9px 11px;margin-bottom:10px;font-size:12px;color:var(--orange);line-height:1.5">⚠️ Cash received. Commission of <b>₦800</b> must be remitted to FixMi within 7 days or your account will be suspended.</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)">
-        <span style="background:#FFF3ED;color:var(--orange);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">⏳ Commission Due</span>
-        <button onclick="toast('💳 Commission paid!')" style="background:var(--orange);border:none;border-radius:9px;padding:9px 16px;font-family:'AppFont',sans-serif;font-size:12px;font-weight:700;color:#fff;cursor:pointer">Pay ₦800</button>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:11px">
+    <div class="card" data-status="CONFIRMED" style="margin-bottom:11px;cursor:pointer" onclick="openArtisanJobDetail('Panel Wiring Fix','⚡','Emeka C.','5 days ago','+₦7,650','✓ Completed','Rewire the distribution panel')">
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
         <div style="width:44px;height:44px;background:#FEF9C3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div>
         <div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:15px;color:var(--navy)">Panel Wiring Fix</div><div style="font-size:12px;color:var(--muted)">Emeka C. · 5 days ago</div></div>
@@ -2157,6 +2318,7 @@ body{background:#fff}
   </div>
   <div class="menu">
     <div class="mi" onclick="go('artisan-edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile &amp; Skills</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-bank-account')"><div class="mi-ico">🏦</div><div class="mi-txt">Bank Account (Payouts)</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-availability')"><div class="mi-ico">🕐</div><div class="mi-txt">Availability Schedule</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-portfolio')"><div class="mi-ico">📸</div><div class="mi-txt">My Portfolio</div><div class="mi-arr">›</div></div>
@@ -3065,6 +3227,103 @@ body{background:#fff}
   </div>
 </div>
 
+
+<!-- ████ CUSTOMER: OPEN REQUEST & LIVE OFFERS ████ -->
+<div class="s" id="cust-offers">
+  <div class="topbar dark"><button class="back w" onclick="go('home')" aria-label="Back to home">←</button><div class="tb-title w" id="co-title">Your Request</div><div class="tb-space"></div></div>
+  <div class="co-hero" id="co-summary" style="background:var(--navy)"></div>
+  <div style="padding:16px 18px">
+    <div id="co-waiting" class="co-waiting">
+      <div class="radar-wrap mini"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="radar-core">🔧</div></div>
+      <div id="co-waiting-txt">Sending your request to artisans nearby…</div>
+      <div class="co-waiting-sub">Offers appear here live. Each artisan can accept your budget, send a price, or ask to see the job first.</div>
+    </div>
+    <div class="sec-title" id="co-offers-title" style="margin-bottom:10px"></div>
+    <div id="co-offers"></div>
+    <button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:6px" onclick="cancelActiveRequest(this)">Cancel Request</button>
+    <div class="job-hint">You can cancel until a price is agreed. Your escrow goes straight back to your wallet.</div>
+  </div>
+</div>
+
+<!-- ████ CUSTOMER: JOB IN PROGRESS ████ -->
+<div class="s" id="cust-job">
+  <div class="topbar dark"><button class="back w" onclick="go('home')" aria-label="Back to home">←</button><div class="tb-title w">Your Job</div><div class="tb-space"></div></div>
+  <div class="job-hero" style="background:var(--navy)"><span class="job-tag" id="cj-tag"></span><div class="job-title" id="cj-title"></div><div id="cj-steps"></div></div>
+  <div style="padding:16px 18px">
+    <div class="card job-person" id="cj-person"></div>
+    <div class="job-money" id="cj-money"></div>
+    <div id="cj-panel"></div>
+    <div class="info blue" style="margin-top:14px"><span>🔒</span><span>All payments go through FixMi escrow — never pay an artisan in cash.</span></div>
+  </div>
+</div>
+
+<!-- ████ ARTISAN: CURRENT JOB ████ -->
+<div class="s" id="art-job">
+  <div class="topbar dark"><button class="back w" onclick="go('artisan-dash')" aria-label="Back to dashboard">←</button><div class="tb-title w">Current Job</div><div class="tb-space"></div></div>
+  <div class="job-hero" style="background:var(--navy)"><span class="job-tag" id="aj-tag"></span><div class="job-title" id="aj-title"></div><div id="aj-steps"></div></div>
+  <div style="padding:16px 18px">
+    <div class="card job-person" id="aj-person"></div>
+    <div class="job-money" id="aj-money"></div>
+    <div id="aj-panel"></div>
+  </div>
+</div>
+
+<!-- ████ WALLET ████ -->
+<div class="s" id="wallet">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Wallet</div><div class="tb-space"></div></div>
+  <div style="padding:16px 18px">
+    <div class="wallet-card"><div class="wc-lbl">Available balance</div><div class="wc-bal" id="wallet-balance">₦0</div><div class="wc-note">Pay for jobs through escrow. Refunds and earnings land here.</div></div>
+    <div class="sec-title" style="margin:18px 0 10px">Top up</div>
+    <div class="search-chips">
+      <button class="search-chip" onclick="pickTopupAmount(5000)">₦5,000</button><button class="search-chip" onclick="pickTopupAmount(10000)">₦10,000</button>
+      <button class="search-chip" onclick="pickTopupAmount(20000)">₦20,000</button><button class="search-chip" onclick="pickTopupAmount(50000)">₦50,000</button>
+    </div>
+    <div class="fg"><label class="label" for="topup-amount">Amount (₦)</label><input class="input" id="topup-amount" type="number" min="100" step="100" inputmode="numeric" placeholder="e.g. 10000"></div>
+    <button class="btn btn-g" onclick="topUpWallet()">Top Up Wallet</button>
+    <div class="sec-title" style="margin:22px 0 10px">Transactions</div>
+    <div id="wallet-tx"></div>
+  </div>
+</div>
+
+<!-- ████ BOOKING DETAIL (history) ████ -->
+<div class="s" id="bk-detail">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Job Details</div><div class="tb-space"></div></div>
+  <div style="padding:16px" id="bkd-body"></div>
+</div>
+
+<!-- Artisan request pop-up: shows on any screen while the artisan is online -->
+<div class="req-pop" id="req-pop" hidden role="dialog" aria-label="Job request">
+  <div class="rp-bar">
+    <button class="rp-nav" id="req-pop-prev" onclick="popNav(-1)" aria-label="Previous request">‹</button>
+    <span id="req-pop-count"></span>
+    <button class="rp-nav" id="req-pop-next" onclick="popNav(1)" aria-label="Next request">›</button>
+    <button class="rp-hide" onclick="hideReqPop()">Hide</button>
+  </div>
+  <div id="req-pop-body"></div>
+</div>
+<button class="req-pill" id="req-pill-btn" hidden onclick="showReqPop()">🔔 <span id="req-pill-count"></span></button>
+
+<!-- Call options, like Handa -->
+<div class="sheet-overlay" id="call-sheet" hidden onclick="if(event.target===this)closeCallSheet()">
+  <div class="sheet">
+    <div class="sheet-title" id="call-sheet-name">Call</div>
+    <div class="sheet-sub" id="call-sheet-phone"></div>
+    <button class="call-opt" onclick="doCall('inapp')"><span class="co-ico" style="background:rgba(0,198,94,.12)">📞</span><span class="co-txt"><b>In-App Call</b><small>Free · in-app voice call</small></span><span class="co-arr">›</span></button>
+    <button class="call-opt" onclick="doCall('phone')"><span class="co-ico" style="background:rgba(59,130,246,.12)">📱</span><span class="co-txt"><b>Regular Phone Call</b><small>Call via your SIM card</small></span><span class="co-arr">›</span></button>
+    <button class="call-opt" onclick="doCall('whatsapp')"><span class="co-ico" style="background:rgba(37,211,102,.14)">💬</span><span class="co-txt"><b>WhatsApp Call</b><small>Call via WhatsApp</small></span><span class="co-arr">›</span></button>
+    <button class="btn btn-gray" style="margin-top:6px" onclick="closeCallSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- Menu (phone & tablet) -->
+<div class="sheet-overlay menu-overlay" id="menu-drawer" hidden onclick="if(event.target===this)closeMenu()">
+  <div class="menu-panel">
+    <div class="menu-head"><div class="tb-logo w">Fix<span>Mi</span></div><button class="back w" onclick="closeMenu()" aria-label="Close menu">✕</button></div>
+    <div class="menu-user"><b id="menu-name"></b><small id="menu-contact"></small></div>
+    <div id="menu-items"></div>
+  </div>
+</div>
+
 </div><!-- /app -->
 </div><!-- /device-frame -->
 </div><!-- /stage -->
@@ -3965,13 +4224,7 @@ function confirmPayment() {
     go('corp-payment-release');
     return;
   }
-  var selected = document.querySelector('.pay-method.sel');
-  var isCash = selected && selected.getAttribute('data-pay') === 'cash';
-  if (isCash) {
-    toast('💵 Cash payment recorded. Artisan commission due to FixMi within 7 days.');
-  } else {
-    toast('✅ Payment confirmed. Artisan receives 85%, FixMi retains 15%.');
-  }
+  toast('✅ Payment confirmed from escrow.');
   go('rating');
 }
 
@@ -4861,21 +5114,44 @@ function attrJson(v) {
   return JSON.stringify(v).replace(/"/g, '&quot;');
 }
 
-function getAccess() { return localStorage.getItem('fixme_access'); }
-function getRefresh() { return localStorage.getItem('fixme_refresh'); }
+// Each browser tab keeps its own sign-in in sessionStorage, so signing in as
+// an artisan in one tab never swaps the customer signed in on another tab.
+// localStorage only seeds a brand-new tab with the most recent sign-in.
+var SESSION_KEYS = ['fixme_access', 'fixme_refresh', 'fixme_user'];
+(function adoptLastSession() {
+  try {
+    if (sessionStorage.getItem('fixme_access') === null && localStorage.getItem('fixme_access')) {
+      SESSION_KEYS.forEach(function (k) {
+        var v = localStorage.getItem(k);
+        if (v !== null) sessionStorage.setItem(k, v);
+      });
+    }
+  } catch (e) {}
+})();
+function sessionGet(key) {
+  try { return sessionStorage.getItem(key); } catch (e) { return null; }
+}
+function sessionSet(key, value) {
+  try { sessionStorage.setItem(key, value); } catch (e) {}
+  try { localStorage.setItem(key, value); } catch (e) {}
+}
+function sessionRemove(key) {
+  try { sessionStorage.removeItem(key); } catch (e) {}
+  try { localStorage.removeItem(key); } catch (e) {}
+}
+function getAccess() { return sessionGet('fixme_access'); }
+function getRefresh() { return sessionGet('fixme_refresh'); }
 function getStoredUser() {
-  try { return JSON.parse(localStorage.getItem('fixme_user') || 'null'); } catch (e) { return null; }
+  try { return JSON.parse(sessionGet('fixme_user') || 'null'); } catch (e) { return null; }
 }
 function setSession(accessToken, refreshToken, user) {
-  localStorage.setItem('fixme_access', accessToken);
-  localStorage.setItem('fixme_refresh', refreshToken);
-  localStorage.setItem('fixme_user', JSON.stringify(user));
+  sessionSet('fixme_access', accessToken);
+  sessionSet('fixme_refresh', refreshToken);
+  sessionSet('fixme_user', JSON.stringify(user));
   window.currentUser = user;
 }
 function clearSession() {
-  localStorage.removeItem('fixme_access');
-  localStorage.removeItem('fixme_refresh');
-  localStorage.removeItem('fixme_user');
+  SESSION_KEYS.forEach(sessionRemove);
   window.currentUser = null;
 }
 window.currentUser = getStoredUser();
@@ -4925,39 +5201,45 @@ function requireLogin() {
   return true;
 }
 
-/* ---------------- Socket.IO ---------------- */
+/* ---------------- Live updates (Socket.IO) ---------------- */
 var _socket = null;
 function initSocket() {
   if (typeof io === 'undefined' || !getAccess()) return;
   if (_socket) { try { _socket.disconnect(); } catch (e) {} }
-  _socket = io({ path: '/socket.io', auth: { token: getAccess() } });
+  // auth as a function so every reconnect sends the current (refreshed) token
+  _socket = io({ path: '/socket.io', auth: function (cb) { cb({ token: getAccess() }); } });
   window.fixmeSocket = _socket;
 
-  _socket.on('booking:accepted', function (b) {
-    if (window._activeBookingId && b.id === window._activeBookingId) {
-      window._activeBooking = b;
-      renderMatchScreen(b);
-      go('match');
-      toast('⚡ ' + (b.artisan && b.artisan.user ? b.artisan.user.name : 'An artisan') + ' accepted your job!');
-    }
+  _socket.on('connect_error', function (err) {
+    // An expired access token: refreshing it through any API call lets the
+    // socket's automatic retry reconnect with the new one.
+    if (/expired|invalid/i.test(err && err.message)) apiFetch('/auth/me').catch(function () {});
   });
-  _socket.on('booking:updated', function (b) {
-    if (window._activeBookingId && b.id === window._activeBookingId) {
-      window._activeBooking = b;
-      var matchScreen = document.getElementById('match');
-      if (matchScreen && matchScreen.classList.contains('on')) renderMatchScreen(b);
-    }
-    if (window.currentUser && window.currentUser.role === 'ARTISAN') refreshArtisanCurrentJob();
-  });
-  _socket.on('booking:new', function () {
-    if (window.currentUser && window.currentUser.role === 'ARTISAN') refreshArtisanOpenJobs();
-  });
+  // After a reconnect, re-sync whatever may have changed while offline.
+  _socket.on('connect', function () { refreshLiveState(); });
+
+  _socket.on('booking:updated', function (b) { onCustomerBookingUpdate(b); });
+  _socket.on('request:updated', function (b) { onRequestUpdated(b); });
+  _socket.on('request:closed', function (d) { onRequestClosed(d && d.bookingId); });
+  _socket.on('job:updated', function (b) { onJobUpdated(b); });
   _socket.on('chat:message', function (msg) {
     if (window._activeChatThreadId && msg.threadId === window._activeChatThreadId) {
       appendChatMessage(msg, window.currentUser && msg.senderId === window.currentUser.id);
     }
   });
-  _socket.on('notification:new', function (n) { toast(n.title); });
+  _socket.on('notification:new', function (n) {
+    toast(n.title + (n.body ? ' — ' + n.body : ''));
+    _unreadNotifs++;
+    renderNotifBadges();
+  });
+}
+
+function refreshLiveState() {
+  var u = window.currentUser;
+  if (!u) return;
+  loadNotificationCount();
+  if (u.role === 'ARTISAN') refreshArtisanCurrentJob(false);
+  else resumeCustomerBooking(false);
 }
 
 /* ---------------- Auth ---------------- */
@@ -5015,12 +5297,16 @@ async function afterAuthSuccess(user) {
   window.currentUser = user;
   applyAccountMode(user);
   initSocket();
+  loadNotificationCount();
   if (user.role === 'ARTISAN') {
     go('artisan-dash');
-    loadArtisanDash();
+    await loadArtisanDash();
+    // An ongoing job reopens where the artisan left it (e.g. after a refresh).
+    if (_job && bookingIsLive(_job)) go('art-job');
   } else {
     go('home');
     loadHomeFeed();
+    resumeCustomerBooking(true);
   }
 }
 
@@ -5050,6 +5336,10 @@ async function signOut() {
   try { await apiFetch('/auth/logout', { method: 'POST', body: { refreshToken: getRefresh() } }); } catch (e) {}
   if (_socket) { try { _socket.disconnect(); } catch (e) {} _socket = null; }
   clearSession();
+  _booking = null; _job = null; _requests = {}; _unreadNotifs = 0;
+  renderRequests();
+  document.getElementById('req-pop').hidden = true;
+  document.getElementById('req-pill-btn').hidden = true;
   document.body.classList.remove('fresh-acct');
   stack = ['splash'];
   go('splash');
@@ -5157,10 +5447,11 @@ function renderArtisanCards(container, artisans, emptyText) {
     var rating = a.ratingCount ? '⭐ ' + a.ratingAvg.toFixed(1) : '⭐ New';
     return (
       '<div class="feat-card">' +
+      '<button class="feat-open" onclick="openArtisanProfile(' + attrJson(a.id) + ')" aria-label="View ' + escapeHtml(a.user.name) + '’s profile">' +
       '<div class="feat-ava" style="background:' + look[1] + '">' + look[0] + (a.isAvailable ? '<div class="online"></div>' : '') + '</div>' +
       '<div class="feat-name">' + escapeHtml(a.user.name) + '</div>' +
       '<div class="feat-role">' + escapeHtml(a.category) + '</div>' +
-      '<div class="feat-meta">' + rating + '</div>' +
+      '<div class="feat-meta">' + rating + '</div></button>' +
       '<button class="feat-book" onclick="bookDirectArtisan(' + attrJson(a.id) + ',' + attrJson(a.user.name) + ',' + attrJson(a.category) + ')">Book ' + escapeHtml(firstName(a.user.name)) + '</button>' +
       '</div>'
     );
@@ -5221,8 +5512,9 @@ function bookSvc(name, ico, bg) {
   if (rt) rt.textContent = 'Book ' + name;
   if (rp) rp.innerHTML = ico + ' ' + escapeHtml(name);
   if (rb) rb.style.display = 'none';
-  if (btn) btn.textContent = '🔍 Find Nearby Artisans';
+  if (btn) btn.textContent = '🔒 Pay into Escrow & Find Artisans';
   go('request');
+  refreshRequestWallet();
 }
 
 // Booking a specific artisan (from Featured or search): the request goes
@@ -5240,181 +5532,362 @@ function bookDirectArtisan(artisanId, name, category) {
   if (rb) rb.style.display = 'flex';
   setText('req-artisan-ico', look[0]);
   setText('req-artisan-name', name);
-  if (btn) btn.textContent = 'Book ' + firstName(name);
+  if (btn) btn.textContent = '🔒 Pay into Escrow & Book ' + firstName(name);
   go('request');
+  refreshRequestWallet();
+}
+
+/* ---------------- Customer: live booking ---------------- */
+// The flow: budget into escrow -> artisans respond with prices / Price on
+// Hold -> customer accepts, counters or declines -> job stages -> confirm.
+var _booking = null; // the customer's current booking
+var TERMINAL = ['CONFIRMED', 'CANCELLED', 'DECLINED'];
+
+function setHTML(id, html) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+function priceInput(id) {
+  var v = Number(((document.getElementById(id) || {}).value || '').replace(/[^\d.]/g, ''));
+  return v > 0 ? Math.round(v * 100) : 0;
+}
+function escrowNote(priceKobo, escrowKobo) {
+  var diff = priceKobo - escrowKobo;
+  if (diff > 0) return '<div class="esc-note up">' + fmtNaira(diff) + ' more will move from your wallet into escrow.</div>';
+  if (diff < 0) return '<div class="esc-note down">' + fmtNaira(-diff) + ' of your escrow will go back to your wallet.</div>';
+  return '<div class="esc-note">Your escrow covers this exactly.</div>';
+}
+function bookingIsLive(b) { return !!b && TERMINAL.indexOf(b.status) === -1; }
+
+async function refreshRequestWallet() {
+  var note = document.getElementById('req-escrow-note');
+  if (!note || !getAccess()) return;
+  try {
+    var w = await apiFetch('/wallet');
+    note.innerHTML = '🔒 Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. Wallet balance: <b>' + fmtNaira(w.wallet.balanceKobo) + '</b>. If no deal is made, it comes straight back.';
+  } catch (e) {}
 }
 
 async function startFindingOrDirect() {
   if (!requireLogin()) return;
   var issue = (document.getElementById('issue-text') || {}).value || '';
   var address = ((document.getElementById('req-location') || {}).value || '').replace(/^\s*\u{1F4CD}\s*/u, '');
-  var budgetNaira = Number((document.getElementById('req-budget') || {}).value || 0);
+  var budgetKobo = priceInput('req-budget');
   if (!issue.trim()) { toast('Please describe your issue'); return; }
-  if (!budgetNaira || budgetNaira <= 0) { toast('Enter your budget'); return; }
+  if (!address.trim()) { toast('Enter your location'); return; }
+  if (!budgetKobo) { toast('Enter your budget'); return; }
 
-  var body = { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: Math.round(budgetNaira * 100) };
+  var body = { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: budgetKobo };
   if (directArtisan && directArtisan.id) body.artisanId = directArtisan.id;
+  var btn = document.getElementById('req-find-btn');
+  var label = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   try {
     var data = await apiFetch('/bookings', { method: 'POST', body: body });
-    window._activeBookingId = data.booking.id;
-    window._activeBooking = data.booking;
-    if (body.artisanId) {
-      renderMatchScreen(data.booking);
-      go('match');
-      toast('📨 Request sent to ' + firstName(directArtisan.name));
-    } else {
-      go('finding');
-    }
+    document.getElementById('issue-text').value = '';
+    showCustomerBooking(data.booking);
+    if (body.artisanId) toast('📨 Request sent to ' + firstName(directArtisan.name));
+    else if (!data.notified) toast('No ' + body.category + ' is online right now — your request stays open.');
+    else toast('📨 Sent to ' + data.notified + ' ' + body.category + (data.notified > 1 ? 's' : '') + ' near you');
   } catch (e) {
     toast('❌ ' + e.message);
-  }
-}
-
-async function checkBookingStatusNow() {
-  if (!window._activeBookingId) { toast('No active request'); return; }
-  try {
-    var data = await apiFetch('/bookings/' + window._activeBookingId);
-    window._activeBooking = data.booking;
-    if (data.booking.status !== 'REQUESTED') {
-      renderMatchScreen(data.booking);
-      go('match');
-    } else {
-      var who = data.booking.artisan && data.booking.artisan.user ? firstName(data.booking.artisan.user.name) : null;
-      toast(who ? 'Still waiting for ' + who + ' to accept…' : 'Still searching for a nearby artisan…');
-    }
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
-}
-
-async function cancelActiveBookingReal() {
-  if (!window._activeBookingId) { go('home'); return; }
-  try {
-    await apiFetch('/bookings/' + window._activeBookingId + '/cancel', { method: 'POST' });
-    toast('Request cancelled');
-  } catch (e) {
-    toast('❌ ' + e.message);
+    if (/insufficient/i.test(e.message)) setTimeout(function () { go('wallet'); }, 900);
   } finally {
-    window._activeBookingId = null;
-    window._activeBooking = null;
-    go('home');
+    if (btn) { btn.disabled = false; btn.textContent = label; }
   }
 }
 
-/* ---------------- Customer: match / pay / confirm ---------------- */
-function renderMatchScreen(b) {
-  var artisanUser = b.artisan && b.artisan.user;
-  document.getElementById('match-ava').textContent = '🔧';
-  document.getElementById('match-name').textContent = artisanUser ? artisanUser.name : 'Searching…';
-  document.getElementById('match-role').textContent = b.category + (b.artisan ? ' · ' + b.address : '');
-  document.getElementById('match-price-val').textContent = fmtNaira(b.priceKobo);
-  document.getElementById('match-price-lbl').textContent = 'Your Budget';
-  document.getElementById('match-eta').textContent = '—';
-  document.getElementById('match-dist').textContent = '—';
+function showCustomerBooking(b) {
+  _booking = b;
+  window._activeBookingId = b.id;
+  window._activeBooking = b;
+  updateActiveBanner();
+  if (b.status === 'REQUESTED') { renderOffers(b); go('cust-offers'); }
+  else if (b.status === 'CONFIRMED') { openRating(b); }
+  else { renderCustJob(b); go('cust-job'); }
+}
 
-  var tag = document.getElementById('match-tag');
-  var h = document.getElementById('match-h');
-  var statusLine = document.getElementById('match-status-line');
-  var btn = document.getElementById('match-action-btn');
+// Called on sign-in, refresh and reconnect: picks the open booking back up.
+async function resumeCustomerBooking(navigate) {
+  try {
+    var d = await apiFetch('/bookings/active');
+    if (d.booking) {
+      _booking = d.booking;
+      window._activeBookingId = d.booking.id;
+      if (navigate) showCustomerBooking(d.booking);
+      else rerenderCustomerBooking();
+    } else if (_booking && bookingIsLive(_booking)) {
+      _booking = null;
+    }
+    updateActiveBanner();
+  } catch (e) {}
+}
 
-  if (b.status === 'ACCEPTED') {
-    tag.textContent = 'Artisan Found';
-    h.textContent = 'Pay to confirm the job';
-    statusLine.style.display = 'none';
-    btn.style.display = 'block';
-    btn.style.background = 'var(--g)';
-    btn.textContent = '💳 Pay ' + fmtNaira(b.priceKobo) + ' — Confirm Booking';
-    btn.onclick = realPayBooking;
-  } else if (b.status === 'PAID') {
-    tag.textContent = 'Payment Held in Escrow';
-    h.textContent = 'Waiting for artisan to start';
-    statusLine.style.display = 'block';
-    statusLine.textContent = 'Your payment is held securely and will be released once you confirm the job is done.';
-    btn.style.display = 'none';
-  } else if (b.status === 'IN_PROGRESS') {
-    tag.textContent = 'Job In Progress';
-    h.textContent = '🔧 Artisan is working';
-    statusLine.style.display = 'block';
-    statusLine.textContent = 'You’ll be able to confirm and release payment once the artisan marks the job done.';
-    btn.style.display = 'none';
-  } else if (b.status === 'COMPLETED') {
-    tag.textContent = 'Job Marked Complete';
-    h.textContent = 'Confirm to release payment';
-    statusLine.style.display = 'none';
-    btn.style.display = 'block';
-    btn.style.background = 'var(--g)';
-    btn.textContent = '✅ Confirm & Release Payment';
-    btn.onclick = realConfirmBooking;
-  } else if (b.status === 'CONFIRMED') {
-    tag.textContent = 'Completed';
-    h.textContent = '🎉 Job complete!';
-    statusLine.style.display = 'none';
-    btn.style.display = 'none';
-  } else if (b.status === 'REQUESTED' && artisanUser) {
-    tag.textContent = 'Request Sent';
-    h.textContent = 'Waiting for ' + firstName(artisanUser.name) + ' to accept';
-    statusLine.style.display = 'block';
-    statusLine.textContent = 'We’ve sent your job to ' + artisanUser.name + '. You’ll be notified as soon as they accept.';
-    btn.style.display = 'block';
-    btn.style.background = 'var(--navy)';
-    btn.textContent = '🔄 Check Status';
-    btn.onclick = checkBookingStatusNow;
+function rerenderCustomerBooking() {
+  if (!_booking) return;
+  var on = (document.querySelector('.s.on') || {}).id;
+  if (_booking.status === 'REQUESTED') renderOffers(_booking);
+  else renderCustJob(_booking);
+  if (on === 'cust-offers' && _booking.status !== 'REQUESTED') {
+    if (_booking.status === 'CONFIRMED') openRating(_booking); else go('cust-job');
+  }
+}
+
+function onCustomerBookingUpdate(b) {
+  if (!window.currentUser || b.customerId !== window.currentUser.id) return;
+  if (_booking && _booking.id !== b.id && bookingIsLive(_booking) && !bookingIsLive(b)) return;
+  _booking = b;
+  window._activeBooking = b;
+  window._activeBookingId = b.id;
+  rerenderCustomerBooking();
+  updateActiveBanner();
+}
+
+function updateActiveBanner() {
+  var el = document.getElementById('home-active-banner');
+  if (!el) return;
+  if (!_booking || !bookingIsLive(_booking)) { el.hidden = true; return; }
+  el.hidden = false;
+  var offers = (_booking.offers || []).filter(function (o) { return o.status === 'PENDING'; }).length;
+  setText('hab-title', _booking.status === 'REQUESTED' ? 'Your ' + _booking.category + ' request is open' : 'Your ' + _booking.category + ' job is in progress');
+  setText('hab-sub', _booking.status === 'REQUESTED' ? (offers ? offers + ' offer' + (offers > 1 ? 's' : '') + ' waiting for you' : 'Waiting for artisans to respond') : 'Tap to see its status');
+}
+function resumeBooking() { if (_booking) showCustomerBooking(_booking); }
+
+// ---- offers screen
+function renderOffers(b) {
+  var look = categoryLook(b.category);
+  setText('co-title', b.artisan ? 'Book ' + firstName(b.artisan.user.name) : 'Your ' + b.category + ' Request');
+  setHTML('co-summary',
+    '<div class="co-cat">' + look[0] + ' ' + escapeHtml(b.category) + '</div>' +
+    '<div class="co-issue">"' + escapeHtml(b.issue) + '"</div>' +
+    '<div class="co-addr">📍 ' + escapeHtml(b.address) + '</div>' +
+    '<div class="co-escrow">🔒 ' + fmtNaira(b.escrowKobo) + ' held in escrow · your budget ' + fmtNaira(b.priceKobo) + '</div>');
+  var offers = (b.offers || []).filter(function (o) { return o.status === 'PENDING'; });
+  var waiting = document.getElementById('co-waiting');
+  if (waiting) {
+    waiting.hidden = offers.length > 0;
+    setText('co-waiting-txt', b.artisan ? 'Waiting for ' + firstName(b.artisan.user.name) + ' to respond…' : 'Sending your request to online ' + b.category + 's nearby…');
+  }
+  setText('co-offers-title', offers.length ? offers.length + ' artisan' + (offers.length > 1 ? 's' : '') + ' responded' : '');
+  setHTML('co-offers', offers.map(function (o) { return offerCard(o, b); }).join(''));
+}
+
+function offerCard(o, b) {
+  var a = o.artisan, look = categoryLook(a.category), fn = firstName(a.user.name);
+  var rating = a.ratingCount ? '⭐ ' + a.ratingAvg.toFixed(1) + ' (' + a.ratingCount + ')' : '⭐ New';
+  var meta = rating + ' · ' + (a.jobsDone || 0) + ' jobs' + (a.yearsExp ? ' · ' + a.yearsExp + ' yrs' : '');
+  var oid = attrJson(o.id), body, actions;
+  if (o.isHold) {
+    body = '<div class="oc-hold"><b>⏸ Price on Hold</b> — ' + escapeHtml(fn) + ' wants to see the job before giving a price. You agree the price at your place; if it is more than your escrow you top up then.</div>';
+    actions = '<div class="oc-acts"><button class="oc-btn ghost" onclick="customerOfferAction(' + oid + ',\'reject\')">Decline</button>' +
+      '<button class="oc-btn orange" onclick="customerOfferAction(' + oid + ',\'accept\')">Accept Price on Hold</button></div>';
+  } else if (o.lastBy === 'ARTISAN') {
+    body = '<div class="oc-price">' + fmtNaira(o.priceKobo) + '<small>' + (o.customerPriceKobo ? 'replied to your ' + fmtNaira(o.customerPriceKobo) : 'their price') + '</small></div>' + escrowNote(o.priceKobo, b.escrowKobo);
+    actions = '<div class="oc-acts"><button class="oc-btn ghost" onclick="customerOfferAction(' + oid + ',\'reject\')">Decline</button>' +
+      '<button class="oc-btn green" onclick="customerOfferAction(' + oid + ',\'accept\')">Accept ' + fmtNaira(o.priceKobo) + '</button></div>' +
+      '<button class="oc-btn blue wide" onclick="toggleCounter(' + oid + ')">💬 Counter Offer</button>';
   } else {
-    tag.textContent = 'Searching';
-    h.textContent = 'Finding an artisan…';
-    statusLine.style.display = 'none';
-    btn.style.display = 'none';
+    body = '<div class="oc-wait">You offered <b>' + fmtNaira(o.customerPriceKobo) + '</b> — waiting for ' + escapeHtml(fn) + ' to reply.' + (o.priceKobo ? ' Their price: ' + fmtNaira(o.priceKobo) + '.' : '') + '</div>';
+    actions = '<div class="oc-acts"><button class="oc-btn ghost" onclick="customerOfferAction(' + oid + ',\'reject\')">Decline</button>' +
+      '<button class="oc-btn blue" onclick="toggleCounter(' + oid + ')">Change my price</button></div>';
   }
+  return '<div class="offer-card">' +
+    '<div class="oc-head"><div class="feat-ava" style="background:' + look[1] + ';margin:0">' + look[0] + '</div>' +
+    '<div style="min-width:0;flex:1"><div class="oc-name">' + escapeHtml(a.user.name) + '</div><div class="oc-meta">' + escapeHtml(a.category) + ' · ' + meta + '</div></div></div>' +
+    body + actions +
+    '<div class="oc-counter" id="occ-' + o.id + '" hidden><input class="input" type="number" min="500" step="100" inputmode="numeric" id="occ-in-' + o.id + '" placeholder="Your price in ₦"><button class="oc-btn navy" onclick="customerCounter(' + oid + ')">Send</button></div>' +
+    '</div>';
 }
 
-async function realPayBooking() {
-  if (!window._activeBookingId) return;
+function toggleCounter(oid) {
+  var row = document.getElementById('occ-' + oid);
+  if (!row) return;
+  row.hidden = !row.hidden;
+  if (!row.hidden) document.getElementById('occ-in-' + oid).focus();
+}
+
+async function customerOfferAction(offerId, action, priceKobo) {
+  if (!_booking) return;
   try {
-    var data = await apiFetch('/bookings/' + window._activeBookingId + '/pay', { method: 'POST' });
-    window._activeBooking = data.booking;
-    renderMatchScreen(data.booking);
-    toast('✅ Payment held in escrow');
+    var data = await apiFetch('/bookings/' + _booking.id + '/offers/' + offerId, { method: 'POST', body: { action: action, priceKobo: priceKobo } });
+    if (action === 'counter') toast('💬 Your price was sent');
+    if (action === 'reject') toast('Offer declined');
+    showCustomerBooking(data.booking);
+  } catch (e) {
+    toast('❌ ' + e.message);
+    if (/insufficient/i.test(e.message)) setTimeout(function () { go('wallet'); }, 900);
+    resumeCustomerBooking(false);
+  }
+}
+function customerCounter(offerId) {
+  var p = priceInput('occ-in-' + offerId);
+  if (!p) { toast('Enter your price'); return; }
+  customerOfferAction(offerId, 'counter', p);
+}
+
+// Two taps to cancel, so a stray tap doesn't throw away the request.
+var _cancelArmed = 0;
+async function cancelActiveRequest(btn) {
+  if (!_booking) return;
+  if (Date.now() - _cancelArmed > 4000) {
+    _cancelArmed = Date.now();
+    if (btn) { btn.dataset.label = btn.dataset.label || btn.textContent; btn.textContent = 'Tap again to cancel — ' + fmtNaira(_booking.escrowKobo) + ' returns to your wallet'; setTimeout(function () { btn.textContent = btn.dataset.label; }, 4000); }
+    return;
+  }
+  _cancelArmed = 0;
+  try {
+    var data = await apiFetch('/bookings/' + _booking.id + '/cancel', { method: 'POST', body: {} });
+    toast('Request cancelled — ' + fmtNaira(_booking.escrowKobo) + ' is back in your wallet');
+    _booking = data.booking;
+    updateActiveBanner();
+    go('home');
+    loadHomeFeed();
   } catch (e) {
     toast('❌ ' + e.message);
   }
 }
 
-async function realConfirmBooking() {
-  if (!window._activeBookingId) return;
+// ---- job screen
+var JOB_STEPS = ['Request sent', 'Price agreed', 'Arrived', 'Working', 'Done', 'Paid'];
+function jobStep(b) {
+  if (b.status === 'CONFIRMED') return 6;
+  if (b.status === 'COMPLETED') return 5;
+  if (b.status === 'IN_PROGRESS') return 4;
+  if (b.arrivedAt && b.agreedPriceKobo != null) return 3;
+  if (b.agreedPriceKobo != null) return 2;
+  return 1;
+}
+function stepsHtml(b) {
+  var n = jobStep(b);
+  return '<div class="job-steps">' + JOB_STEPS.map(function (s, i) {
+    return '<div class="js-step' + (i < n ? ' done' : '') + (i === n ? ' cur' : '') + '"><span></span>' + s + '</div>';
+  }).join('') + '</div>';
+}
+
+function renderCustJob(b) {
+  var a = b.artisan, u = a && a.user, fn = firstName(u && u.name), look = categoryLook(b.category);
+  var tag, title, panel = '', cancel = false;
+  if (b.status === 'CANCELLED') {
+    tag = 'Cancelled'; title = 'This booking was cancelled';
+    panel = '<div class="job-panel grey">Any escrow for it has been returned to your wallet.</div><button class="btn btn-g" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
+  } else if (b.status === 'IN_PROGRESS') {
+    tag = 'In Progress'; title = fn + ' is working on your job';
+    panel = '<div class="job-panel green">You’ll confirm once the work is done. ' + fmtNaira(b.agreedPriceKobo) + ' stays in escrow until then.</div>';
+  } else if (b.status === 'COMPLETED') {
+    tag = 'Job Done'; title = 'Check the work and release payment';
+    panel = '<div class="job-panel green">' + escapeHtml(fn) + ' marked the job done. If you’re happy, release ' + fmtNaira(b.agreedPriceKobo) + ' from escrow. It releases automatically after 24 hours.</div>' +
+      '<button class="btn btn-g" onclick="customerConfirmJob()">✅ Confirm &amp; Release ' + fmtNaira(b.agreedPriceKobo) + '</button>';
+  } else if (b.agreedPriceKobo == null) {
+    cancel = true;
+    if (b.onsitePriceKobo != null) {
+      tag = 'Price Submitted'; title = fn + ' submitted ' + fmtNaira(b.onsitePriceKobo);
+      panel = '<div class="job-panel blue">Accept the price you agreed at your place to let ' + escapeHtml(fn) + ' start.' + escrowNote(b.onsitePriceKobo, b.escrowKobo) + '</div>' +
+        '<div class="oc-acts"><button class="oc-btn ghost" onclick="customerOnsite(\'reject\')">Not agreed</button><button class="oc-btn green" onclick="customerOnsite(\'accept\')">Accept ' + fmtNaira(b.onsitePriceKobo) + '</button></div>';
+    } else if (b.arrivedAt) {
+      tag = 'Assessing'; title = fn + ' is assessing the job';
+      panel = '<div class="job-panel blue">Agree a price together. ' + escapeHtml(fn) + ' will submit it here for you to accept — your escrow (' + fmtNaira(b.escrowKobo) + ') covers it, or you top up the difference.</div>';
+    } else {
+      tag = 'Price on Hold'; title = fn + ' is coming to assess the job';
+      panel = '<div class="job-panel orange">You’ll agree the price at your place. Your ' + fmtNaira(b.escrowKobo) + ' stays safe in escrow meanwhile.</div>';
+    }
+  } else if (b.arrivedAt) {
+    tag = 'Arrived'; title = fn + ' has arrived';
+    panel = '<div class="job-panel green">Agreed price ' + fmtNaira(b.agreedPriceKobo) + ' is held in escrow. Work starts shortly.</div>';
+  } else {
+    tag = 'Price Agreed'; title = fn + ' is on the way';
+    panel = '<div class="job-panel green">You agreed ' + fmtNaira(b.agreedPriceKobo) + ', held safely in escrow. You don’t pay anything else.</div>';
+  }
+  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="cancelActiveRequest(this)">Cancel Booking</button>';
+  else if (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1) panel += '<div class="job-hint">The price is agreed, so this job can’t be cancelled in the app. Contact support if something goes wrong.</div>';
+
+  setText('cj-tag', tag);
+  setText('cj-title', title);
+  setHTML('cj-steps', b.status === 'CANCELLED' ? '' : stepsHtml(b));
+  setHTML('cj-person', u ? (
+    '<div class="feat-ava" style="background:' + look[1] + ';margin:0;width:52px;height:52px;font-size:26px">' + look[0] + '</div>' +
+    '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(u.name) + '</div><div class="oc-meta">' + escapeHtml(b.category) + ' · ' + (a.ratingCount ? '⭐ ' + a.ratingAvg.toFixed(1) : '⭐ New') + '</div></div>' +
+    contactButtons(u.name, u.phone)) : '');
+  setHTML('cj-money',
+    '<div><small>In escrow</small><b>' + fmtNaira(b.escrowKobo || (b.status === 'COMPLETED' || b.status === 'CONFIRMED' ? b.agreedPriceKobo : 0)) + '</b></div>' +
+    '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'On hold' : '—')) + '</b></div>' +
+    '<div><small>Job</small><b>' + escapeHtml(b.category) + '</b></div>');
+  setHTML('cj-panel', panel);
+}
+
+async function customerOnsite(action) {
+  if (!_booking) return;
   try {
-    var data = await apiFetch('/bookings/' + window._activeBookingId + '/confirm', { method: 'POST' });
-    window._activeBooking = data.booking;
-    var artisanUser = data.booking.artisan && data.booking.artisan.user;
-    document.getElementById('rating-summary').textContent = 'Payment of ' + fmtNaira(data.booking.priceKobo) + ' released to ' + (artisanUser ? artisanUser.name : 'your artisan') + '.';
-    document.getElementById('rating-title').textContent = 'Rate ' + (artisanUser ? artisanUser.name : 'your artisan');
-    window._ratingBookingId = data.booking.id;
-    curRating = 0;
-    document.querySelectorAll('.star-btn').forEach(function (s) { s.textContent = '☆'; });
-    document.getElementById('rate-lbl').textContent = 'Tap a star to rate';
-    go('rating');
+    var data = await apiFetch('/bookings/' + _booking.id + '/onsite-respond', { method: 'POST', body: { action: action } });
+    toast(action === 'accept' ? '✅ Price accepted — the job can start' : 'Price not accepted — agree a new one with your artisan');
+    showCustomerBooking(data.booking);
+  } catch (e) {
+    toast('❌ ' + e.message);
+    if (/insufficient/i.test(e.message)) setTimeout(function () { go('wallet'); }, 900);
+  }
+}
+
+async function customerConfirmJob() {
+  if (!_booking) return;
+  try {
+    var data = await apiFetch('/bookings/' + _booking.id + '/confirm', { method: 'POST', body: {} });
+    _booking = data.booking;
+    updateActiveBanner();
+    openRating(data.booking);
   } catch (e) {
     toast('❌ ' + e.message);
   }
+}
+
+function openRating(b) {
+  var u = b.artisan && b.artisan.user;
+  setText('rating-summary', 'Payment of ' + fmtNaira(b.agreedPriceKobo || b.priceKobo) + ' released to ' + (u ? u.name : 'your artisan') + '.');
+  setText('rating-title', 'Rate ' + (u ? firstName(u.name) : 'your artisan'));
+  window._ratingBookingId = b.id;
+  curRating = 0;
+  document.querySelectorAll('.star-btn').forEach(function (s) { s.textContent = '☆'; });
+  setText('rate-lbl', 'Tap a star to rate');
+  go('rating');
 }
 
 async function realSubmitRating() {
   if (!curRating) { toast('Please tap a star to rate'); return; }
-  var bookingId = window._ratingBookingId || window._activeBookingId;
+  var bookingId = window._ratingBookingId;
   if (!bookingId) { go('home'); return; }
   try {
-    await apiFetch('/ratings', {
-      method: 'POST',
-      body: { bookingId: bookingId, stars: curRating, comment: (document.getElementById('rating-comment') || {}).value || undefined },
-    });
+    await apiFetch('/ratings', { method: 'POST', body: { bookingId: bookingId, stars: curRating, comment: (document.getElementById('rating-comment') || {}).value || undefined } });
     toast('🎉 Thanks for your review!');
   } catch (e) {
     toast('❌ ' + e.message);
   } finally {
-    window._activeBookingId = null;
-    window._activeBooking = null;
+    window._ratingBookingId = null;
+    _booking = null;
+    updateActiveBanner();
     go('home');
     loadHomeFeed();
   }
+}
+
+/* ---------------- Chat & call (shared) ---------------- */
+function contactButtons(name, phone) {
+  return '<div class="contact-btns"><button class="ct-btn" onclick="openChatForActiveBooking()" aria-label="Chat">💬</button>' +
+    '<button class="ct-btn" onclick="openCallSheet(' + attrJson(name || '') + ',' + attrJson(phone || '') + ')" aria-label="Call">📞</button></div>';
+}
+var _callTarget = { name: '', phone: '' };
+function openCallSheet(name, phone) {
+  _callTarget = { name: name, phone: phone };
+  setText('call-sheet-name', 'Call ' + firstName(name));
+  setText('call-sheet-phone', phone || 'No phone number on file');
+  document.getElementById('call-sheet').hidden = false;
+}
+function closeCallSheet() { document.getElementById('call-sheet').hidden = true; }
+function doCall(type) {
+  var phone = String(_callTarget.phone || '').replace(/[^\d+]/g, '');
+  closeCallSheet();
+  if (type === 'inapp') { toast('In-app calling is coming soon — use Phone or WhatsApp for now 📞'); return; }
+  if (!phone) { toast('No phone number on file — use chat instead'); return; }
+  if (type === 'phone') window.location.href = 'tel:' + phone;
+  else window.open('https://wa.me/' + phone.replace(/^\+/, ''), '_blank', 'noopener');
 }
 
 /* ---------------- Chat ---------------- */
@@ -5444,6 +5917,8 @@ async function loadChatThreads(listId) {
 }
 
 async function openChatForActiveBooking() {
+  if (isArtisanUser() && _job) window._activeBookingId = _job.id;
+  if (!isArtisanUser() && _booking) window._activeBookingId = _booking.id;
   if (!window._activeBookingId) { go('chat'); return; }
   try {
     var data = await apiFetch('/chat/threads');
@@ -5545,141 +6020,410 @@ async function loadArtisanDash() {
   } catch (e) {
     toast('❌ ' + e.message);
   }
-  refreshArtisanCurrentJob();
+  await refreshArtisanCurrentJob(false);
 }
+
+/* ---------------- Artisan: availability, requests, job ---------------- */
+var _requests = {};   // open requests this artisan can respond to, by id
+var _job = null;      // the artisan's current job
+var _popIndex = 0;
+var _popHidden = false;
+function isArtisanUser() { return !!window.currentUser && window.currentUser.role === 'ARTISAN'; }
 
 async function toggleAvail() {
   if (!requireLogin()) return;
-  if (window._artisanVerified === false) {
-    toast('⚠️ Your account is still awaiting admin verification');
-    return;
-  }
+  if (window._artisanVerified === false) { toast('⚠️ Your account is still awaiting verification'); return; }
   var next = !avail;
   try {
     await apiFetch('/users/me/availability', { method: 'PATCH', body: { isAvailable: next } });
     avail = next;
     var tgl = document.getElementById('avail-toggle');
     var thumb = document.getElementById('avail-thumb');
-    var lbl = document.getElementById('avail-lbl');
     if (tgl) tgl.style.background = avail ? '#00C65E' : 'rgba(255,255,255,.2)';
     if (thumb) thumb.style.left = avail ? '26px' : '3px';
-    if (lbl) lbl.textContent = avail ? 'Online' : 'Offline';
-    toast(avail ? 'You are now Online — job requests will appear' : 'You are Offline — no new job requests');
-    refreshArtisanOpenJobs();
+    setText('avail-lbl', avail ? 'Online' : 'Offline');
+    toast(avail ? 'You are Online — job requests in your category will pop up' : 'You are Offline — you won’t get job requests');
+    _popHidden = false;
+    refreshArtisanRequests();
   } catch (e) {
     toast('❌ ' + e.message);
   }
 }
 
-async function refreshArtisanCurrentJob() {
+// Current job + open requests, from the server. Navigate=true on sign-in /
+// refresh, so an ongoing job reopens where the artisan left it.
+async function refreshArtisanCurrentJob(navigate) {
   try {
-    var data = await apiFetch('/bookings');
-    var active = (data.bookings || []).find(function (b) { return ['ACCEPTED', 'PAID', 'IN_PROGRESS', 'COMPLETED'].indexOf(b.status) !== -1; });
-    if (active) {
-      window._activeBookingId = active.id;
-      renderArtisanCurrentJob(active);
+    var d = await apiFetch('/bookings/active');
+    _job = d.booking;
+    if (_job) window._activeBookingId = _job.id;
+  } catch (e) {}
+  renderArtJob();
+  if (navigate && _job) go('art-job');
+  await refreshArtisanRequests();
+}
+
+async function refreshArtisanRequests() {
+  if (!isArtisanUser()) return;
+  if (!avail) { _requests = {}; renderRequests(); return; }
+  try {
+    var d = await apiFetch('/bookings/open');
+    _requests = {};
+    (d.bookings || []).forEach(function (b) { _requests[b.id] = b; });
+  } catch (e) {}
+  renderRequests();
+}
+
+function onRequestUpdated(b) {
+  if (!isArtisanUser() || !avail || !b) return;
+  if (b.status !== 'REQUESTED') { delete _requests[b.id]; renderRequests(); return; }
+  var isNew = !_requests[b.id];
+  _requests[b.id] = b;
+  if (isNew) { _popHidden = false; _popIndex = 0; }
+  renderRequests();
+}
+function onRequestClosed(id) {
+  if (id && _requests[id]) { delete _requests[id]; renderRequests(); }
+}
+function onJobUpdated(b) {
+  if (!isArtisanUser() || !b) return;
+  var wasNew = !_job || _job.id !== b.id;
+  _job = b;
+  window._activeBookingId = b.id;
+  delete _requests[b.id];
+  renderRequests();
+  renderArtJob();
+  if (wasNew && b.status === 'ACCEPTED') go('art-job');
+}
+
+function requestList() {
+  return Object.keys(_requests).map(function (k) { return _requests[k]; })
+    .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+}
+function timeAgo(d) {
+  var s = Math.max(0, (Date.now() - new Date(d).getTime()) / 1000);
+  if (s < 60) return 'Just now';
+  if (s < 3600) return Math.floor(s / 60) + ' min ago';
+  if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+  return Math.floor(s / 86400) + ' d ago';
+}
+
+// One request card — used in the pop-up and on the dashboard list.
+function requestCard(b, where) {
+  var look = categoryLook(b.category), mine = b.myOffer, id = attrJson(b.id), key = where + '-' + b.id;
+  var onTable = mine && mine.lastBy === 'CUSTOMER' && mine.customerPriceKobo ? mine.customerPriceKobo : b.priceKobo;
+  var head = '<div class="rq-head"><span class="rq-tag">' + (b.artisanId ? '⭐ BOOKED YOU' : '🚨 NEW JOB') + '</span><span class="rq-time">' + timeAgo(b.createdAt) + '</span></div>' +
+    '<div class="rq-title">' + look[0] + ' ' + escapeHtml(b.category) + '</div>' +
+    '<div class="rq-issue">"' + escapeHtml(b.issue) + '"</div>' +
+    '<div class="rq-addr">📍 ' + escapeHtml(b.address) + (b.customer ? ' · ' + escapeHtml(firstName(b.customer.name)) : '') + '</div>';
+  var bodyHtml;
+  if (mine && mine.status === 'PENDING' && mine.lastBy === 'ARTISAN') {
+    bodyHtml = '<div class="rq-sent">' + (mine.isHold ? '⏸ You offered <b>Price on Hold</b>' : 'You offered <b>' + fmtNaira(mine.priceKobo) + '</b>') + ' — waiting for the customer.</div>' +
+      '<div class="oc-acts"><button class="oc-btn ghost" onclick="artisanRespondTo(' + id + ',\'decline\')">Withdraw</button>' +
+      '<button class="oc-btn blue" onclick="toggleRqCounter(' + attrJson(key) + ')">Change price</button></div>';
+  } else {
+    var counter = mine && mine.lastBy === 'CUSTOMER';
+    bodyHtml = '<div class="rq-price">' + (counter ? 'Customer counter-offer: ' : 'Customer offers: ') + fmtNaira(onTable) + '</div>' +
+      '<div class="rq-help">Accept the price, send a counter offer, or put Price on Hold if you need to see the job first.</div>' +
+      '<div class="oc-acts"><button class="oc-btn ghost" onclick="artisanRespondTo(' + id + ',\'decline\')">Decline</button>' +
+      '<button class="oc-btn green" onclick="artisanRespondTo(' + id + ',\'accept\')">Accept ' + fmtNaira(onTable) + '</button></div>' +
+      '<div class="oc-acts"><button class="oc-btn blue" onclick="toggleRqCounter(' + attrJson(key) + ')">💬 Counter Offer</button>' +
+      '<button class="oc-btn orange" onclick="artisanRespondTo(' + id + ',\'hold\')">⏸ Price on Hold</button></div>';
+  }
+  return '<div class="rq-card">' + head + bodyHtml +
+    '<div class="oc-counter" id="rqc-' + key + '" hidden><input class="input" type="number" min="500" step="100" inputmode="numeric" id="rqc-in-' + key + '" placeholder="Your price in ₦"><button class="oc-btn navy" onclick="artisanSendPrice(' + id + ',' + attrJson(key) + ')">Send</button></div>' +
+    '</div>';
+}
+function toggleRqCounter(key) {
+  var row = document.getElementById('rqc-' + key);
+  if (!row) return;
+  row.hidden = !row.hidden;
+  if (!row.hidden) document.getElementById('rqc-in-' + key).focus();
+}
+function artisanSendPrice(bookingId, key) {
+  var p = priceInput('rqc-in-' + key);
+  if (!p) { toast('Enter your price'); return; }
+  artisanRespondTo(bookingId, 'price', p);
+}
+
+async function artisanRespondTo(bookingId, action, priceKobo) {
+  try {
+    var data = await apiFetch('/bookings/' + bookingId + '/respond', { method: 'POST', body: { action: action, priceKobo: priceKobo } });
+    if (action === 'decline') {
+      delete _requests[bookingId];
+      toast('Request declined');
+    } else if (action === 'accept') {
+      delete _requests[bookingId];
+      toast('✅ You got the job! Head to the customer.');
+      onJobUpdated(data.booking);
     } else {
-      refreshArtisanOpenJobs();
+      _requests[bookingId] = data.booking;
+      toast(action === 'hold' ? '⏸ Price on Hold sent to the customer' : '💬 Your price was sent to the customer');
     }
-  } catch (e) {
-    // not logged in yet or no bookings — ignore
-  }
-}
-
-function renderArtisanCurrentJob(b) {
-  var section = document.getElementById('job-alert-section');
-  if (!section) return;
-  var actionHtml = '';
-  if (b.status === 'ACCEPTED') actionHtml = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:10px">Waiting for customer to pay…</div>';
-  else if (b.status === 'PAID') actionHtml = '<button onclick="realStartJob()" style="width:100%;background:var(--g);border:none;border-radius:12px;padding:14px;font-family:\'AppFont\',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer">🔧 Start Job</button>';
-  else if (b.status === 'IN_PROGRESS') actionHtml = '<button onclick="realCompleteJob()" style="width:100%;background:var(--g);border:none;border-radius:12px;padding:14px;font-family:\'AppFont\',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer">✅ Mark Job Complete</button>';
-  else if (b.status === 'COMPLETED') actionHtml = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:10px">Waiting for customer to confirm & release payment…</div>';
-
-  section.className = 'job-alert';
-  section.innerHTML =
-    '<div class="alert-hdr"><span class="alert-tag">🔧 CURRENT JOB</span></div>' +
-    '<div class="alert-svc">' + escapeHtml(b.category) + '</div>' +
-    '<div class="alert-issue">"' + escapeHtml(b.issue) + '"</div>' +
-    '<div class="alert-loc">📍 ' + escapeHtml(b.address) + '</div>' +
-    '<div style="font-family:\'AppFont\',sans-serif;font-size:20px;font-weight:800;color:var(--orange);margin-bottom:12px">' + fmtNaira(b.priceKobo) + '</div>' +
-    actionHtml;
-}
-
-async function realStartJob() {
-  if (!window._activeBookingId) return;
-  try {
-    var data = await apiFetch('/bookings/' + window._activeBookingId + '/start', { method: 'POST' });
-    renderArtisanCurrentJob(data.booking);
-    toast('🔧 Job started');
+    renderRequests();
   } catch (e) {
     toast('❌ ' + e.message);
+    refreshArtisanRequests();
   }
 }
 
-async function realCompleteJob() {
-  if (!window._activeBookingId) return;
-  try {
-    var data = await apiFetch('/bookings/' + window._activeBookingId + '/complete', { method: 'POST' });
-    renderArtisanCurrentJob(data.booking);
-    toast('✅ Marked complete — waiting for customer to confirm');
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
-}
-
-async function refreshArtisanOpenJobs() {
+function renderRequests() {
+  if (!isArtisanUser()) return;
+  var list = requestList();
+  // Dashboard section: current job first, then open requests.
   var section = document.getElementById('job-alert-section');
-  if (!section) return;
-  if (window._artisanVerified === false) {
+  if (section) {
     section.className = '';
-    section.innerHTML = '<div style="background:#FFF3ED;border-radius:14px;padding:16px;text-align:center;color:var(--orange);font-size:13px;font-weight:600">⏳ Your account is awaiting admin verification. You\'ll be able to go online and receive jobs once approved.</div>';
+    var html = '';
+    if (_job && bookingIsLive(_job)) {
+      html += '<div class="rq-card current"><div class="rq-head"><span class="rq-tag green">🔧 CURRENT JOB</span><span class="rq-time">' + escapeHtml(_job.status === 'COMPLETED' ? 'Awaiting payment' : 'In progress') + '</span></div>' +
+        '<div class="rq-title">' + categoryLook(_job.category)[0] + ' ' + escapeHtml(_job.category) + '</div><div class="rq-addr">📍 ' + escapeHtml(_job.address) + '</div>' +
+        '<button class="oc-btn green wide" onclick="go(\'art-job\')">Open Job →</button></div>';
+    }
+    if (!avail) html += '<div class="empty-note">You’re offline. Switch Online at the top to receive job requests in your category.</div>';
+    else if (!list.length) html += '<div class="empty-note">No job requests right now. New requests in your category will pop up here.</div>';
+    else html += list.map(function (b) { return requestCard(b, 'dash'); }).join('');
+    section.innerHTML = html;
+  }
+  // Pop-up, on whatever screen the artisan is on.
+  var pop = document.getElementById('req-pop'), pill = document.getElementById('req-pill-btn');
+  if (!pop) return;
+  if (!avail || !list.length) { pop.hidden = true; pill.hidden = true; return; }
+  if (_popIndex >= list.length) _popIndex = 0;
+  if (_popHidden) { pop.hidden = true; pill.hidden = false; setText('req-pill-count', list.length + ' job request' + (list.length > 1 ? 's' : '')); return; }
+  pill.hidden = true;
+  pop.hidden = false;
+  setText('req-pop-count', list.length > 1 ? (_popIndex + 1) + ' of ' + list.length : '');
+  document.getElementById('req-pop-prev').hidden = list.length < 2;
+  document.getElementById('req-pop-next').hidden = list.length < 2;
+  setHTML('req-pop-body', requestCard(list[_popIndex], 'pop'));
+}
+function popNav(step) { var n = requestList().length; _popIndex = (_popIndex + step + n) % n; renderRequests(); }
+function hideReqPop() { _popHidden = true; renderRequests(); }
+function showReqPop() { _popHidden = false; renderRequests(); }
+
+// ---- artisan job screen
+function renderArtJob() {
+  var b = _job;
+  if (!b) { setText('aj-title', 'No current job'); setHTML('aj-panel', '<button class="btn btn-g" onclick="go(\'artisan-dash\')">Back to Dashboard</button>'); setHTML('aj-person', ''); setHTML('aj-money', ''); setHTML('aj-steps', ''); setText('aj-tag', ''); return; }
+  var c = b.customer || {}, tag, title, panel = '', cancel = false, id = attrJson(b.id);
+  if (b.status === 'CANCELLED') {
+    tag = 'Cancelled'; title = 'This job was cancelled';
+    panel = '<div class="job-panel grey">The customer’s escrow was refunded.</div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');renderRequests()">Back to Dashboard</button>';
+  } else if (b.status === 'CONFIRMED') {
+    tag = 'Paid'; title = '🎉 Payment released to your wallet';
+    panel = '<div class="job-panel green">' + fmtNaira(b.agreedPriceKobo) + ' (less FixMi commission) is in your wallet.</div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
+  } else if (b.status === 'COMPLETED') {
+    tag = 'Awaiting Payment'; title = 'Waiting for the customer to confirm';
+    panel = '<div class="job-panel green">Once ' + escapeHtml(firstName(c.name)) + ' confirms, ' + fmtNaira(b.agreedPriceKobo) + ' is released to you. It releases automatically after 24 hours.</div>';
+  } else if (b.status === 'IN_PROGRESS') {
+    tag = 'In Progress'; title = 'You are working';
+    panel = '<button class="btn btn-g" onclick="artisanJobStep(' + id + ',\'complete\')">✅ Work Is Done</button>';
+  } else if (b.agreedPriceKobo == null) {
+    cancel = true;
+    if (!b.arrivedAt) {
+      tag = 'Price on Hold'; title = 'Head to the customer to assess the job';
+      panel = '<button class="btn" style="background:var(--orange);color:#fff" onclick="artisanJobStep(' + id + ',\'arrive\')">📍 I Have Arrived</button>';
+    } else if (b.onsitePriceKobo == null) {
+      tag = 'Assessing'; title = 'Agree the price with the customer';
+      panel = '<div class="job-panel blue">Assess the job and agree a price together, then enter it here for the customer to accept.</div>' +
+        '<div class="fg"><input class="input" type="number" min="500" step="100" inputmode="numeric" id="aj-price" placeholder="Agreed price in ₦" style="font-size:20px;font-weight:700;text-align:center"></div>' +
+        '<button class="btn btn-g" onclick="artisanSubmitOnsite(' + id + ')">Submit Agreed Price →</button>';
+    } else {
+      tag = 'Waiting'; title = 'Waiting for the customer to accept ' + fmtNaira(b.onsitePriceKobo);
+      panel = '<div class="job-panel blue">The customer gets a prompt to accept your price. If they top up their escrow, you can start right after.</div>';
+    }
+  } else if (!b.arrivedAt) {
+    tag = 'En Route'; title = 'Head to the customer';
+    panel = '<button class="btn" style="background:var(--orange);color:#fff" onclick="artisanJobStep(' + id + ',\'arrive\')">📍 I Have Arrived</button>';
+  } else {
+    tag = 'Arrived'; title = 'Start the job when you’re ready';
+    panel = '<button class="btn btn-g" onclick="artisanJobStep(' + id + ',\'start\')">🔧 Start Work</button>';
+  }
+  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="artisanCancelJob(this,' + id + ')">Cancel Job</button>';
+  setText('aj-tag', tag);
+  setText('aj-title', title);
+  setHTML('aj-steps', b.status === 'CANCELLED' ? '' : stepsHtml(b));
+  setHTML('aj-person',
+    '<div class="feat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0);margin:0;width:52px;height:52px;font-size:26px">👤</div>' +
+    '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div></div>' +
+    contactButtons(c.name, c.phone));
+  setHTML('aj-money',
+    '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : 'On hold') + '</b></div>' +
+    '<div><small>Customer escrow</small><b>' + fmtNaira(b.escrowKobo) + '</b></div>' +
+    '<div><small>Navigate</small><b><a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(b.address) + '" target="_blank" rel="noopener" style="color:var(--g)">Open map ›</a></b></div>');
+  setHTML('aj-panel', panel);
+}
+
+async function artisanJobStep(bookingId, step, body) {
+  try {
+    var data = await apiFetch('/bookings/' + bookingId + '/' + step, { method: 'POST', body: body || {} });
+    _job = data.booking;
+    renderArtJob();
+    renderRequests();
+    toast({ arrive: '📍 Customer notified that you’ve arrived', start: '🔧 Job started', complete: '✅ Marked done — waiting for the customer to confirm', 'onsite-price': '💬 Price sent to the customer' }[step] || 'Updated');
+  } catch (e) {
+    toast('❌ ' + e.message);
+  }
+}
+function artisanSubmitOnsite(bookingId) {
+  var p = priceInput('aj-price');
+  if (!p) { toast('Enter the agreed price'); return; }
+  artisanJobStep(bookingId, 'onsite-price', { priceKobo: p });
+}
+var _jobCancelArmed = 0;
+async function artisanCancelJob(btn, bookingId) {
+  if (Date.now() - _jobCancelArmed > 4000) {
+    _jobCancelArmed = Date.now();
+    btn.dataset.label = btn.dataset.label || btn.textContent;
+    btn.textContent = 'Tap again to cancel this job';
+    setTimeout(function () { btn.textContent = btn.dataset.label; }, 4000);
     return;
   }
+  _jobCancelArmed = 0;
   try {
-    var data = await apiFetch('/bookings/open');
-    var jobs = data.bookings || [];
-    if (!jobs.length) {
-      section.className = '';
-      section.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">No open jobs right now. New requests in your category will show up here.</div>';
-      return;
-    }
-    section.className = 'job-alert';
-    section.innerHTML = jobs.map(function (b) {
-      return (
-        '<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,.06)">' +
-        '<div class="alert-hdr"><span class="alert-tag">🚨 NEW JOB</span></div>' +
-        '<div class="alert-svc">' + escapeHtml(b.category) + '</div>' +
-        '<div class="alert-issue">"' + escapeHtml(b.issue) + '"</div>' +
-        '<div class="alert-loc">📍 ' + escapeHtml(b.address) + '</div>' +
-        '<div style="font-family:\'AppFont\',sans-serif;font-size:20px;font-weight:800;color:var(--orange);margin-bottom:12px">Customer offers: ' + fmtNaira(b.priceKobo) + '</div>' +
-        '<div class="alert-acts"><button class="a-accept" style="flex:1" onclick="realAcceptJob(' + attrJson(b.id) + ')">Accept ' + fmtNaira(b.priceKobo) + '</button></div>' +
-        '</div>'
-      );
-    }).join('');
-  } catch (e) {
-    section.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">' + escapeHtml(e.message) + '</div>';
-  }
-}
-
-async function realAcceptJob(bookingId) {
-  try {
-    var data = await apiFetch('/bookings/' + bookingId + '/accept', { method: 'POST' });
-    window._activeBookingId = data.booking.id;
-    toast('✅ Job accepted! Waiting for customer to pay.');
-    renderArtisanCurrentJob(data.booking);
+    var data = await apiFetch('/bookings/' + bookingId + '/cancel', { method: 'POST', body: {} });
+    _job = data.booking;
+    renderArtJob();
+    toast('Job cancelled — the customer’s escrow was refunded');
   } catch (e) {
     toast('❌ ' + e.message);
-    refreshArtisanOpenJobs();
   }
 }
 
-/* ---------------- Real activity lists (non-demo accounts) ---------------- */
-var STATUS_LABEL = {
-  REQUESTED: ['⏳ Requested', '#FFF3ED', 'var(--orange)'], ACCEPTED: ['✓ Accepted', '#EFF6FF', '#1E40AF'],
-  PAID: ['💳 Paid', '#EFF6FF', '#1E40AF'], IN_PROGRESS: ['🔧 In Progress', '#EFF6FF', '#1E40AF'],
-  COMPLETED: ['✅ Done — confirm', '#FFF3ED', 'var(--orange)'], CONFIRMED: ['✓ Completed', 'var(--g3)', 'var(--g2)'],
-  DECLINED: ['Declined', 'var(--gray)', 'var(--muted)'], CANCELLED: ['Cancelled', 'var(--gray)', 'var(--muted)'], DISPUTED: ['Disputed', '#FEE2E2', '#DC2626']
+/* ---------------- Notifications ---------------- */
+var _unreadNotifs = 0;
+async function loadNotificationCount() {
+  if (!getAccess()) return;
+  try {
+    var d = await apiFetch('/notifications');
+    window._notifs = d.notifications || [];
+    _unreadNotifs = window._notifs.filter(function (n) { return !n.readAt; }).length;
+    renderNotifBadges();
+  } catch (e) {}
+}
+function renderNotifBadges() {
+  document.querySelectorAll('.notif-count').forEach(function (el) {
+    el.textContent = _unreadNotifs > 9 ? '9+' : String(_unreadNotifs);
+    el.hidden = !_unreadNotifs;
+  });
+}
+var NOTIF_ICON = { BOOKING: ['🔧', 'var(--g3)'], PAYMENT: ['💰', 'var(--g3)'], CHAT: ['💬', '#EFF6FF'], SYSTEM: ['🔔', '#FFFBEB'], ADMIN: ['🛡️', '#FFFBEB'] };
+async function openNotifications() {
+  var artisan = isArtisanUser();
+  go(artisan ? 'artisan-notifications' : 'notifications');
+  var box = document.getElementById(artisan ? 'art-notif-real' : 'notif-real');
+  if (!box) return;
+  box.innerHTML = '<div class="empty-note">Loading…</div>';
+  await loadNotificationCount();
+  var list = window._notifs || [];
+  box.innerHTML = list.length ? list.map(function (n) {
+    var ic = NOTIF_ICON[n.type] || NOTIF_ICON.SYSTEM;
+    var click = n.data && n.data.bookingId ? ' onclick="openBookingFromNotif(' + attrJson(n.data.bookingId) + ')" style="cursor:pointer"' : '';
+    return '<div class="notif-row' + (n.readAt ? '' : ' unread') + '"' + click + '><div class="notif-ico" style="background:' + ic[1] + '">' + ic[0] + '</div>' +
+      '<div style="min-width:0"><div class="notif-title">' + escapeHtml(n.title) + '</div><div class="notif-body">' + escapeHtml(n.body || '') + '</div><div class="notif-time">' + timeAgo(n.createdAt) + '</div></div></div>';
+  }).join('') : '<div class="empty-state"><b>No notifications yet</b>Updates about your bookings and payments will show up here.</div>';
+  if (_unreadNotifs) {
+    apiFetch('/notifications/read-all', { method: 'PATCH' }).catch(function () {});
+    _unreadNotifs = 0;
+    renderNotifBadges();
+  }
+}
+async function markAllNotifsRead() {
+  try { await apiFetch('/notifications/read-all', { method: 'PATCH' }); } catch (e) {}
+  _unreadNotifs = 0;
+  renderNotifBadges();
+  document.querySelectorAll('.notif-row.unread').forEach(function (r) { r.classList.remove('unread'); });
+  toast('✓ All marked read');
+}
+function openBookingFromNotif(id) {
+  if (isArtisanUser()) {
+    if (_job && _job.id === id) { go('art-job'); return; }
+    if (_requests[id]) { _popHidden = false; _popIndex = requestList().findIndex(function (b) { return b.id === id; }); renderRequests(); return; }
+  } else if (_booking && _booking.id === id && bookingIsLive(_booking)) {
+    showCustomerBooking(_booking); return;
+  }
+  openBookingDetail(id);
+}
+
+/* ---------------- Wallet ---------------- */
+var TX_LABEL = {
+  DEPOSIT: 'Wallet top-up', WITHDRAWAL: 'Withdrawal', ESCROW_HOLD: 'Paid into escrow', ESCROW_RELEASE: 'Escrow released',
+  ESCROW_REFUND: 'Escrow refunded', PAYOUT: 'Job payment received', COMMISSION_PAYMENT: 'Commission', ADJUSTMENT: 'Adjustment'
 };
+async function openWallet() {
+  go('wallet');
+  setText('wallet-balance', '…');
+  setHTML('wallet-tx', '<div class="empty-note">Loading…</div>');
+  try {
+    var w = await apiFetch('/wallet');
+    setText('wallet-balance', fmtNaira(w.wallet.balanceKobo));
+    var t = await apiFetch('/wallet/transactions');
+    var list = t.transactions || [];
+    setHTML('wallet-tx', list.length ? list.map(function (x) {
+      var plus = x.amountKobo > 0;
+      return '<div class="tx-row"><div style="min-width:0"><div class="tx-title">' + escapeHtml(x.description || TX_LABEL[x.type] || x.type) + '</div><div class="tx-time">' + new Date(x.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + '</div></div>' +
+        '<div class="tx-amt ' + (plus ? 'plus' : 'minus') + '">' + (plus ? '+' : '−') + fmtNaira(Math.abs(x.amountKobo)) + '</div></div>';
+    }).join('') : '<div class="empty-state"><b>No transactions yet</b>Top up your wallet to pay for jobs through escrow.</div>');
+  } catch (e) {
+    setHTML('wallet-tx', '<div class="empty-note">' + escapeHtml(e.message) + '</div>');
+  }
+}
+function pickTopupAmount(naira) { var i = document.getElementById('topup-amount'); if (i) i.value = naira; }
+async function topUpWallet() {
+  var kobo = priceInput('topup-amount');
+  if (!kobo || kobo < 10000) { toast('Enter at least ₦100'); return; }
+  try {
+    await apiFetch('/payments/wallet-deposit/dev', { method: 'POST', body: { amountKobo: kobo } });
+    toast('✅ ' + fmtNaira(kobo) + ' added to your wallet');
+    document.getElementById('topup-amount').value = '';
+    openWallet();
+  } catch (e) {
+    if (e.status !== 403) { toast('❌ ' + e.message); return; }
+    // Real payments: hand over to Paystack checkout.
+    try {
+      var d = await apiFetch('/payments/wallet-deposit', { method: 'POST', body: { amountKobo: kobo } });
+      window.location.href = d.authorizationUrl;
+    } catch (err) {
+      toast('❌ ' + err.message);
+    }
+  }
+}
+
+/* ---------------- History: filters, details, hire again ---------------- */
+var HISTORY_FILTER = {
+  all: null,
+  completed: ['CONFIRMED'],
+  pending: ['REQUESTED', 'ACCEPTED', 'PAID', 'IN_PROGRESS', 'COMPLETED'],
+  cancelled: ['CANCELLED', 'DECLINED']
+};
+function filterHistory(btn, screenId, key) {
+  var screen = document.getElementById(screenId);
+  screen.querySelectorAll('.hist-chips .chip').forEach(function (c) { c.classList.toggle('on', c === btn); });
+  var statuses = HISTORY_FILTER[key];
+  var shown = 0;
+  screen.querySelectorAll('[data-status]').forEach(function (card) {
+    var ok = !statuses || statuses.indexOf(card.getAttribute('data-status')) !== -1;
+    card.hidden = !ok;
+    if (ok && card.offsetParent !== null) shown++;
+  });
+  screen.querySelectorAll('.hist-empty').forEach(function (e) { e.hidden = shown > 0; });
+}
+var CUSTOMER_STATUS = {
+  REQUESTED: '⏳ Waiting for artisans', ACCEPTED: '✓ Artisan booked', PAID: '✓ Artisan booked', IN_PROGRESS: '🔧 In progress',
+  COMPLETED: '💳 Payment pending', CONFIRMED: '✓ Completed', CANCELLED: '✕ Booking cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Disputed'
+};
+var ARTISAN_STATUS = {
+  ACCEPTED: '✓ Accepted', PAID: '✓ Accepted', IN_PROGRESS: '🔧 In progress', COMPLETED: '💳 Payment pending',
+  CONFIRMED: '✓ Paid', CANCELLED: '✕ Cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Disputed'
+};
+function statusColors(s) {
+  if (s === 'CONFIRMED') return ['var(--g3)', 'var(--g2)'];
+  if (s === 'CANCELLED' || s === 'DECLINED') return ['var(--gray)', 'var(--muted)'];
+  if (s === 'COMPLETED' || s === 'REQUESTED') return ['#FFF3ED', 'var(--orange)'];
+  return ['#EFF6FF', '#1E40AF'];
+}
+var _historyCache = {};
 async function loadBookingHistory(containerId, asArtisan) {
   var box = document.getElementById(containerId);
   if (!box || !document.body.classList.contains('fresh-acct')) return;
@@ -5687,33 +6431,160 @@ async function loadBookingHistory(containerId, asArtisan) {
   try {
     var data = await apiFetch('/bookings');
     var list = data.bookings || [];
+    list.forEach(function (b) { _historyCache[b.id] = b; });
     if (!asArtisan) {
-      var spent = list.filter(function (b) { return b.status === 'CONFIRMED'; }).reduce(function (t, b) { return t + b.priceKobo; }, 0);
+      var spent = list.filter(function (b) { return b.status === 'CONFIRMED'; }).reduce(function (t, b) { return t + (b.agreedPriceKobo || b.priceKobo); }, 0);
       setText('cust-stat-jobs', String(list.length));
       setText('cust-stat-spent', fmtNaira(spent));
     }
-    if (!list.length) {
-      box.innerHTML = '<div class="empty-state"><b>No jobs yet</b>' + (asArtisan ? 'Jobs you accept will show up here.' : 'Book an artisan from the home page and your jobs will show up here.') + '</div>';
-      return;
-    }
-    box.innerHTML = list.map(function (b) {
-      var look = categoryLook(b.category);
-      var st = STATUS_LABEL[b.status] || [b.status, 'var(--gray)', 'var(--muted)'];
+    var empty = '<div class="empty-state hist-empty"' + (list.length ? ' hidden' : '') + '><b>No jobs here</b>' + (asArtisan ? 'Jobs you take will show up here.' : 'Book an artisan from the home page and your jobs will show up here.') + '</div>';
+    box.innerHTML = empty + list.map(function (b) {
+      var look = categoryLook(b.category), colors = statusColors(b.status);
+      var label = (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
       var other = asArtisan ? (b.customer && b.customer.name) : (b.artisan && b.artisan.user && b.artisan.user.name);
       var when = new Date(b.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
-      return (
-        '<div class="card" style="margin-bottom:11px">' +
+      return '<div class="card hist-card" data-status="' + b.status + '" onclick="openBookingDetail(' + attrJson(b.id) + ')">' +
         '<div style="display:flex;align-items:center;gap:11px;margin-bottom:10px"><div style="width:44px;height:44px;background:' + look[1] + ';border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">' + look[0] + '</div>' +
-        '<div style="min-width:0"><div style="font-weight:700;font-size:15px;color:var(--navy)">' + escapeHtml(b.category) + '</div><div style="font-size:12px;color:var(--muted)">' + escapeHtml(other || 'Awaiting artisan') + ' · ' + when + '</div></div></div>' +
+        '<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:15px;color:var(--navy)">' + escapeHtml(b.category) + '</div><div style="font-size:12px;color:var(--muted)">' + escapeHtml(other || 'No artisan yet') + ' · ' + when + '</div></div><span style="color:var(--muted)">›</span></div>' +
         '<p style="font-size:13px;color:var(--muted);margin-bottom:10px">"' + escapeHtml(b.issue) + '"</p>' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)"><span style="background:' + st[1] + ';color:' + st[2] + ';border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">' + st[0] + '</span><span style="font-weight:800;font-size:16px">' + fmtNaira(b.priceKobo) + '</span></div>' +
-        '</div>'
-      );
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)"><span style="background:' + colors[0] + ';color:' + colors[1] + ';border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700">' + label + '</span><span style="font-weight:800;font-size:16px">' + fmtNaira(b.agreedPriceKobo || b.priceKobo) + '</span></div>' +
+        '</div>';
     }).join('');
+    var chip = document.querySelector('#' + (asArtisan ? 'artisan-history' : 'history') + ' .hist-chips .chip.on');
+    if (chip) chip.click();
   } catch (e) {
     box.innerHTML = '<div class="empty-note">' + escapeHtml(e.message) + '</div>';
   }
 }
+
+async function openBookingDetail(id) {
+  var b = _historyCache[id];
+  try { b = (await apiFetch('/bookings/' + id)).booking; } catch (e) { if (!b) { toast('❌ ' + e.message); return; } }
+  var asArtisan = isArtisanUser(), look = categoryLook(b.category), colors = statusColors(b.status);
+  var label = (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
+  var other = asArtisan ? b.customer : (b.artisan && b.artisan.user);
+  var rows = [
+    ['Description', escapeHtml(b.issue)],
+    ['Location', escapeHtml(b.address)],
+    ['Requested', new Date(b.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })],
+    ['Budget', fmtNaira(b.priceKobo)],
+    ['Agreed price', b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'Price on Hold' : '—')],
+    ['Payment', { CONFIRMED: 'Released to artisan', COMPLETED: 'Pending your confirmation', CANCELLED: 'Escrow refunded to wallet' }[b.status] || (b.escrowKobo ? fmtNaira(b.escrowKobo) + ' held in escrow' : '—')]
+  ];
+  if (b.cancelReason) rows.push(['Reason', escapeHtml(b.cancelReason)]);
+  var actions = '';
+  if (!asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="showCustomerBooking(_historyCache[' + attrJson(b.id) + '] || _booking)">Open Live Booking →</button>';
+  if (asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="go(\'art-job\')">Open Job →</button>';
+  if (!asArtisan && b.artisan) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="bookDirectArtisan(' + attrJson(b.artisan.id) + ',' + attrJson(b.artisan.user.name) + ',' + attrJson(b.category) + ')">🔄 Hire ' + escapeHtml(firstName(b.artisan.user.name)) + ' Again</button>';
+  actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="go(' + (asArtisan ? '\'report-customer\'' : '\'report-issue\'') + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'an Issue') + '</button>';
+  _historyCache[b.id] = b;
+  setHTML('bkd-body',
+    '<div class="card" style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">' +
+    '<div style="width:50px;height:50px;background:' + look[1] + ';border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">' + look[0] + '</div>' +
+    '<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:16px;color:var(--navy)">' + escapeHtml(b.category) + '</div><div style="font-size:12px;color:var(--muted)">' + escapeHtml(other ? other.name : 'No artisan yet') + '</div></div>' +
+    '<span style="background:' + colors[0] + ';color:' + colors[1] + ';border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap">' + label + '</span></div>' +
+    rows.map(function (r) { return '<div class="pay-row"><span class="pay-lbl">' + r[0] + '</span><span class="pay-val" style="text-align:right;max-width:62%">' + r[1] + '</span></div>'; }).join('') +
+    '</div>' + actions);
+  go('bk-detail');
+}
+
+// Demo history cards (Ada) — find the real artisan by name, then book them.
+async function hireArtisanAgain(name) {
+  name = name || (document.getElementById('jd-art-name') || {}).textContent || '';
+  try {
+    var d = await apiFetch('/search?q=' + encodeURIComponent(name));
+    var a = (d.artisans || []).find(function (x) { return x.user.name === name; }) || (d.artisans || [])[0];
+    if (a) { bookDirectArtisan(a.id, a.user.name, a.category); return; }
+  } catch (e) {}
+  toast(name + ' isn’t available to book right now');
+}
+
+/* ---------------- Artisan public profile ---------------- */
+function favKey() { return 'fixmi_favs_' + (window.currentUser ? window.currentUser.id : 'guest'); }
+function getFavs() { try { return JSON.parse(localStorage.getItem(favKey()) || '[]'); } catch (e) { return []; } }
+function toggleFav() {
+  var id = window._profileArtisan && window._profileArtisan.id;
+  if (!id) { toast('❤️ Saved to favourites!'); return; }
+  var favs = getFavs(), i = favs.indexOf(id);
+  if (i === -1) favs.push(id); else favs.splice(i, 1);
+  try { localStorage.setItem(favKey(), JSON.stringify(favs)); } catch (e) {}
+  renderFavBtn();
+  toast(i === -1 ? '❤️ Saved to favourites' : 'Removed from favourites');
+}
+function renderFavBtn() {
+  var on = window._profileArtisan && getFavs().indexOf(window._profileArtisan.id) !== -1;
+  setText('ap-fav', on ? '♥' : '♡');
+}
+async function openArtisanProfile(id) {
+  try {
+    var a = (await apiFetch('/artisans/' + id)).artisan;
+    window._profileArtisan = a;
+    var look = categoryLook(a.category), fn = firstName(a.user.name);
+    setText('ap-ava', look[0]);
+    document.getElementById('ap-ava').style.background = look[1];
+    setText('ap-name', a.user.name);
+    setText('ap-role', look[0] + ' ' + a.category + (a.user.state ? ' · ' + a.user.state : ''));
+    setHTML('ap-pills', '<span class="pill pill-g">⭐ ' + (a.ratingCount ? a.ratingAvg.toFixed(1) + ' (' + a.ratingCount + ' reviews)' : 'New') + '</span>' + (a.isVerified ? '<span class="pill pill-g">✓ ID Verified</span>' : '') + (a.isAvailable ? '<span class="pill pill-g">🟢 Online</span>' : '<span class="pill pill-gray">Offline</span>'));
+    setText('ap-jobs', String(a.jobsDone || 0));
+    setText('ap-years', a.yearsExp ? a.yearsExp + ' yrs' : '—');
+    setText('ap-rating', a.ratingCount ? a.ratingAvg.toFixed(1) + '★' : 'New');
+    setText('ap-about', a.bio || (fn + ' is a verified ' + a.category.toLowerCase() + ' on FixMi.'));
+    setText('ap-online', a.isAvailable ? '💡 ' + fn + ' is online now and can take your job.' : '⏸ ' + fn + ' is offline right now — you can book once they’re back online.');
+    var btn = document.getElementById('ap-book');
+    btn.textContent = 'Book ' + fn + ' →';
+    btn.onclick = function () { bookDirectArtisan(a.id, a.user.name, a.category); };
+    renderFavBtn();
+    document.querySelectorAll('#artisan-profile [data-static-reviews]').forEach(function (el) { el.hidden = true; });
+    go('artisan-profile');
+  } catch (e) {
+    toast('❌ ' + e.message);
+  }
+}
+
+/* ---------------- Menu (phone & tablet) ---------------- */
+var MENU_ITEMS = {
+  customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['🔔', 'Notifications', 'openNotifications()'],
+    ['🏢', 'Corporate Plan', "go('corp-plan')"], ['📍', 'Saved Addresses', "go('saved-addresses')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
+  artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'My Jobs', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
+    ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"]]
+};
+function openMenu() {
+  var u = window.currentUser || {};
+  var items = MENU_ITEMS[u.role === 'ARTISAN' ? 'artisan' : 'customer'];
+  setText('menu-name', u.name || 'FixMi');
+  setText('menu-contact', [u.email, u.phone].filter(Boolean).join(' · '));
+  setHTML('menu-items', items.map(function (it) {
+    return '<button class="menu-item" onclick="closeMenu();' + it[2] + '"><span>' + it[0] + '</span>' + it[1] + '</button>';
+  }).join('') + '<button class="menu-item danger" onclick="closeMenu();signOut()"><span>🚪</span>Sign Out</button>');
+  document.getElementById('menu-drawer').hidden = false;
+}
+function closeMenu() { document.getElementById('menu-drawer').hidden = true; }
+
+/* ---------------- Small helpers for older screens ---------------- */
+// Corporate jobs can be raised for any FixMi service, plus Others.
+function fillCorporateServices() {
+  var sel = document.getElementById('job-svc');
+  if (!sel || sel.dataset.filled) return;
+  var opts = '<option value="">Select service...</option>' + serviceNames().map(function (s) {
+    return '<option value="' + escapeHtml(s.name) + '">' + s.ico + ' ' + escapeHtml(s.name) + '</option>';
+  }).join('') + '<option value="Others">🔧 Others</option>';
+  sel.innerHTML = opts;
+  sel.dataset.filled = '1';
+}
+
+// Evidence photos show on whichever report screen is open.
+var _origRenderPreviews = renderPreviews;
+renderPreviews = function () {
+  _origRenderPreviews();
+  ['report-previews', 'cust-report-previews'].forEach(function (id) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.innerHTML = mediaFiles.map(function (m, i) {
+      return '<div style="position:relative;width:64px;height:64px;border-radius:12px;overflow:hidden"><img src="' + m.url + '" style="width:100%;height:100%;object-fit:cover" alt="Evidence photo ' + (i + 1) + '">' +
+        '<button onclick="removeMedia(' + i + ')" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.65);border:none;color:#fff;cursor:pointer;font-size:10px" aria-label="Remove photo">x</button></div>';
+    }).join('');
+  });
+};
 
 /* ---------------- Promote My Page (real) ---------------- */
 var PROMO_PLAN_KEYS = { 'Basic Boost': 'basic', 'Standard Boost': 'standard', 'VIP Annual': 'vip' };
@@ -5755,6 +6626,9 @@ async function confirmPromoPayment() {
     if (id === 'artisan-messages' && document.body.classList.contains('fresh-acct')) loadChatThreads('artisan-chat-thread-list');
     if (id === 'history' || id === 'profile') loadBookingHistory('history-real', false);
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
+    if (id === 'corp-raise') fillCorporateServices();
+    // the request pop-up stays on top of every artisan screen except the job itself
+    if (isArtisanUser()) renderRequests();
   };
 })();
 
