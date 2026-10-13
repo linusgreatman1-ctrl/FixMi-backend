@@ -34,14 +34,15 @@ async function listArtisans(req, res, next) {
     const where = { kycStatus: "APPROVED", isVerified: true, user: { status: "ACTIVE" } };
     if (category) where.category = category;
     if (onlyAvailable === "true") where.isAvailable = true;
-    // Homepage list: only artisans with a paid, unexpired promotion.
+    // Homepage list: only artisans with a paid, unexpired promotion (up to
+    // 20 — the page shows 10 on phones, 15 on tablets, 20 on desktop).
     if (featured === "true") where.featuredUntil = { gt: new Date() };
 
     const artisans = await prisma.artisanProfile.findMany({
       where,
       select: PUBLIC_SELECT,
       orderBy: { ratingAvg: "desc" },
-      ...(featured === "true" ? { take: 10 } : {}),
+      ...(featured === "true" ? { take: 20 } : {}),
     });
 
     const withDistance = artisans.map((a) => ({

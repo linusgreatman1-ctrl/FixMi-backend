@@ -8,13 +8,18 @@ router.use(requireAuth);
 router.post("/", ctrl.createBooking);
 router.get("/", ctrl.listMyBookings);
 router.get("/open", ctrl.listOpenBookings);
+router.get("/active", ctrl.getActiveBooking);
 router.get("/:id", ctrl.getBooking);
-router.post("/:id/accept", ctrl.acceptBooking);
-router.post("/:id/decline", ctrl.declineBooking);
-router.post("/:id/pay", ctrl.payBooking);
+// Artisan: accept / price / hold / decline an open request
+router.post("/:id/respond", ctrl.artisanRespond);
+// Customer: accept / counter / reject one artisan's offer
+router.post("/:id/offers/:offerId", ctrl.customerRespond);
+router.post("/:id/cancel", ctrl.cancelBooking);
+router.post("/:id/arrive", ctrl.arriveBooking);
+router.post("/:id/onsite-price", ctrl.submitOnsitePrice);
+router.post("/:id/onsite-respond", ctrl.respondOnsitePrice);
 router.post("/:id/start", ctrl.startBooking);
 router.post("/:id/complete", ctrl.completeBooking);
 router.post("/:id/confirm", ctrl.confirmBooking);
-router.post("/:id/cancel", ctrl.cancelBooking);
 
 module.exports = router;
