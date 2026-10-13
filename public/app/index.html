@@ -5655,6 +5655,11 @@ function resumeBooking() { if (_booking) showCustomerBooking(_booking); }
 
 // ---- offers screen
 function renderOffers(b) {
+  var keep = snapshotCounters();
+  drawOffers(b);
+  restoreCounters(keep);
+}
+function drawOffers(b) {
   var look = categoryLook(b.category);
   setText('co-title', b.artisan ? 'Book ' + firstName(b.artisan.user.name) : 'Your ' + b.category + ' Request');
   setHTML('co-summary',
@@ -6166,7 +6171,32 @@ async function artisanRespondTo(bookingId, action, priceKobo) {
   }
 }
 
+// Live updates redraw the request and offer cards; keep any price box the
+// person has open (and what they typed) across the redraw.
+function snapshotCounters() {
+  var keep = {};
+  document.querySelectorAll('.oc-counter').forEach(function (row) {
+    if (row.hidden || !row.id) return;
+    var inp = row.querySelector('input');
+    keep[row.id] = { value: inp ? inp.value : '', focused: !!inp && document.activeElement === inp };
+  });
+  return keep;
+}
+function restoreCounters(keep) {
+  Object.keys(keep).forEach(function (id) {
+    var row = document.getElementById(id);
+    if (!row) return;
+    row.hidden = false;
+    var inp = row.querySelector('input');
+    if (inp) { inp.value = keep[id].value; if (keep[id].focused) inp.focus(); }
+  });
+}
 function renderRequests() {
+  var keep = snapshotCounters();
+  drawRequests();
+  restoreCounters(keep);
+}
+function drawRequests() {
   if (!isArtisanUser()) return;
   var list = requestList();
   // Dashboard section: current job first, then open requests.

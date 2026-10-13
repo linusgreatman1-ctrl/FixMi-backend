@@ -128,24 +128,34 @@ customer never taps Confirm.
 
 ## Booking lifecycle
 
-```
-REQUESTED --accept--> ACCEPTED --pay--> PAID --start--> IN_PROGRESS
-   |                     |                                  |
-   +--cancel (no refund needed)      cancel (refund)---------+
-                                                              |
-                                                          complete
-                                                              v
-                                                          COMPLETED --confirm--> CONFIRMED
-                                                       (auto-releases after
-                                                        ESCROW_AUTO_RELEASE_HOURS
-                                                        if never confirmed)
-```
+Escrow first, like Handa's shopper requests. No cash anywhere.
 
-A booking is created `REQUESTED` with no artisan assigned and broadcast
-(Socket.IO `booking:new` + a push `Notification`) to every available,
-verified artisan in that category — first to `POST /bookings/:id/accept`
-wins, matching the frontend's "finding artisan" radar screen. Accepting
-also opens a `ChatThread` between customer and artisan.
+1. **Request** — `POST /bookings` with a budget (`priceKobo`). The budget is
+   taken from the customer's wallet straight away and held on the booking
+   (`escrowKobo`). It goes to every *online*, verified artisan in that
+   category (or only the chosen artisan when `artisanId` is passed — they
+   must be online).
+2. **Offers** — each artisan answers with `POST /bookings/:id/respond`:
+   `accept` (the customer's price), `price` (their own), `hold` (Price on
+   Hold — assess on site first) or `decline`. The customer answers each
+   offer with `POST /bookings/:id/offers/:offerId`: `accept`, `counter` or
+   `reject`. Offers and counters live in `BookingOffer`.
+3. **Match** — the first accepted price wins (`ACCEPTED`). The request
+   closes for every other artisan, a chat thread opens, and the escrow is
+   topped up from (or partly refunded to) the wallet to equal the agreed
+   price.
+4. **Price on Hold** — the matched artisan checks in (`/arrive`), submits the
+   price agreed on site (`/onsite-price`), and the customer accepts it
+   (`/onsite-respond`), topping up escrow if it's short.
+5. **Cancel** — either side can cancel (`/cancel`) until a price is agreed;
+   the escrow goes back to the customer's wallet. After that, no in-app
+   cancellation.
+6. **Work** — `/start` → `IN_PROGRESS` → `/complete` (escrow moves into
+   payout holds: artisan share + commission) → customer `/confirm` releases
+   it (`CONFIRMED`), or it auto-releases after `ESCROW_AUTO_RELEASE_HOURS`.
+
+`GET /bookings/active` returns the booking to resume after a refresh; `GET
+/bookings/open` is an online artisan's list of requests they can answer.
 
 ## API surface
 
@@ -157,10 +167,10 @@ multiple tabs/devices can hold independent sessions).
 | Area | Routes |
 |---|---|
 | Auth | `POST /auth/register`, `/login`, `/guest`, `/refresh`, `/logout`, `GET /auth/me` |
-| Users | `PATCH /users/me`, `/me/artisan-profile`, `/me/availability` (go online/offline), `POST /me/avatar`, `/me/bank-account`, `GET /users/banks` |
+| Users | `PATCH /users/me`, `/me/artisan-profile`, `/me/availability` (go online/offline), `POST /me/promote` (featured listing), `POST /me/avatar`, `/me/bank-account`, `GET /users/banks` |
 | Artisans | `GET /artisans` (filter by `category`, `onlyAvailable`, sorted by distance if `lat`/`lng` given), `GET /artisans/:id`, `GET /artisans/categories` |
 | Search | `GET /search?q=` |
-| Bookings | `POST /bookings`, `GET /bookings` (mine), `GET /bookings/open` (artisan's open job feed), accept/decline/pay/start/complete/confirm/cancel |
+| Bookings | `POST /bookings`, `GET /bookings` (mine), `/bookings/active`, `/bookings/open` (online artisan's requests), `POST /:id/respond` (artisan), `/:id/offers/:offerId` (customer), `/:id/cancel`, `/arrive`, `/onsite-price`, `/onsite-respond`, `/start`, `/complete`, `/confirm` |
 | Wallet | `GET /wallet`, `/wallet/transactions`, `POST /wallet/withdraw`, `GET /wallet/withdrawals` |
 | Payments | `POST /payments/wallet-deposit` (Paystack), `/payments/wallet-deposit/dev` (DEV_BYPASS only), `GET /payments/verify/:reference`, `POST /payments/webhook` |
 | Ratings | `POST /ratings` (one row per side per booking — customer rates artisan and vice versa) |
@@ -172,7 +182,9 @@ multiple tabs/devices can hold independent sessions).
 ## Real-time (Socket.IO)
 
 Connect with `auth: { token: accessToken }`. Rooms: `user:{id}` (personal
-— notifications, new-job broadcast to artisans), `booking:{id}`,
+— notifications plus the booking events: `booking:updated` to the customer,
+`request:updated` / `request:closed` to artisans, `job:updated` to the
+matched artisan), `booking:{id}`,
 `chat:{threadId}`. `artisan:location` events update the artisan's live
 position and rebroadcast to whichever booking room they're actively
 working — this is what should replace the frontend's animated
