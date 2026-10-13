@@ -27,6 +27,9 @@ const chatRoutes = require("./routes/chat.routes");
 const adminRoutes = require("./routes/admin.routes");
 const corporateRoutes = require("./routes/corporate.routes");
 const configRoutes = require("./routes/config.routes");
+const favouritesRoutes = require("./routes/favourites.routes");
+const safetyRoutes = require("./routes/safety.routes");
+const settingsRoutes = require("./routes/settings.routes");
 
 const app = express();
 
@@ -96,6 +99,9 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/corporate", corporateRoutes);
 app.use("/api/config", configRoutes);
+app.use("/api/favourites", favouritesRoutes);
+app.use("/api/safety", safetyRoutes);
+app.use("/api/settings", settingsRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

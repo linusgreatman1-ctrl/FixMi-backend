@@ -9,6 +9,7 @@ router.use(requireAuth);
 router.patch("/me", ctrl.updateMe);
 router.patch("/me/artisan-profile", ctrl.updateArtisanProfile);
 router.patch("/me/availability", ctrl.setAvailability);
+router.get("/me/promotions", ctrl.listPromotions);
 router.post("/me/promote", ctrl.promoteMe);
 router.post("/me/avatar", upload.single("avatar"), ctrl.uploadAvatar);
 router.post("/me/bank-account", ctrl.linkBankAccount);

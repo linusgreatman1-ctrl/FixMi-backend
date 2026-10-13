@@ -46,15 +46,22 @@ model User {
   wallet           Wallet?
   notificationPref NotificationPreference?
 
-  refreshTokens  RefreshToken[]
-  bookingsAsCust Booking[]                @relation("CustomerBookings")
-  notifications  Notification[]
-  ratingsGiven   Rating[]                 @relation("RatingsGiven")
-  supportTickets SupportTicket[]
+  refreshTokens    RefreshToken[]
+  bookingsAsCust   Booking[]         @relation("CustomerBookings")
+  notifications    Notification[]
+  ratingsGiven     Rating[]          @relation("RatingsGiven")
+  supportTickets   SupportTicket[]
   chatParticipants ChatParticipant[]
+  corporatePlans   CorporatePlan[]
+
+  addresses         SavedAddress[]
+  favourites        Favourite[]
+  kycDocuments      KycDocument[]
+  emergencyContacts EmergencyContact[]
+  safetyReports     SafetyReport[]
+  featureBoosts     FeatureBoost[]
 
   @@index([role])
-  corporatePlans CorporatePlan[]
 }
 
 model RefreshToken {
@@ -80,33 +87,35 @@ enum KycStatus {
 // Plumber, AC Tech, ... — the frontend's service grid is open-ended, not a
 // fixed enum) so new trades never need a migration.
 model ArtisanProfile {
-  id          String    @id @default(uuid())
-  userId      String    @unique
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category    String
-  bizName     String?
-  bio         String?
-  yearsExp    Int?
-  idType      String?
-  idNumber    String?
-  kycStatus   KycStatus @default(PENDING)
-  kycNote     String?
-  isVerified  Boolean   @default(false)
-  isAvailable Boolean   @default(false)
-  lat         Float?
-  lng         Float?
-  ratingAvg   Float     @default(0)
-  ratingCount Int       @default(0)
-  jobsDone    Int       @default(0)
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      String
+  bizName       String?
+  bio           String?
+  yearsExp      Int?
+  idType        String?
+  idNumber      String?
+  kycStatus     KycStatus @default(PENDING)
+  kycNote       String?
+  isVerified    Boolean   @default(false)
+  isAvailable   Boolean   @default(false)
+  lat           Float?
+  lng           Float?
+  ratingAvg     Float     @default(0)
+  ratingCount   Int       @default(0)
+  jobsDone      Int       @default(0)
   // Set when the artisan pays to promote their page; they appear in the
   // homepage "Featured" list until this date passes.
   featuredUntil DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  bookings      Booking[]
-  offers        BookingOffer[]
+  bookings          Booking[]
+  offers            BookingOffer[]
   commissionPeriods CommissionPeriod[]
+  favouritedBy      Favourite[]
+  featureBoosts     FeatureBoost[]
 
   @@index([category])
   @@index([kycStatus])
@@ -126,39 +135,39 @@ enum BookingStatus {
 }
 
 model Booking {
-  id          String        @id @default(uuid())
-  customerId  String
-  customer    User          @relation("CustomerBookings", fields: [customerId], references: [id])
-  artisanId   String?
-  artisan     ArtisanProfile? @relation(fields: [artisanId], references: [id])
+  id         String          @id @default(uuid())
+  customerId String
+  customer   User            @relation("CustomerBookings", fields: [customerId], references: [id])
+  artisanId  String?
+  artisan    ArtisanProfile? @relation(fields: [artisanId], references: [id])
 
-  category    String
-  issue       String
-  address     String
-  lat         Float?
-  lng         Float?
+  category String
+  issue    String
+  address  String
+  lat      Float?
+  lng      Float?
 
-  priceKobo   Int // the customer's budget / offered price
-  status      BookingStatus @default(REQUESTED)
+  priceKobo Int // the customer's budget / offered price
+  status    BookingStatus @default(REQUESTED)
 
   // Escrow-first: the customer's budget is taken from their wallet when the
   // request is posted and held here (topped up or partly refunded once a
   // price is agreed). Moves into payout EscrowHolds when the job is done.
-  escrowKobo      Int     @default(0)
+  escrowKobo      Int       @default(0)
   agreedPriceKobo Int?
   // Price on Hold: the artisan assesses at the customer's place first and
   // submits the agreed price there (onsitePriceKobo) for the customer to accept.
-  priceOnHold     Boolean @default(false)
+  priceOnHold     Boolean   @default(false)
   onsitePriceKobo Int?
   arrivedAt       DateTime?
 
-  scheduledAt DateTime?
-  acceptedAt  DateTime?
-  paidAt      DateTime?
-  startedAt   DateTime?
-  completedAt DateTime?
-  confirmedAt DateTime?
-  cancelledAt DateTime?
+  scheduledAt  DateTime?
+  acceptedAt   DateTime?
+  paidAt       DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  confirmedAt  DateTime?
+  cancelledAt  DateTime?
   cancelReason String?
 
   createdAt DateTime @default(now())
@@ -302,15 +311,15 @@ enum WithdrawalStatus {
 }
 
 model Withdrawal {
-  id            String           @id @default(uuid())
-  userId        String
-  walletId      String
-  wallet        Wallet           @relation(fields: [walletId], references: [id])
-  amountKobo    Int
-  status        WithdrawalStatus @default(PENDING)
-  paystackRef   String?
-  createdAt     DateTime         @default(now())
-  processedAt   DateTime?
+  id          String           @id @default(uuid())
+  userId      String
+  walletId    String
+  wallet      Wallet           @relation(fields: [walletId], references: [id])
+  amountKobo  Int
+  status      WithdrawalStatus @default(PENDING)
+  paystackRef String?
+  createdAt   DateTime         @default(now())
+  processedAt DateTime?
 
   @@index([userId])
 }
@@ -318,16 +327,16 @@ model Withdrawal {
 // Weekly platform commission owed by an artisan on completed jobs — mirrors
 // the "Pay Commission" screen in the prototype.
 model CommissionPeriod {
-  id            String   @id @default(uuid())
-  artisanId     String
-  artisan       ArtisanProfile @relation(fields: [artisanId], references: [id])
-  periodStart   DateTime
-  periodEnd     DateTime
-  jobsCompleted Int      @default(0)
-  grossKobo     Int      @default(0)
-  commissionKobo Int     @default(0)
-  paid          Boolean  @default(false)
-  paidAt        DateTime?
+  id             String         @id @default(uuid())
+  artisanId      String
+  artisan        ArtisanProfile @relation(fields: [artisanId], references: [id])
+  periodStart    DateTime
+  periodEnd      DateTime
+  jobsCompleted  Int            @default(0)
+  grossKobo      Int            @default(0)
+  commissionKobo Int            @default(0)
+  paid           Boolean        @default(false)
+  paidAt         DateTime?
 
   @@index([artisanId])
 }
@@ -406,6 +415,7 @@ enum NotificationType {
   CHAT
   ADMIN
   SYSTEM
+  ANNOUNCEMENT
 }
 
 model Notification {
@@ -423,11 +433,14 @@ model Notification {
 }
 
 model NotificationPreference {
-  id            String  @id @default(uuid())
-  userId        String  @unique
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pushEnabled   Boolean @default(true)
-  emailEnabled  Boolean @default(true)
+  id               String  @id @default(uuid())
+  userId           String  @unique
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pushEnabled      Boolean @default(true)
+  emailEnabled     Boolean @default(true)
+  smsEnabled       Boolean @default(false)
+  // Promotions / tips. Booking and payment alerts are never switched off by this.
+  marketingEnabled Boolean @default(true)
 }
 
 model ChatThread {
@@ -465,4 +478,156 @@ model ChatMessage {
 model AppSetting {
   key   String @id
   value Json
+}
+
+// ---- Sidebar features (Profile, Settings, Safety & Trust, Promote My Page) ----
+
+// "Settings": addresses a customer books jobs to, so they don't retype them.
+model SavedAddress {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  address   String
+  state     String?
+  lga       String?
+  lat       Float?
+  lng       Float?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// "Profile": artisans a customer saved. Moved from localStorage so it follows
+// the account across devices.
+model Favourite {
+  id        String         @id @default(uuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artisanId String
+  artisan   ArtisanProfile @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([userId, artisanId])
+  @@index([userId])
+}
+
+enum KycDocType {
+  GOVERNMENT_ID
+  PROOF_OF_ADDRESS
+  TRADE_CERTIFICATE
+}
+
+// "Safety & Trust": identity documents behind the "ID Verified" badge. Admin
+// reviews each one; the artisan profile flips to verified once an ID is approved.
+model KycDocument {
+  id              String     @id @default(uuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  docType         KycDocType
+  idType          String?
+  idNumber        String?
+  fileUrl         String
+  status          KycStatus  @default(PENDING)
+  rejectionReason String?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  createdAt       DateTime   @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
+
+model EmergencyContact {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  phone        String
+  relationship String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum SafetyReportType {
+  SOS
+  UNSAFE_BEHAVIOUR
+  FRAUD
+  HARASSMENT
+  OTHER
+}
+
+enum SafetyReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+}
+
+// SOS alerts and user-flagged incidents. An SOS pings every admin and the
+// reporter's emergency contacts (when SMS is configured).
+model SafetyReport {
+  id             String             @id @default(uuid())
+  reporterId     String
+  reporter       User               @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  type           SafetyReportType
+  bookingId      String?
+  reportedUserId String?
+  description    String?
+  lat            Float?
+  lng            Float?
+  status         SafetyReportStatus @default(OPEN)
+  adminNote      String?
+  createdAt      DateTime           @default(now())
+  resolvedAt     DateTime?
+
+  @@index([status])
+  @@index([reporterId])
+}
+
+// "Promote My Page": history of boosts bought, alongside ArtisanProfile.featuredUntil.
+model FeatureBoost {
+  id         String         @id @default(uuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artisanId  String
+  artisan    ArtisanProfile @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  plan       String
+  days       Int
+  amountKobo Int
+  startsAt   DateTime
+  endsAt     DateTime
+  createdAt  DateTime       @default(now())
+
+  @@index([artisanId])
+}
+
+// Super-admin trail of sensitive admin actions. Actor fields are snapshots so
+// an entry stays readable after the admin is removed.
+model AdminAuditLog {
+  id         String   @id @default(uuid())
+  actorId    String
+  actorName  String
+  actorEmail String?
+  action     String
+  targetType String?
+  targetId   String?
+  details    String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Announcement {
+  id             String   @id @default(uuid())
+  title          String
+  body           String
+  targetRoles    String[] @default([])
+  sentById       String
+  sentByName     String
+  recipientCount Int
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
 }

@@ -141,10 +141,11 @@ async function promoteMe(req, res, next) {
       }, tx);
       const current = await tx.artisanProfile.findUnique({ where: { id: req.user.artisanProfile.id }, select: { featuredUntil: true } });
       const start = current.featuredUntil && current.featuredUntil > new Date() ? current.featuredUntil : new Date();
-      return tx.artisanProfile.update({
-        where: { id: req.user.artisanProfile.id },
-        data: { featuredUntil: new Date(start.getTime() + plan.days * 24 * 60 * 60 * 1000) },
+      const endsAt = new Date(start.getTime() + plan.days * 24 * 60 * 60 * 1000);
+      await tx.featureBoost.create({
+        data: { userId: req.user.id, artisanId: req.user.artisanProfile.id, plan: req.body.plan, days: plan.days, amountKobo: plan.priceKobo, startsAt: start, endsAt },
       });
+      return tx.artisanProfile.update({ where: { id: req.user.artisanProfile.id }, data: { featuredUntil: endsAt } });
     });
     res.json({ artisanProfile: profile, plan: plan.label });
   } catch (err) {
@@ -152,4 +153,18 @@ async function promoteMe(req, res, next) {
   }
 }
 
-module.exports = { updateMe, updateArtisanProfile, setAvailability, promoteMe, uploadAvatar, linkBankAccount, listBanks };
+async function listPromotions(req, res, next) {
+  try {
+    if (!req.user.artisanProfile) return res.status(403).json({ error: "No artisan profile found." });
+    const [profile, history] = await Promise.all([
+      prisma.artisanProfile.findUnique({ where: { id: req.user.artisanProfile.id }, select: { featuredUntil: true } }),
+      prisma.featureBoost.findMany({ where: { artisanId: req.user.artisanProfile.id }, orderBy: { createdAt: "desc" }, take: 50 }),
+    ]);
+    const active = !!profile.featuredUntil && profile.featuredUntil > new Date();
+    res.json({ plans: PROMOTION_PLANS, featuredUntil: profile.featuredUntil, active, history });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { listPromotions, updateMe, updateArtisanProfile, setAvailability, promoteMe, uploadAvatar, linkBankAccount, listBanks };
