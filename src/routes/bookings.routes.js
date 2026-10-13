@@ -21,5 +21,9 @@ router.post("/:id/onsite-respond", ctrl.respondOnsitePrice);
 router.post("/:id/start", ctrl.startBooking);
 router.post("/:id/complete", ctrl.completeBooking);
 router.post("/:id/confirm", ctrl.confirmBooking);
+// "Job not completed": customer freezes the escrow; artisan adds their side
+router.post("/:id/dispute", ctrl.openDispute);
+router.get("/:id/dispute", ctrl.getDispute);
+router.post("/:id/dispute/respond", ctrl.respondDispute);
 
 module.exports = router;

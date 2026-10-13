@@ -25,6 +25,8 @@ const supportRoutes = require("./routes/support.routes");
 const notificationsRoutes = require("./routes/notifications.routes");
 const chatRoutes = require("./routes/chat.routes");
 const adminRoutes = require("./routes/admin.routes");
+const corporateRoutes = require("./routes/corporate.routes");
+const configRoutes = require("./routes/config.routes");
 
 const app = express();
 
@@ -75,6 +77,7 @@ app.use("/api", globalLimiter);
 
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/app", express.static(path.join(__dirname, "..", "public", "app")));
+app.use("/admin", express.static(path.join(__dirname, "..", "public", "admin")));
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: "fixmi-backend" }));
 app.get("/", (req, res) => res.json({ service: "fixmi-backend", status: "ok", app: "/app", health: "/health", api: "/api" }));
@@ -91,6 +94,8 @@ app.use("/api/support", supportRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/corporate", corporateRoutes);
+app.use("/api/config", configRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -102,6 +107,7 @@ app.set("io", io);
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`FixMi backend listening on port ${PORT}`);
+  require("./services/adminBootstrap.service").ensureAdminFromEnv().catch((err) => console.error("[admin] bootstrap failed:", err.message));
 });
 
 module.exports = { app, server };

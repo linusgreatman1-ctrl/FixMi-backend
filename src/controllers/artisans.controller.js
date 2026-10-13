@@ -42,7 +42,7 @@ async function listArtisans(req, res, next) {
       where,
       select: PUBLIC_SELECT,
       orderBy: { ratingAvg: "desc" },
-      ...(featured === "true" ? { take: 20 } : {}),
+      ...(featured === "true" ? { take: 25 } : {}),
     });
 
     const withDistance = artisans.map((a) => ({

@@ -1,6 +1,7 @@
 const express = require("express");
 const { requireAuth, requireRole } = require("../middleware/auth");
 const ctrl = require("../controllers/admin.controller");
+const bookings = require("../controllers/bookings.controller");
 
 const router = express.Router();
 router.use(requireAuth, requireRole("ADMIN"));
@@ -15,5 +16,7 @@ router.post("/users/:id/reactivate", ctrl.reactivateUser);
 router.get("/bookings", ctrl.listBookings);
 router.get("/tickets", ctrl.listTickets);
 router.patch("/tickets/:id", ctrl.updateTicket);
+router.get("/disputes", bookings.listDisputes);
+router.post("/disputes/:ticketId/resolve", bookings.resolveDispute);
 
 module.exports = router;
