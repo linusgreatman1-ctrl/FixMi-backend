@@ -770,7 +770,6 @@ body{background:#fff}
       <div class="svc-item" onclick="bookSvc('CCTV','📹','#EFF6FF')"><div class="svc-ico" style="background:#EFF6FF">📹</div><div class="svc-lbl">CCTV</div></div>
       <div class="svc-item" onclick="bookSvc('Bricklayer','🧱','#FFF7ED')"><div class="svc-ico" style="background:#FFF7ED">🧱</div><div class="svc-lbl">Bricklayer</div></div>
       <div class="svc-item" onclick="bookSvc('Welder','🔥','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">🔥</div><div class="svc-lbl">Welder</div></div>
-      <div class="svc-item" onclick="bookSvc('Laundry','👔','#F0F9FF')"><div class="svc-ico" style="background:#F0F9FF">👔</div><div class="svc-lbl">Laundry</div></div>
     </div>
   </div>
 
@@ -6188,7 +6187,9 @@ function renderRequests() {
   // Pop-up, on whatever screen the artisan is on.
   var pop = document.getElementById('req-pop'), pill = document.getElementById('req-pill-btn');
   if (!pop) return;
-  if (!avail || !list.length) { pop.hidden = true; pill.hidden = true; return; }
+  // On the dashboard the same requests are already listed in full.
+  var onDash = (document.querySelector('.s.on') || {}).id === 'artisan-dash';
+  if (!avail || !list.length || onDash) { pop.hidden = true; pill.hidden = true; return; }
   if (_popIndex >= list.length) _popIndex = 0;
   if (_popHidden) { pop.hidden = true; pill.hidden = false; setText('req-pill-count', list.length + ' job request' + (list.length > 1 ? 's' : '')); return; }
   pill.hidden = true;
