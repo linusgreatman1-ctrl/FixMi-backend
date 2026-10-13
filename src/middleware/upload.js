@@ -27,4 +27,15 @@ const upload = multer({
   },
 });
 
-module.exports = { upload };
+// Same limits, but keeps the file in memory so it can be stored in the database
+// (used for ID documents, which must not sit in the public /uploads folder).
+const uploadMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!ALLOWED_MIME.has(file.mimetype)) return cb(new Error("Only JPEG, PNG, WEBP, or GIF images are allowed."));
+    cb(null, true);
+  },
+});
+
+module.exports = { upload, uploadMemory };

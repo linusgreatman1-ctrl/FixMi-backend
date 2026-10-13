@@ -4,6 +4,7 @@ const escrow = require("../services/escrow.service");
 const { notify, notifyAllAdmins } = require("../services/notifications.service");
 const { generateReference } = require("../utils/reference");
 const corporate = require("../services/corporate.service");
+const { logAdminAction } = require("../services/auditLog.service");
 
 // Booking flow (escrow first, like Handa's shopper requests):
 //
@@ -798,6 +799,7 @@ async function resolveDispute(req, res, next) {
       : `${naira(result.refundKobo)} refunded to the customer, ${naira(result.payoutKobo)} paid to the artisan.`;
     notify(io(req), booking.customerId, "BOOKING", "Dispute resolved", summary + (note ? ` ${note}` : ""), { bookingId: booking.id }).catch(() => {});
     if (job.artisan) notify(io(req), job.artisan.userId, "BOOKING", "Dispute resolved", summary + (note ? ` ${note}` : ""), { bookingId: booking.id }).catch(() => {});
+    logAdminAction(req.user, "DISPUTE_" + outcome, "SupportTicket", ticket.id, summary);
     res.json({ ok: true, ...result });
   } catch (err) {
     next(err);

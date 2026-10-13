@@ -4,13 +4,17 @@ const { notifyAllAdmins, notify } = require("../services/notifications.service")
 const DOC_TYPES = ["GOVERNMENT_ID", "PROOF_OF_ADDRESS", "TRADE_CERTIFICATE"];
 const ID_TYPES = ["NIN", "DRIVERS_LICENSE", "INTL_PASSPORT", "VOTERS_CARD"];
 const REPORT_TYPES = ["SOS", "UNSAFE_BEHAVIOUR", "FRAUD", "HARASSMENT", "OTHER"];
+const KYC_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
+const REPORT_STATUSES = ["OPEN", "REVIEWING", "RESOLVED"];
+// Never send the image bytes in list/JSON responses.
+const DOC_SELECT = { id: true, userId: true, docType: true, idType: true, idNumber: true, fileUrl: true, status: true, rejectionReason: true, reviewedAt: true, createdAt: true };
 
 // ---- Trust centre summary -------------------------------------------------
 
 async function overview(req, res, next) {
   try {
     const [documents, contacts] = await Promise.all([
-      prisma.kycDocument.findMany({ where: { userId: req.user.id }, orderBy: { createdAt: "desc" } }),
+      prisma.kycDocument.findMany({ where: { userId: req.user.id }, orderBy: { createdAt: "desc" }, select: DOC_SELECT }),
       prisma.emergencyContact.count({ where: { userId: req.user.id } }),
     ]);
     const idApproved = documents.some((d) => d.docType === "GOVERNMENT_ID" && d.status === "APPROVED");
@@ -38,15 +42,19 @@ async function uploadDocument(req, res, next) {
     }
     // Replaces any still-pending submission of the same type.
     await prisma.kycDocument.deleteMany({ where: { userId: req.user.id, docType, status: "PENDING" } });
-    const document = await prisma.kycDocument.create({
+    const created = await prisma.kycDocument.create({
       data: {
         userId: req.user.id,
         docType,
         idType: docType === "GOVERNMENT_ID" ? idType : null,
         idNumber: docType === "GOVERNMENT_ID" ? String(idNumber).trim() : null,
-        fileUrl: `/uploads/${req.file.filename}`,
+        fileUrl: "",
+        fileData: req.file.buffer,
+        fileMime: req.file.mimetype,
       },
+      select: { id: true },
     });
+    const document = await prisma.kycDocument.update({ where: { id: created.id }, data: { fileUrl: `/api/safety/documents/${created.id}/file` }, select: DOC_SELECT });
     if (req.user.artisanProfile && docType === "GOVERNMENT_ID") {
       await prisma.artisanProfile.update({ where: { id: req.user.artisanProfile.id }, data: { kycStatus: "PENDING", idType, idNumber: String(idNumber).trim() } });
     }
@@ -64,6 +72,18 @@ async function deleteDocument(req, res, next) {
     if (doc.status === "APPROVED") return res.status(409).json({ error: "Approved documents can only be replaced by an admin." });
     await prisma.kycDocument.delete({ where: { id: doc.id } });
     res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Streams the stored image to its owner or an admin only.
+async function getDocumentFile(req, res, next) {
+  try {
+    const doc = await prisma.kycDocument.findUnique({ where: { id: req.params.id }, select: { userId: true, fileData: true, fileMime: true } });
+    if (!doc || !doc.fileData || (doc.userId !== req.user.id && req.user.role !== "ADMIN")) return res.status(404).json({ error: "Document not found." });
+    res.set({ "Content-Type": doc.fileMime || "application/octet-stream", "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" });
+    res.send(Buffer.from(doc.fileData));
   } catch (err) {
     next(err);
   }
@@ -152,10 +172,11 @@ async function listMyReports(req, res, next) {
 async function adminListDocuments(req, res, next) {
   try {
     const status = req.query.status || "PENDING";
+    if (!KYC_STATUSES.includes(status)) return res.status(400).json({ error: "Invalid status." });
     const documents = await prisma.kycDocument.findMany({
       where: { status },
       orderBy: { createdAt: "asc" },
-      include: { user: { select: { id: true, name: true, phone: true, email: true, role: true } } },
+      select: { ...DOC_SELECT, user: { select: { id: true, name: true, phone: true, email: true, role: true } } },
     });
     res.json({ documents });
   } catch (err) {
@@ -173,6 +194,7 @@ async function adminReviewDocument(req, res, next) {
     const updated = await prisma.kycDocument.update({
       where: { id: doc.id },
       data: { status: decision, rejectionReason: decision === "REJECTED" ? reason : null, reviewedById: req.user.id, reviewedAt: new Date() },
+      select: DOC_SELECT,
     });
     if (doc.docType === "GOVERNMENT_ID") {
       await prisma.artisanProfile.updateMany({
@@ -190,6 +212,7 @@ async function adminReviewDocument(req, res, next) {
 
 async function adminListReports(req, res, next) {
   try {
+    if (req.query.status && !REPORT_STATUSES.includes(req.query.status)) return res.status(400).json({ error: "Invalid status." });
     const where = req.query.status ? { status: req.query.status } : {};
     const reports = await prisma.safetyReport.findMany({
       where,
@@ -217,4 +240,4 @@ async function adminUpdateReport(req, res, next) {
   }
 }
 
-module.exports = { overview, uploadDocument, deleteDocument, listContacts, addContact, deleteContact, createReport, listMyReports, adminListDocuments, adminReviewDocument, adminListReports, adminUpdateReport };
+module.exports = { overview, uploadDocument, getDocumentFile, deleteDocument, listContacts, addContact, deleteContact, createReport, listMyReports, adminListDocuments, adminReviewDocument, adminListReports, adminUpdateReport };

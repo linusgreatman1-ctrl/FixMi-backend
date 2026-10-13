@@ -1,13 +1,14 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { requireAuth } = require("../middleware/auth");
-const { upload } = require("../middleware/upload");
+const { uploadMemory } = require("../middleware/upload");
 const ctrl = require("../controllers/safety.controller");
 
 const router = express.Router();
 router.use(requireAuth);
 router.get("/", ctrl.overview);
-router.post("/documents", upload.single("file"), ctrl.uploadDocument);
+router.post("/documents", uploadMemory.single("file"), ctrl.uploadDocument);
+router.get("/documents/:id/file", ctrl.getDocumentFile);
 router.delete("/documents/:id", ctrl.deleteDocument);
 router.get("/contacts", ctrl.listContacts);
 router.post("/contacts", ctrl.addContact);

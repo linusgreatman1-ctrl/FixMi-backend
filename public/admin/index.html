@@ -125,11 +125,18 @@ function loadKyc(){
     setList(d.documents.map(function(x){
       return '<div class="card"><b>' + esc(x.user.name) + '</b> <span class="muted">' + esc(x.user.role) + ' · ' + esc(x.user.phone || x.user.email || '') + '</span>' +
         '<div class="muted">' + esc(x.docType.replace(/_/g,' ').toLowerCase()) + (x.idType ? ' · ' + esc(x.idType.replace(/_/g,' ')) + ' ' + esc(x.idNumber || '') : '') + ' · ' + when(x.createdAt) + '</div>' +
-        '<a href="' + esc(x.fileUrl) + '" target="_blank" rel="noopener"><img src="' + esc(x.fileUrl) + '" alt="ID" style="max-width:260px;border-radius:8px;margin:8px 0"></a>' +
+        '<div><img data-src="' + esc(x.fileUrl) + '" alt="ID" style="max-width:260px;border-radius:8px;margin:8px 0;cursor:zoom-in" onclick="window.open(this.src)"></div>' +
         '<label>Reason (needed to decline)</label><input id="kr-' + x.id + '"><div class="err" id="ke-' + x.id + '"></div>' +
         '<div class="row"><button class="g" onclick="reviewKyc(\'' + x.id + '\',\'APPROVED\')">Approve</button><button class="r" onclick="reviewKyc(\'' + x.id + '\',\'REJECTED\')">Decline</button></div></div>';
     }).join(''));
+    loadImages();
   }).catch(fail);
+}
+function loadImages(){
+  document.querySelectorAll('img[data-src]').forEach(function(img){
+    fetch(img.getAttribute('data-src'), { headers: { Authorization: 'Bearer ' + tok } }).then(function(r){ if (!r.ok) throw 0; return r.blob(); })
+      .then(function(b){ img.src = URL.createObjectURL(b); }).catch(function(){ img.alt = 'Could not load image'; });
+  });
 }
 function reviewKyc(id, decision){
   api('/admin/kyc/documents/' + id + '/review', { decision: decision, reason: document.getElementById('kr-' + id).value }).then(loadKyc)

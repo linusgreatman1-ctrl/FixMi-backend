@@ -1,5 +1,6 @@
 const prisma = require("../config/db");
 const { notify } = require("../services/notifications.service");
+const { logAdminAction } = require("../services/auditLog.service");
 
 async function stats(req, res, next) {
   try {
@@ -37,6 +38,7 @@ async function approveArtisan(req, res, next) {
       data: { kycStatus: "APPROVED", isVerified: true, kycNote: null },
       include: { user: true },
     });
+    logAdminAction(req.user, "ARTISAN_APPROVED", "ArtisanProfile", artisan.id, artisan.user.name);
     notify(req.app.get("io"), artisan.userId, "ADMIN", "You're verified! ✅", "Your artisan profile was approved. You can now go online and receive jobs.", {
       artisanId: artisan.id,
     }).catch(() => {});
@@ -53,6 +55,7 @@ async function rejectArtisan(req, res, next) {
       where: { id: req.params.id },
       data: { kycStatus: "REJECTED", isVerified: false, kycNote: reason || null },
     });
+    logAdminAction(req.user, "ARTISAN_REJECTED", "ArtisanProfile", artisan.id, reason || null);
     notify(req.app.get("io"), artisan.userId, "ADMIN", "Verification declined", reason || "Your artisan application was declined.", {
       artisanId: artisan.id,
     }).catch(() => {});
@@ -79,7 +82,9 @@ async function listUsers(req, res, next) {
 
 async function suspendUser(req, res, next) {
   try {
+    if (req.params.id === req.user.id) return res.status(400).json({ error: "You cannot suspend your own account." });
     const user = await prisma.user.update({ where: { id: req.params.id }, data: { status: "SUSPENDED" } });
+    logAdminAction(req.user, "USER_SUSPENDED", "User", user.id, user.name);
     res.json({ user: { id: user.id, status: user.status } });
   } catch (err) {
     next(err);
@@ -89,6 +94,7 @@ async function suspendUser(req, res, next) {
 async function reactivateUser(req, res, next) {
   try {
     const user = await prisma.user.update({ where: { id: req.params.id }, data: { status: "ACTIVE" } });
+    logAdminAction(req.user, "USER_REACTIVATED", "User", user.id, user.name);
     res.json({ user: { id: user.id, status: user.status } });
   } catch (err) {
     next(err);
