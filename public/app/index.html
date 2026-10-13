@@ -672,7 +672,44 @@ body{background:#fff}
       <div class="fg"><label class="label" for="login-password">Password</label><input class="input" type="password" id="login-password" autocomplete="current-password" placeholder="Your password"></div>
       <button class="btn btn-g" type="submit" id="login-btn">Sign In</button>
     </form>
+    <p style="text-align:center;font-size:14px;margin-top:14px"><span style="color:var(--g);font-weight:600;cursor:pointer" onclick="go('forgot-password')">Forgot password?</span></p>
     <p style="text-align:center;color:var(--muted);font-size:14px;margin-top:18px">New to FixMi? <span style="color:var(--g);font-weight:600;cursor:pointer" onclick="go('role-screen')">Create an account</span></p>
+  </div>
+</div>
+
+
+<!-- ████ FORGOT PASSWORD ████ -->
+<div class="s" id="forgot-password">
+  <div class="topbar"><button class="back" onclick="go('login-screen')" aria-label="Back">←</button><div class="tb-title">Forgot Password</div><div class="tb-space"></div></div>
+  <div style="padding:18px">
+    <div class="info blue" style="margin-bottom:14px"><span>🔑</span><span>Enter the phone number or email you signed up with. We’ll send you a 6-digit code.</span></div>
+    <div class="fg"><label class="label" for="fp-id">Phone number or email</label><input class="input" id="fp-id" autocomplete="username"></div>
+    <button class="btn btn-g" onclick="sendResetCode(this)">Send Code</button>
+    <p style="text-align:center;font-size:14px;margin-top:16px"><span style="color:var(--g);font-weight:600;cursor:pointer" onclick="go('reset-password')">I already have a code</span></p>
+  </div>
+</div>
+
+<!-- ████ RESET PASSWORD ████ -->
+<div class="s" id="reset-password">
+  <div class="topbar"><button class="back" onclick="go('forgot-password')" aria-label="Back">←</button><div class="tb-title">Reset Password</div><div class="tb-space"></div></div>
+  <div style="padding:18px">
+    <div class="fg"><label class="label" for="rs-code">6-digit code</label><input class="input" id="rs-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+    <div class="fg"><label class="label" for="rs-pass">New password</label><input class="input" id="rs-pass" type="password" autocomplete="new-password" placeholder="At least 6 characters"></div>
+    <button class="btn btn-g" onclick="submitReset(this)">Change Password</button>
+  </div>
+</div>
+
+<!-- ████ RATE FIXMI ████ -->
+<div class="s" id="rate-app">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Rate FixMi</div><div class="tb-space"></div></div>
+  <div style="padding:18px;text-align:center">
+    <div style="font-size:34px;margin-bottom:8px">⭐</div>
+    <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px">How is FixMi working for you?</div>
+    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:16px">
+      <button class="ra-star" onclick="setAppStars(1)" style="background:none;border:none;font-size:34px;cursor:pointer;opacity:.3">⭐</button><button class="ra-star" onclick="setAppStars(2)" style="background:none;border:none;font-size:34px;cursor:pointer;opacity:.3">⭐</button><button class="ra-star" onclick="setAppStars(3)" style="background:none;border:none;font-size:34px;cursor:pointer;opacity:.3">⭐</button><button class="ra-star" onclick="setAppStars(4)" style="background:none;border:none;font-size:34px;cursor:pointer;opacity:.3">⭐</button><button class="ra-star" onclick="setAppStars(5)" style="background:none;border:none;font-size:34px;cursor:pointer;opacity:.3">⭐</button>
+    </div>
+    <textarea class="input" id="ra-comment" style="min-height:100px;resize:vertical;margin-bottom:14px" placeholder="Tell us more (optional)"></textarea>
+    <button class="btn btn-g" onclick="submitAppReview(this)">Submit</button>
   </div>
 </div>
 
@@ -794,6 +831,7 @@ body{background:#fff}
   </div>
 
   <div class="sec">
+    <div id="home-banner" hidden style="background:#FEF3C7;color:#92400E;border-radius:12px;padding:11px 14px;font-size:13px;font-weight:600;margin-bottom:14px"></div>
     <div class="sec-hdr"><div class="sec-title">Our Services</div><div class="see-all" onclick="go('all-services')">See all <span id="svc-count"></span></div></div>
     <div class="svc-grid home-svc">
       <div class="svc-item" onclick="bookSvc('Electrician','⚡','#FEF9C3')"><div class="svc-ico" style="background:#FEF9C3">⚡</div><div class="svc-lbl">Electrician</div></div>
@@ -892,7 +930,7 @@ body{background:#fff}
 <!-- ████ ALL SERVICES ████ -->
 <div class="s" id="all-services">
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">All Services</div><div class="tb-space"></div></div>
-  <div style="padding:14px 18px">
+  <div style="padding:14px 18px" id="all-svc-body">
 
     <p style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border)">🏠 Home &amp; Building</p>
     <div class="svc-grid" style="gap:14px;margin-bottom:22px">
@@ -1896,11 +1934,14 @@ body{background:#fff}
   <div style="padding:16px">
     <div style="background:var(--navy);border-radius:17px;padding:20px;text-align:center;margin-bottom:18px"><div style="font-size:34px;margin-bottom:9px">🤝</div><div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">How can we help?</div><div style="color:rgba(255,255,255,.4);font-size:13px;margin-bottom:13px">Send us a message and we’ll reply in your notifications</div><button class="btn btn-g" onclick="openSupport()">Chat with Support</button></div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs</div>
+    <div id="help-faqs">
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I book an artisan? <span class="faq-arr">›</span></div><div class="faq-a">Select the service you need, describe your issue, set your location, and tap "Find Nearby Artisans". Verified artisans near you will be notified and can accept your request.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How does payment work? <span class="faq-arr">›</span></div><div class="faq-a">When you request a job, your budget goes into FixMi escrow from your wallet. Once you and an artisan agree a price, the escrow is topped up or the difference refunded. The artisan is paid from escrow only after you confirm the job is done — never pay cash.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if I'm not satisfied? <span class="faq-arr">›</span></div><div class="faq-a">When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 5 minutes). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How are artisans verified? <span class="faq-arr">›</span></div><div class="faq-a">Every artisan must provide a government ID (NIN or Voter Card), a profile photo, and their phone number. Our admin team reviews each application before approval.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I call an artisan directly? <span class="faq-arr">›</span></div><div class="faq-a">Yes. Once an artisan has your job, tap 📞 on the job screen for a free in-app call, a regular phone call or WhatsApp. Keep payments inside FixMi escrow.</div></div>
+    </div>
+    <div class="help-contact"></div>
   </div>
 </div>
 
@@ -2314,6 +2355,7 @@ body{background:#fff}
   </div>
   <div style="padding:18px">
     <div id="promo-status"></div>
+    <div id="promo-plans">
     <div style="background:#fff;border:2px solid var(--border);border-radius:17px;padding:18px;margin-bottom:13px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
         <div style="font-family:'AppFont',sans-serif;font-weight:800;font-size:16px;color:var(--navy)">Basic Boost</div>
@@ -2341,6 +2383,7 @@ body{background:#fff}
       <div style="background:rgba(0,198,94,.2);border-radius:8px;padding:5px 10px;display:inline-block;font-size:12px;font-weight:600;color:var(--g);margin-bottom:11px">1 Year — Save 26%</div>
       <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.8">✓ Featured on the customer home page for a full year<br>✓ Customers can book you directly from your card</div>
       <button onclick="selectPromo('VIP Annual','1 Year','₦40,000','Featured on the home page for 1 year')" style="width:100%;background:var(--g);border:none;border-radius:11px;padding:12px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select VIP Annual →</button>
+    </div>
     </div>
   </div>
 </div>
@@ -2463,11 +2506,14 @@ body{background:#fff}
       <button class="btn btn-g" onclick="openSupport()">Chat with Support</button>
     </div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs for Artisans</div>
+    <div id="artisan-help-faqs">
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I receive payments? <span class="faq-arr">›</span></div><div class="faq-a">After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 5 minutes after you mark the job done. Withdraw from your wallet to your bank account.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What is FixMi's commission? <span class="faq-arr">›</span></div><div class="faq-a">FixMi keeps 10% of every job as its platform fee and you receive 90%. Every job is paid through escrow — there are no cash jobs. Set your price so the 90% you take home covers your materials, transport and profit. Example: quote ₦10,000 and you receive ₦9,000.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I get more job requests? <span class="faq-arr">›</span></div><div class="faq-a">Stay online, maintain a high rating, respond quickly, and consider boosting your profile under Promote My Page. Customers see your rating on every offer, so good reviews help you win more jobs.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if a customer is difficult? <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in your Job History. Provide details and FixMi will review it. Never engage in arguments — complete the job or contact support.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I cancel a job? <span class="faq-arr">›</span></div><div class="faq-a">Cancellations affect your rating. Only cancel via the app with a valid reason. Repeated cancellations may result in account suspension.</div></div>
+    </div>
+    <div class="help-contact"></div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2481,11 +2527,13 @@ body{background:#fff}
       <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">Your Safety Matters</div>
       <div style="color:rgba(255,255,255,.6);font-size:13px;line-height:1.6">FixMi takes artisan safety seriously. These guidelines protect you on every job.</div>
     </div>
+    <div id="artisan-safety-faqs">
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Before you arrive <span class="faq-arr">›</span></div><div class="faq-a">Always verify the customer's address matches what's in the app before travelling. If anything seems suspicious, contact support before proceeding.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">At the customer's location <span class="faq-arr">›</span></div><div class="faq-a">Never enter a location that feels unsafe. Always keep your app open and active. If you feel threatened, leave immediately and contact support and the police.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Payments and money <span class="faq-arr">›</span></div><div class="faq-a">Never accept payment outside the FixMi app unless the customer selects Cash as their payment method. If asked to use another payment platform, refuse and report it.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Reporting an incident <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in Job History or contact support directly. All reports are confidential and reviewed by FixMi.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Police: 199 | FixMi Emergency: tap the Support button. Always trust your instincts — your safety comes first, before any job.</div></div>
+    </div>
     <button onclick="openSafetyCenter()" class="btn btn-g" style="margin-top:16px">🛡️ Safety Centre: ID, contacts &amp; SOS</button>
     <div style="height:20px"></div>
   </div>
@@ -2707,11 +2755,13 @@ body{background:#fff}
       <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:16px;font-weight:700;margin-bottom:5px">Your Safety on FixMi</div>
       <div style="color:rgba(255,255,255,.6);font-size:13px;line-height:1.6">We protect every booking with these safety guidelines.</div>
     </div>
+    <div id="user-safety-faqs">
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Never pay outside the app <span class="faq-arr">›</span></div><div class="faq-a">Always pay through FixMi. Your money is held in escrow and released to the artisan only after you confirm the job is complete. Never hand cash directly or use another platform.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Verifying your artisan <span class="faq-arr">›</span></div><div class="faq-a">Every artisan has submitted a government ID (NIN or Voter Card) verified by our admin team. Look for the ✓ Verified badge before booking.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Communication safety <span class="faq-arr">›</span></div><div class="faq-a">All communication must happen through FixMi's in-app chat only. Calls are disabled for your protection. Never share personal contact details outside the app.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">If you feel unsafe <span class="faq-arr">›</span></div><div class="faq-a">End the job immediately. You will not be charged if cancelled before work begins. Contact FixMi support and authorities if necessary.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Emergency contacts <span class="faq-arr">›</span></div><div class="faq-a">Nigeria Police: 199 | Emergency: 112 | FixMi: use Contact Support in Help &amp; Support.</div></div>
+    </div>
     <button onclick="openSafetyCenter()" class="btn btn-g" style="margin-top:16px">🛡️ Safety Centre: ID, contacts &amp; SOS</button>
     <button onclick="openSupport()" class="btn" style="margin-top:10px;background:var(--gray);color:var(--navy)">💬 Contact Support</button>
     <div style="height:20px"></div>
@@ -3205,6 +3255,7 @@ body{background:#fff}
   </div>
 </div>
 
+<div id="maint-overlay" style="display:none;position:absolute;inset:0;z-index:999;background:var(--navy);color:#fff;align-items:center;justify-content:center;text-align:center;padding:30px"><div><div style="font-size:44px;margin-bottom:12px">🛠️</div><div id="maint-msg" style="font-size:16px;line-height:1.6"></div></div></div>
 </div><!-- /app -->
 </div><!-- /device-frame -->
 </div><!-- /stage -->
@@ -5590,7 +5641,7 @@ async function realSubmitRating() {
 // Platform cut and the confirm window, from the server so the text always matches.
 var APP_CFG = { commissionPercent: 10, autoReleaseMinutes: 5 };
 function loadAppConfig() {
-  apiFetch('/config/app').then(function (d) { if (d) { APP_CFG = d; applyCommissionText(); } }).catch(function () {});
+  apiFetch('/config/app').then(function (d) { if (d) { APP_CFG = d; applyCommissionText(); applyContent(d); } }).catch(function () {});
 }
 function releaseWindowText() {
   var m = APP_CFG.autoReleaseMinutes;
@@ -6695,9 +6746,9 @@ async function openArtisanProfile(id) {
 /* ---------------- Menu (phone & tablet) ---------------- */
 var MENU_ITEMS = {
   customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['❤️', 'Saved Artisans', 'openSavedArtisans()'], ['🔔', 'Notifications', 'openNotifications()'],
-    ['🏢', 'Corporate Plan', "openCorporate()"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"]],
+    ['🏢', 'Corporate Plan', "openCorporate()"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"], ['⭐', 'Rate FixMi', 'openRateApp()']],
   artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'My Jobs', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
-    ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"]]
+    ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"], ['⭐', 'Rate FixMi', 'openRateApp()']]
 };
 function openMenu() {
   var u = window.currentUser || {};
@@ -6983,7 +7034,7 @@ async function openSupport(subject) {
     var t = (await apiFetch('/support/tickets')).tickets || [];
     setHTML('sup-list', t.length ? t.map(function (x) {
       return '<div class="card" style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:10px"><b style="font-size:14px">' + escapeHtml(x.subject) + '</b><span class="pill ' + (x.status === 'RESOLVED' ? 'pill-g' : 'pill-gray') + '">' + (TICKET_STATUS[x.status] || x.status) + '</span></div>' +
-        '<div style="font-size:13px;color:var(--muted);margin-top:5px">' + escapeHtml(x.message) + '</div>' + (x.resolution ? '<div style="font-size:13px;color:var(--g2);margin-top:6px"><b>FixMi:</b> ' + escapeHtml(x.resolution) + '</div>' : '') +
+        '<div style="font-size:13px;color:var(--muted);margin-top:5px">' + escapeHtml(x.message) + '</div>' + (x.adminReply ? '<div style="font-size:13px;color:var(--g2);margin-top:6px"><b>FixMi:</b> ' + escapeHtml(x.adminReply) + '</div>' : '') + (x.resolution ? '<div style="font-size:13px;color:var(--g2);margin-top:6px"><b>FixMi:</b> ' + escapeHtml(x.resolution) + '</div>' : '') +
         '<div style="font-size:11px;color:var(--muted);margin-top:6px">' + new Date(x.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</div></div>';
     }).join('') : '<div class="empty-note">You haven’t contacted support yet.</div>');
   } catch (e) {}
@@ -7205,6 +7256,150 @@ async function openSavedArtisans() {
         '<div style="font-size:13px;color:var(--muted);margin-top:3px">' + escapeHtml(a.category) + (a.user.state ? ' · ' + escapeHtml(a.user.state) : '') + ' · ' + (a.ratingCount ? a.ratingAvg.toFixed(1) + '★' : 'New') + '</div></div>';
     }).join('') : '<div class="empty-note">You haven’t saved any artisans yet. Tap ♡ on a profile to save one.</div>');
   } catch (e) { toast('❌ ' + e.message); }
+}
+
+/* ---------------- Content controlled from the admin panel ---------------- */
+function cleanAttr(v) { return String(v == null ? '' : v).replace(/['"\\<>&]/g, ''); }
+function svcItemHtml(s) {
+  var n = cleanAttr(s.name), ic = cleanAttr(s.icon), bg = cleanAttr(s.bg);
+  return '<div class="svc-item" onclick="bookSvc(\'' + n + '\',\'' + ic + '\',\'' + bg + '\')"><div class="svc-ico" style="background:' + bg + '">' + escapeHtml(s.icon) + '</div><div class="svc-lbl">' + escapeHtml(s.label || s.name) + '</div></div>';
+}
+function renderServices(list) {
+  if (!Array.isArray(list) || !list.length) return;
+  list.forEach(function (s) { CATEGORY_LOOK[s.name] = [s.icon, s.bg]; });
+  var home = document.querySelector('.home-svc');
+  if (home) home.innerHTML = list.slice(0, 40).map(svcItemHtml).join('');
+  var body = document.getElementById('all-svc-body');
+  if (body) {
+    var groups = [], byGroup = {};
+    list.forEach(function (s) {
+      var g = s.group || 'Services';
+      if (!byGroup[g]) { byGroup[g] = []; groups.push(g); }
+      byGroup[g].push(s);
+    });
+    body.innerHTML = groups.map(function (g) {
+      return '<p style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border)">' + escapeHtml(g) + '</p>' +
+        '<div class="svc-grid" style="gap:14px;margin-bottom:22px">' + byGroup[g].map(svcItemHtml).join('') + '</div>';
+    }).join('');
+  }
+  setText('svc-count', String(list.length));
+}
+function renderFaqs(containerId, list) {
+  var el = document.getElementById(containerId);
+  if (!el || !Array.isArray(list) || !list.length) return;
+  el.innerHTML = list.map(function (f) {
+    return '<div class="faq" onclick="toggleFaq(this)"><div class="faq-q">' + escapeHtml(f.q) + ' <span class="faq-arr">›</span></div><div class="faq-a">' + f.a + '</div></div>';
+  }).join('');
+}
+function fmtMoneyKobo(k) { return '₦' + Math.round((k || 0) / 100).toLocaleString('en-NG'); }
+function durationText(days) {
+  if (days >= 360) return days >= 730 ? Math.round(days / 365) + ' Years' : '1 Year';
+  if (days >= 28 && days <= 31) return '1 Month';
+  if (days === 7) return '1 Week';
+  return days + ' days';
+}
+function renderPromoPlans(plans) {
+  var el = document.getElementById('promo-plans');
+  if (!el || !plans) return;
+  var keys = Object.keys(plans);
+  if (!keys.length) return;
+  PROMO_PLAN_KEYS = {};
+  el.innerHTML = keys.map(function (k, i) {
+    var p = plans[k], popular = keys.length > 2 && i === 1, dark = keys.length > 2 && i === keys.length - 1;
+    PROMO_PLAN_KEYS[p.label] = k;
+    var dur = durationText(p.days), price = fmtMoneyKobo(p.priceKobo);
+    var benefit = 'Featured on the home page for ' + p.days + ' days';
+    var border = popular ? '2px solid var(--g)' : '2px solid var(--border)';
+    var bg = dark ? 'var(--navy)' : '#fff';
+    var tcol = dark ? '#fff' : 'var(--navy)';
+    return '<div style="background:' + bg + ';border:' + (dark ? 'none' : border) + ';border-radius:17px;padding:18px;margin-bottom:' + (i === keys.length - 1 ? 20 : 13) + 'px;position:relative">' +
+      (popular ? '<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700">🔥 MOST POPULAR</div>' : '') +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px"><div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:16px;color:' + tcol + '">' + escapeHtml(p.label) + '</div><div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:18px;color:var(--g)">' + price + '</div></div>' +
+      '<div style="background:' + (dark ? 'rgba(0,198,94,.2)' : 'var(--gray)') + ';border-radius:8px;padding:5px 10px;display:inline-block;font-size:12px;font-weight:600;color:' + (dark ? 'var(--g)' : 'var(--muted)') + ';margin-bottom:11px">' + dur + '</div>' +
+      '<div style="font-size:13px;color:' + (dark ? 'rgba(255,255,255,.6)' : 'var(--muted)') + ';line-height:1.8">✓ ' + benefit + '<br>✓ Customers can book you directly from your card</div>' +
+      '<button data-promo="' + escapeHtml(k) + '" style="width:100%;background:' + (dark || popular ? 'var(--g)' : 'var(--navy)') + ';border:none;border-radius:11px;padding:12px;font-family:\'AppFont\',sans-serif;font-weight:700;font-size:14px;color:#fff;cursor:pointer;margin-top:13px">Select ' + escapeHtml(p.label) + ' →</button></div>';
+  }).join('');
+  el.querySelectorAll('button[data-promo]').forEach(function (b) {
+    var p = plans[b.getAttribute('data-promo')];
+    b.onclick = function () { selectPromo(p.label, durationText(p.days), fmtMoneyKobo(p.priceKobo), 'Featured on the home page for ' + p.days + ' days'); };
+  });
+}
+function renderSupportContact(s) {
+  var parts = [];
+  if (s && s.phone) parts.push('📞 <a href="tel:' + escapeHtml(s.phone) + '">' + escapeHtml(s.phone) + '</a>');
+  if (s && s.whatsapp) parts.push('💬 <a href="https://wa.me/' + escapeHtml(String(s.whatsapp).replace(/\D/g, '')) + '" target="_blank" rel="noopener">WhatsApp</a>');
+  if (s && s.email) parts.push('✉️ <a href="mailto:' + escapeHtml(s.email) + '">' + escapeHtml(s.email) + '</a>');
+  var html = parts.length ? '<div class="card" style="margin-top:14px;font-size:14px;line-height:1.9">' + parts.join('<br>') + (s.hours ? '<br><span style="color:var(--muted);font-size:12px">' + escapeHtml(s.hours) + '</span>' : '') + '</div>' : '';
+  document.querySelectorAll('.help-contact').forEach(function (el) { el.innerHTML = html; });
+}
+function renderBanner(b) {
+  var el = document.getElementById('home-banner');
+  if (!el) return;
+  if (b && b.enabled && b.text) { el.textContent = b.text; el.hidden = false; } else el.hidden = true;
+}
+function renderMaintenance(m) {
+  var el = document.getElementById('maint-overlay');
+  if (!el) return;
+  if (m && m.enabled) { setText('maint-msg', m.message || 'FixMi is being updated. Please try again shortly.'); el.style.display = 'flex'; } else el.style.display = 'none';
+}
+function applyContent(cfg) {
+  try {
+    renderServices(cfg.services);
+    if (cfg.faqs) { renderFaqs('help-faqs', cfg.faqs.customer); renderFaqs('artisan-help-faqs', cfg.faqs.artisan); }
+    if (cfg.safety) { renderFaqs('user-safety-faqs', cfg.safety.customer); renderFaqs('artisan-safety-faqs', cfg.safety.artisan); }
+    renderPromoPlans(cfg.promotionPlans);
+    renderSupportContact(cfg.support);
+    renderBanner(cfg.banner);
+    renderMaintenance(cfg.maintenance);
+  } catch (e) { /* the built-in screens stay as they are */ }
+}
+
+/* ---------------- Forgot password ---------------- */
+var _fpId = '';
+async function sendResetCode(btn) {
+  var id = document.getElementById('fp-id').value.trim();
+  if (!id) { toast('Enter your phone number or email'); return; }
+  btn.disabled = true;
+  try {
+    await apiFetch('/auth/forgot-password', { method: 'POST', body: id.indexOf('@') !== -1 ? { email: id } : { phone: id } });
+    _fpId = id;
+    toast('If that account exists, a code is on its way');
+    go('reset-password');
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+async function submitReset(btn) {
+  var code = document.getElementById('rs-code').value.trim(), pw = document.getElementById('rs-pass').value;
+  if (!code) { toast('Enter the code'); return; }
+  if (pw.length < 6) { toast('The new password needs at least 6 characters'); return; }
+  btn.disabled = true;
+  try {
+    await apiFetch('/auth/reset-password', { method: 'POST', body: Object.assign({ code: code, newPassword: pw }, _fpId.indexOf('@') !== -1 ? { email: _fpId } : { phone: _fpId }) });
+    setValue('rs-code', ''); setValue('rs-pass', '');
+    toast('✅ Password changed. Sign in with the new one.');
+    go('login-screen');
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+/* ---------------- Rate FixMi ---------------- */
+var _rateStars = 0;
+function setAppStars(n) {
+  _rateStars = n;
+  document.querySelectorAll('#rate-app .ra-star').forEach(function (b, i) { b.style.opacity = i < n ? '1' : '.3'; });
+}
+async function openRateApp() {
+  if (!requireLogin()) return;
+  setValue('ra-comment', ''); setAppStars(0);
+  go('rate-app');
+  try {
+    var r = (await apiFetch('/app-reviews/mine')).review;
+    if (r) { setAppStars(r.stars); setValue('ra-comment', r.comment || ''); if (r.adminResponse) toast('FixMi replied: ' + r.adminResponse); }
+  } catch (e) {}
+}
+async function submitAppReview(btn) {
+  if (!_rateStars) { toast('Tap a star first'); return; }
+  btn.disabled = true;
+  try { await apiFetch('/app-reviews', { method: 'POST', body: { stars: _rateStars, comment: document.getElementById('ra-comment').value } }); toast('✅ Thank you for rating FixMi'); goBack(); }
+  catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
 }
 </script>
 </body>

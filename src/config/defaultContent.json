@@ -4,343 +4,400 @@
       "name": "Electrician",
       "icon": "⚡",
       "bg": "#FEF9C3",
-      "label": "Electrician"
+      "label": "Electrician",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Plumber",
       "icon": "🔩",
       "bg": "#EFF6FF",
-      "label": "Plumber"
-    },
-    {
-      "name": "AC Technician",
-      "icon": "❄️",
-      "bg": "#F0F9FF",
-      "label": "AC Tech"
-    },
-    {
-      "name": "Mechanic",
-      "icon": "🚘",
-      "bg": "#FFF7ED",
-      "label": "Mechanic"
+      "label": "Plumber",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Painter",
       "icon": "🖌️",
       "bg": "#FDF4FF",
-      "label": "Painter"
+      "label": "Painter",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Carpenter",
       "icon": "🪚",
       "bg": "#FFF8ED",
-      "label": "Carpenter"
+      "label": "Carpenter",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Cleaner",
       "icon": "🧹",
       "bg": "#F0FDF4",
-      "label": "Cleaner"
-    },
-    {
-      "name": "Barber",
-      "icon": "✂️",
-      "bg": "#FFF1F2",
-      "label": "Barber"
-    },
-    {
-      "name": "Hairdresser",
-      "icon": "💇",
-      "bg": "#FDF4FF",
-      "label": "Hairdresser"
-    },
-    {
-      "name": "Phone Repairer",
-      "icon": "📱",
-      "bg": "#EFF6FF",
-      "label": "Phone Repair"
-    },
-    {
-      "name": "Generator Mechanic",
-      "icon": "⚙️",
-      "bg": "#FEF9C3",
-      "label": "Generator"
-    },
-    {
-      "name": "Tiler",
-      "icon": "🟫",
-      "bg": "#FFF7ED",
-      "label": "Tiler"
-    },
-    {
-      "name": "CCTV Installer",
-      "icon": "📹",
-      "bg": "#EFF6FF",
-      "label": "CCTV"
+      "label": "Cleaner",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Bricklayer",
       "icon": "🧱",
       "bg": "#FFF7ED",
-      "label": "Bricklayer"
-    },
-    {
-      "name": "Welder",
-      "icon": "🔥",
-      "bg": "#FEF9C3",
-      "label": "Welder"
+      "label": "Bricklayer",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "POP Installer",
       "icon": "🏛️",
       "bg": "#F5F3FF",
-      "label": "POP Installer"
+      "label": "POP Installer",
+      "group": "🏠 Home & Building"
+    },
+    {
+      "name": "Tiler",
+      "icon": "🟫",
+      "bg": "#FFF7ED",
+      "label": "Tiler",
+      "group": "🏠 Home & Building"
+    },
+    {
+      "name": "Welder",
+      "icon": "🔥",
+      "bg": "#FEF9C3",
+      "label": "Welder",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Waterproofer",
       "icon": "💧",
       "bg": "#EFF6FF",
-      "label": "Waterproofer"
+      "label": "Waterproofer",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Blacksmith",
       "icon": "⚒️",
       "bg": "#F2F2F2",
-      "label": "Blacksmith"
+      "label": "Blacksmith",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Drywall Installer",
       "icon": "🧲",
       "bg": "#EFF6FF",
-      "label": "Drywall/Taper"
+      "label": "Drywall/Taper",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Scaffolder",
       "icon": "🏗️",
       "bg": "#FFF7ED",
-      "label": "Scaffolder"
+      "label": "Scaffolder",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Interlock Layer",
       "icon": "🛤️",
       "bg": "#F0FDF4",
-      "label": "Interlock Layer"
+      "label": "Interlock Layer",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Construction Worker",
       "icon": "👷",
       "bg": "#FFF7ED",
-      "label": "Construction"
+      "label": "Construction",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "General Labourer",
       "icon": "🔨",
       "bg": "#F2F2F2",
-      "label": "Gen. Labour"
+      "label": "Gen. Labour",
+      "group": "🏠 Home & Building"
     },
     {
       "name": "Aluminum Roofer",
       "icon": "🏠",
       "bg": "#F0FDF4",
-      "label": "Alum. Roofer"
+      "label": "Alum. Roofer",
+      "group": "🪟 Windows, Roofing & Doors"
     },
     {
       "name": "Window Installer",
       "icon": "🪟",
       "bg": "#EFF6FF",
-      "label": "Window Install"
+      "label": "Window Install",
+      "group": "🪟 Windows, Roofing & Doors"
     },
     {
       "name": "Security Door Installer",
       "icon": "🔐",
       "bg": "#FFF1F2",
-      "label": "Security Door"
+      "label": "Security Door",
+      "group": "🪟 Windows, Roofing & Doors"
     },
     {
       "name": "Cabinet Maker",
       "icon": "🗄️",
       "bg": "#FFF8ED",
-      "label": "Cabinet Maker"
+      "label": "Cabinet Maker",
+      "group": "🪟 Windows, Roofing & Doors"
+    },
+    {
+      "name": "AC Technician",
+      "icon": "❄️",
+      "bg": "#F0F9FF",
+      "label": "AC Technician",
+      "group": "⚡ Electrical & Tech"
+    },
+    {
+      "name": "CCTV Installer",
+      "icon": "📹",
+      "bg": "#EFF6FF",
+      "label": "CCTV",
+      "group": "⚡ Electrical & Tech"
     },
     {
       "name": "Solar Panel Installer",
       "icon": "☀️",
       "bg": "#FEF9C3",
-      "label": "Solar Panel"
+      "label": "Solar Panel",
+      "group": "⚡ Electrical & Tech"
+    },
+    {
+      "name": "Generator Mechanic",
+      "icon": "⚙️",
+      "bg": "#FEF9C3",
+      "label": "Generator",
+      "group": "⚡ Electrical & Tech"
     },
     {
       "name": "Car Electrician",
       "icon": "🚗",
       "bg": "#FFF7ED",
-      "label": "Car Electrician"
+      "label": "Car Electrician",
+      "group": "⚡ Electrical & Tech"
     },
     {
       "name": "Smart Home Installer",
       "icon": "🏡",
       "bg": "#F0FDF4",
-      "label": "Smart Home"
+      "label": "Smart Home",
+      "group": "⚡ Electrical & Tech"
     },
     {
       "name": "Automation Technician",
       "icon": "🤖",
       "bg": "#F5F3FF",
-      "label": "Automation"
+      "label": "Automation",
+      "group": "⚡ Electrical & Tech"
     },
     {
       "name": "Elevator Mechanic",
       "icon": "🛗",
       "bg": "#EFF6FF",
-      "label": "Elevator Mech."
+      "label": "Elevator Mech.",
+      "group": "⚡ Electrical & Tech"
+    },
+    {
+      "name": "Phone Repairer",
+      "icon": "📱",
+      "bg": "#EFF6FF",
+      "label": "Phone Repair",
+      "group": "🔌 Appliance Repairs"
     },
     {
       "name": "TV Repairer",
       "icon": "📺",
       "bg": "#EFF6FF",
-      "label": "TV Repair"
+      "label": "TV Repair",
+      "group": "🔌 Appliance Repairs"
     },
     {
       "name": "Appliance Repairer",
       "icon": "🔌",
       "bg": "#F2F2F2",
-      "label": "Appliance Repair"
+      "label": "Appliance Repair",
+      "group": "🔌 Appliance Repairs"
     },
     {
       "name": "Fridge Technician",
       "icon": "🧊",
       "bg": "#EFF6FF",
-      "label": "Fridge Tech"
+      "label": "Fridge Tech",
+      "group": "🔌 Appliance Repairs"
     },
     {
       "name": "Gas Technician",
       "icon": "🔴",
       "bg": "#FFF1F2",
-      "label": "Gas Tech"
+      "label": "Gas Tech",
+      "group": "🔌 Appliance Repairs"
     },
     {
       "name": "Laptop Repairer",
       "icon": "💻",
       "bg": "#EFF6FF",
-      "label": "Laptop Repair"
+      "label": "Laptop Repair",
+      "group": "🔌 Appliance Repairs"
+    },
+    {
+      "name": "Mechanic",
+      "icon": "🚘",
+      "bg": "#FFF7ED",
+      "label": "Mechanic",
+      "group": "🚘 Vehicles & Transport"
     },
     {
       "name": "Driver",
       "icon": "🚖",
       "bg": "#FFF7ED",
-      "label": "Driver"
+      "label": "Driver",
+      "group": "🚘 Vehicles & Transport"
     },
     {
       "name": "Truck Loader/Offloader",
       "icon": "🚛",
       "bg": "#F2F2F2",
-      "label": "Truck Loader"
+      "label": "Truck Loader",
+      "group": "🚘 Vehicles & Transport"
     },
     {
       "name": "Borehole Sinker",
       "icon": "🕳️",
       "bg": "#EFF6FF",
-      "label": "Borehole Sinker"
+      "label": "Borehole Sinker",
+      "group": "🚘 Vehicles & Transport"
     },
     {
       "name": "Furniture/Upholsterer",
       "icon": "🛋️",
       "bg": "#FFF8ED",
-      "label": "Upholsterer"
+      "label": "Upholsterer",
+      "group": "🎨 Décor & Outdoor"
     },
     {
       "name": "Home/Office Decorator",
       "icon": "🏠",
       "bg": "#FDF4FF",
-      "label": "Home Decor"
+      "label": "Home Decor",
+      "group": "🎨 Décor & Outdoor"
     },
     {
       "name": "Event Decorator",
       "icon": "🎊",
       "bg": "#FDF4FF",
-      "label": "Event Decor"
+      "label": "Event Decor",
+      "group": "🎨 Décor & Outdoor"
     },
     {
       "name": "Landscaper",
       "icon": "🌳",
       "bg": "#F0FDF4",
-      "label": "Landscaper"
+      "label": "Landscaper",
+      "group": "🎨 Décor & Outdoor"
     },
     {
       "name": "Sign Maker",
       "icon": "🪧",
       "bg": "#FEF9C3",
-      "label": "Sign Maker"
+      "label": "Sign Maker",
+      "group": "🎨 Décor & Outdoor"
     },
     {
       "name": "Artist/Drawing",
       "icon": "🎨",
       "bg": "#FDF4FF",
-      "label": "Artist/Drawing"
+      "label": "Artist/Drawing",
+      "group": "🎨 Décor & Outdoor"
     },
     {
       "name": "Pool/Spa Technician",
       "icon": "🏊",
       "bg": "#EFF6FF",
-      "label": "Pool/Spa Tech"
+      "label": "Pool/Spa Tech",
+      "group": "🎨 Décor & Outdoor"
+    },
+    {
+      "name": "Barber",
+      "icon": "✂️",
+      "bg": "#FFF1F2",
+      "label": "Barber",
+      "group": "💇 Fashion & Personal Care"
+    },
+    {
+      "name": "Hairdresser",
+      "icon": "💇",
+      "bg": "#FDF4FF",
+      "label": "Hairdresser",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Fashion Designer",
       "icon": "👗",
       "bg": "#FDF4FF",
-      "label": "Fashion Design"
+      "label": "Fashion Design",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Shoemaker",
       "icon": "👟",
       "bg": "#FFF8ED",
-      "label": "Shoemaker"
+      "label": "Shoemaker",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Goldsmith/Jeweler",
       "icon": "💍",
       "bg": "#FEF9C3",
-      "label": "Goldsmith"
+      "label": "Goldsmith",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Dyer",
       "icon": "🎨",
       "bg": "#FDF4FF",
-      "label": "Dyer"
+      "label": "Dyer",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Pet Groomer",
       "icon": "🐾",
       "bg": "#F0FDF4",
-      "label": "Pet Groomer"
+      "label": "Pet Groomer",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Laundry Service",
       "icon": "👔",
       "bg": "#F0F9FF",
-      "label": "Laundry"
+      "label": "Laundry",
+      "group": "💇 Fashion & Personal Care"
     },
     {
       "name": "Security Personnel",
       "icon": "🛡️",
       "bg": "#FFF1F2",
-      "label": "Security"
+      "label": "Security",
+      "group": "🛡️ Security & Events"
     },
     {
       "name": "DJ",
       "icon": "🎧",
       "bg": "#F5F3FF",
-      "label": "DJ"
+      "label": "DJ",
+      "group": "🛡️ Security & Events"
     },
     {
       "name": "Trumpeter/Musician",
       "icon": "🎺",
       "bg": "#FEF9C3",
-      "label": "Trumpeter"
+      "label": "Trumpeter",
+      "group": "🛡️ Security & Events"
     },
     {
       "name": "Event Usher",
       "icon": "🎫",
       "bg": "#F0FDF4",
-      "label": "Event Usher"
+      "label": "Event Usher",
+      "group": "🛡️ Security & Events"
     }
   ],
   "faqs_customer": [
