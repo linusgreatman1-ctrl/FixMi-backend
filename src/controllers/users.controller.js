@@ -2,6 +2,7 @@ const prisma = require("../config/db");
 const paystack = require("../services/paystack.service");
 const wallet = require("../services/wallet.service");
 const { generateReference } = require("../utils/reference");
+const settings = require("../services/settings.service");
 
 function publicUser(user) {
   const { passwordHash, ...rest } = user;
@@ -131,7 +132,8 @@ const PROMOTION_PLANS = {
 async function promoteMe(req, res, next) {
   try {
     if (!req.user.artisanProfile) return res.status(403).json({ error: "No artisan profile found." });
-    const plan = PROMOTION_PLANS[req.body?.plan];
+    const plans = await settings.get("promotion.plans");
+    const plan = plans[req.body?.plan];
     if (!plan) return res.status(400).json({ error: "Choose a promotion plan: basic, standard or vip." });
 
     const profile = await prisma.$transaction(async (tx) => {
@@ -161,7 +163,7 @@ async function listPromotions(req, res, next) {
       prisma.featureBoost.findMany({ where: { artisanId: req.user.artisanProfile.id }, orderBy: { createdAt: "desc" }, take: 50 }),
     ]);
     const active = !!profile.featuredUntil && profile.featuredUntil > new Date();
-    res.json({ plans: PROMOTION_PLANS, featuredUntil: profile.featuredUntil, active, history });
+    res.json({ plans: await settings.get("promotion.plans"), featuredUntil: profile.featuredUntil, active, history });
   } catch (err) {
     next(err);
   }

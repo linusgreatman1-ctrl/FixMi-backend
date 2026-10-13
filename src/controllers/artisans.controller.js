@@ -62,7 +62,7 @@ async function getArtisan(req, res, next) {
     const artisan = await prisma.artisanProfile.findUnique({ where: { id: req.params.id }, select: PUBLIC_SELECT });
     if (!artisan) return res.status(404).json({ error: "Artisan not found." });
     const reviews = await prisma.rating.findMany({
-      where: { rateeUserId: artisan.user.id, rateeRole: "ARTISAN" },
+      where: { rateeUserId: artisan.user.id, rateeRole: "ARTISAN", hidden: false },
       select: { stars: true, comment: true, createdAt: true, rater: { select: { name: true } }, booking: { select: { category: true } } },
       orderBy: { createdAt: "desc" },
       take: 5,

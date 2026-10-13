@@ -29,7 +29,7 @@ async function createRating(req, res, next) {
         data: { bookingId, raterId: req.user.id, rateeRole, rateeUserId, stars: Number(stars), comment: comment || null },
       });
       if (rateeRole === "ARTISAN") {
-        const agg = await tx.rating.aggregate({ where: { rateeRole: "ARTISAN", rateeUserId }, _avg: { stars: true }, _count: true });
+        const agg = await tx.rating.aggregate({ where: { rateeRole: "ARTISAN", rateeUserId, hidden: false }, _avg: { stars: true }, _count: true });
         await tx.artisanProfile.update({
           where: { id: booking.artisanId },
           data: { ratingAvg: agg._avg.stars || 0, ratingCount: agg._count },

@@ -4,6 +4,7 @@ const rateLimit = require("express-rate-limit");
 const { validate } = require("../middleware/validate");
 const { requireAuth } = require("../middleware/auth");
 const ctrl = require("../controllers/auth.controller");
+const recovery = require("../controllers/recovery.controller");
 
 const router = express.Router();
 
@@ -38,6 +39,8 @@ router.post(
 );
 
 router.post("/guest", authLimiter, ctrl.guestLogin);
+router.post("/forgot-password", authLimiter, recovery.forgotPassword);
+router.post("/reset-password", authLimiter, recovery.resetPassword);
 router.post("/refresh", ctrl.refresh);
 router.post("/logout", ctrl.logout);
 router.get("/me", requireAuth, ctrl.me);

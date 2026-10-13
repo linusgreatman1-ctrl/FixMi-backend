@@ -1,0 +1,434 @@
+{
+  "services": [
+    {
+      "name": "Electrician",
+      "icon": "⚡",
+      "bg": "#FEF9C3",
+      "label": "Electrician"
+    },
+    {
+      "name": "Plumber",
+      "icon": "🔩",
+      "bg": "#EFF6FF",
+      "label": "Plumber"
+    },
+    {
+      "name": "AC Technician",
+      "icon": "❄️",
+      "bg": "#F0F9FF",
+      "label": "AC Tech"
+    },
+    {
+      "name": "Mechanic",
+      "icon": "🚘",
+      "bg": "#FFF7ED",
+      "label": "Mechanic"
+    },
+    {
+      "name": "Painter",
+      "icon": "🖌️",
+      "bg": "#FDF4FF",
+      "label": "Painter"
+    },
+    {
+      "name": "Carpenter",
+      "icon": "🪚",
+      "bg": "#FFF8ED",
+      "label": "Carpenter"
+    },
+    {
+      "name": "Cleaner",
+      "icon": "🧹",
+      "bg": "#F0FDF4",
+      "label": "Cleaner"
+    },
+    {
+      "name": "Barber",
+      "icon": "✂️",
+      "bg": "#FFF1F2",
+      "label": "Barber"
+    },
+    {
+      "name": "Hairdresser",
+      "icon": "💇",
+      "bg": "#FDF4FF",
+      "label": "Hairdresser"
+    },
+    {
+      "name": "Phone Repairer",
+      "icon": "📱",
+      "bg": "#EFF6FF",
+      "label": "Phone Repair"
+    },
+    {
+      "name": "Generator Mechanic",
+      "icon": "⚙️",
+      "bg": "#FEF9C3",
+      "label": "Generator"
+    },
+    {
+      "name": "Tiler",
+      "icon": "🟫",
+      "bg": "#FFF7ED",
+      "label": "Tiler"
+    },
+    {
+      "name": "CCTV Installer",
+      "icon": "📹",
+      "bg": "#EFF6FF",
+      "label": "CCTV"
+    },
+    {
+      "name": "Bricklayer",
+      "icon": "🧱",
+      "bg": "#FFF7ED",
+      "label": "Bricklayer"
+    },
+    {
+      "name": "Welder",
+      "icon": "🔥",
+      "bg": "#FEF9C3",
+      "label": "Welder"
+    },
+    {
+      "name": "POP Installer",
+      "icon": "🏛️",
+      "bg": "#F5F3FF",
+      "label": "POP Installer"
+    },
+    {
+      "name": "Waterproofer",
+      "icon": "💧",
+      "bg": "#EFF6FF",
+      "label": "Waterproofer"
+    },
+    {
+      "name": "Blacksmith",
+      "icon": "⚒️",
+      "bg": "#F2F2F2",
+      "label": "Blacksmith"
+    },
+    {
+      "name": "Drywall Installer",
+      "icon": "🧲",
+      "bg": "#EFF6FF",
+      "label": "Drywall/Taper"
+    },
+    {
+      "name": "Scaffolder",
+      "icon": "🏗️",
+      "bg": "#FFF7ED",
+      "label": "Scaffolder"
+    },
+    {
+      "name": "Interlock Layer",
+      "icon": "🛤️",
+      "bg": "#F0FDF4",
+      "label": "Interlock Layer"
+    },
+    {
+      "name": "Construction Worker",
+      "icon": "👷",
+      "bg": "#FFF7ED",
+      "label": "Construction"
+    },
+    {
+      "name": "General Labourer",
+      "icon": "🔨",
+      "bg": "#F2F2F2",
+      "label": "Gen. Labour"
+    },
+    {
+      "name": "Aluminum Roofer",
+      "icon": "🏠",
+      "bg": "#F0FDF4",
+      "label": "Alum. Roofer"
+    },
+    {
+      "name": "Window Installer",
+      "icon": "🪟",
+      "bg": "#EFF6FF",
+      "label": "Window Install"
+    },
+    {
+      "name": "Security Door Installer",
+      "icon": "🔐",
+      "bg": "#FFF1F2",
+      "label": "Security Door"
+    },
+    {
+      "name": "Cabinet Maker",
+      "icon": "🗄️",
+      "bg": "#FFF8ED",
+      "label": "Cabinet Maker"
+    },
+    {
+      "name": "Solar Panel Installer",
+      "icon": "☀️",
+      "bg": "#FEF9C3",
+      "label": "Solar Panel"
+    },
+    {
+      "name": "Car Electrician",
+      "icon": "🚗",
+      "bg": "#FFF7ED",
+      "label": "Car Electrician"
+    },
+    {
+      "name": "Smart Home Installer",
+      "icon": "🏡",
+      "bg": "#F0FDF4",
+      "label": "Smart Home"
+    },
+    {
+      "name": "Automation Technician",
+      "icon": "🤖",
+      "bg": "#F5F3FF",
+      "label": "Automation"
+    },
+    {
+      "name": "Elevator Mechanic",
+      "icon": "🛗",
+      "bg": "#EFF6FF",
+      "label": "Elevator Mech."
+    },
+    {
+      "name": "TV Repairer",
+      "icon": "📺",
+      "bg": "#EFF6FF",
+      "label": "TV Repair"
+    },
+    {
+      "name": "Appliance Repairer",
+      "icon": "🔌",
+      "bg": "#F2F2F2",
+      "label": "Appliance Repair"
+    },
+    {
+      "name": "Fridge Technician",
+      "icon": "🧊",
+      "bg": "#EFF6FF",
+      "label": "Fridge Tech"
+    },
+    {
+      "name": "Gas Technician",
+      "icon": "🔴",
+      "bg": "#FFF1F2",
+      "label": "Gas Tech"
+    },
+    {
+      "name": "Laptop Repairer",
+      "icon": "💻",
+      "bg": "#EFF6FF",
+      "label": "Laptop Repair"
+    },
+    {
+      "name": "Driver",
+      "icon": "🚖",
+      "bg": "#FFF7ED",
+      "label": "Driver"
+    },
+    {
+      "name": "Truck Loader/Offloader",
+      "icon": "🚛",
+      "bg": "#F2F2F2",
+      "label": "Truck Loader"
+    },
+    {
+      "name": "Borehole Sinker",
+      "icon": "🕳️",
+      "bg": "#EFF6FF",
+      "label": "Borehole Sinker"
+    },
+    {
+      "name": "Furniture/Upholsterer",
+      "icon": "🛋️",
+      "bg": "#FFF8ED",
+      "label": "Upholsterer"
+    },
+    {
+      "name": "Home/Office Decorator",
+      "icon": "🏠",
+      "bg": "#FDF4FF",
+      "label": "Home Decor"
+    },
+    {
+      "name": "Event Decorator",
+      "icon": "🎊",
+      "bg": "#FDF4FF",
+      "label": "Event Decor"
+    },
+    {
+      "name": "Landscaper",
+      "icon": "🌳",
+      "bg": "#F0FDF4",
+      "label": "Landscaper"
+    },
+    {
+      "name": "Sign Maker",
+      "icon": "🪧",
+      "bg": "#FEF9C3",
+      "label": "Sign Maker"
+    },
+    {
+      "name": "Artist/Drawing",
+      "icon": "🎨",
+      "bg": "#FDF4FF",
+      "label": "Artist/Drawing"
+    },
+    {
+      "name": "Pool/Spa Technician",
+      "icon": "🏊",
+      "bg": "#EFF6FF",
+      "label": "Pool/Spa Tech"
+    },
+    {
+      "name": "Fashion Designer",
+      "icon": "👗",
+      "bg": "#FDF4FF",
+      "label": "Fashion Design"
+    },
+    {
+      "name": "Shoemaker",
+      "icon": "👟",
+      "bg": "#FFF8ED",
+      "label": "Shoemaker"
+    },
+    {
+      "name": "Goldsmith/Jeweler",
+      "icon": "💍",
+      "bg": "#FEF9C3",
+      "label": "Goldsmith"
+    },
+    {
+      "name": "Dyer",
+      "icon": "🎨",
+      "bg": "#FDF4FF",
+      "label": "Dyer"
+    },
+    {
+      "name": "Pet Groomer",
+      "icon": "🐾",
+      "bg": "#F0FDF4",
+      "label": "Pet Groomer"
+    },
+    {
+      "name": "Laundry Service",
+      "icon": "👔",
+      "bg": "#F0F9FF",
+      "label": "Laundry"
+    },
+    {
+      "name": "Security Personnel",
+      "icon": "🛡️",
+      "bg": "#FFF1F2",
+      "label": "Security"
+    },
+    {
+      "name": "DJ",
+      "icon": "🎧",
+      "bg": "#F5F3FF",
+      "label": "DJ"
+    },
+    {
+      "name": "Trumpeter/Musician",
+      "icon": "🎺",
+      "bg": "#FEF9C3",
+      "label": "Trumpeter"
+    },
+    {
+      "name": "Event Usher",
+      "icon": "🎫",
+      "bg": "#F0FDF4",
+      "label": "Event Usher"
+    }
+  ],
+  "faqs_customer": [
+    {
+      "q": "How do I book an artisan?",
+      "a": "Select the service you need, describe your issue, set your location, and tap \"Find Nearby Artisans\". Verified artisans near you will be notified and can accept your request."
+    },
+    {
+      "q": "How does payment work?",
+      "a": "When you request a job, your budget goes into FixMi escrow from your wallet. Once you and an artisan agree a price, the escrow is topped up or the difference refunded. The artisan is paid from escrow only after you confirm the job is done — never pay cash."
+    },
+    {
+      "q": "What if I'm not satisfied?",
+      "a": "When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 5 minutes). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History."
+    },
+    {
+      "q": "How are artisans verified?",
+      "a": "Every artisan must provide a government ID (NIN or Voter Card), a profile photo, and their phone number. Our admin team reviews each application before approval."
+    },
+    {
+      "q": "Can I call an artisan directly?",
+      "a": "Yes. Once an artisan has your job, tap 📞 on the job screen for a free in-app call, a regular phone call or WhatsApp. Keep payments inside FixMi escrow."
+    }
+  ],
+  "faqs_artisan": [
+    {
+      "q": "How do I receive payments?",
+      "a": "After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 5 minutes after you mark the job done. Withdraw from your wallet to your bank account."
+    },
+    {
+      "q": "What is FixMi's commission?",
+      "a": "FixMi keeps 10% of every job as its platform fee and you receive 90%. Every job is paid through escrow — there are no cash jobs. Set your price so the 90% you take home covers your materials, transport and profit. Example: quote ₦10,000 and you receive ₦9,000."
+    },
+    {
+      "q": "How do I get more job requests?",
+      "a": "Stay online, maintain a high rating, respond quickly, and consider boosting your profile under Promote My Page. Customers see your rating on every offer, so good reviews help you win more jobs."
+    },
+    {
+      "q": "What if a customer is difficult?",
+      "a": "Use the Report Customer button in your Job History. Provide details and FixMi will review it. Never engage in arguments — complete the job or contact support."
+    },
+    {
+      "q": "Can I cancel a job?",
+      "a": "Cancellations affect your rating. Only cancel via the app with a valid reason. Repeated cancellations may result in account suspension."
+    }
+  ],
+  "safety_customer": [
+    {
+      "q": "Never pay outside the app",
+      "a": "Always pay through FixMi. Your money is held in escrow and released to the artisan only after you confirm the job is complete. Never hand cash directly or use another platform."
+    },
+    {
+      "q": "Verifying your artisan",
+      "a": "Every artisan has submitted a government ID (NIN or Voter Card) verified by our admin team. Look for the ✓ Verified badge before booking."
+    },
+    {
+      "q": "Communication safety",
+      "a": "All communication must happen through FixMi's in-app chat only. Calls are disabled for your protection. Never share personal contact details outside the app."
+    },
+    {
+      "q": "If you feel unsafe",
+      "a": "End the job immediately. You will not be charged if cancelled before work begins. Contact FixMi support and authorities if necessary."
+    },
+    {
+      "q": "Emergency contacts",
+      "a": "Nigeria Police: 199 | Emergency: 112 | FixMi: use Contact Support in Help &amp; Support."
+    }
+  ],
+  "safety_artisan": [
+    {
+      "q": "Before you arrive",
+      "a": "Always verify the customer's address matches what's in the app before travelling. If anything seems suspicious, contact support before proceeding."
+    },
+    {
+      "q": "At the customer's location",
+      "a": "Never enter a location that feels unsafe. Always keep your app open and active. If you feel threatened, leave immediately and contact support and the police."
+    },
+    {
+      "q": "Payments and money",
+      "a": "Never accept payment outside the FixMi app unless the customer selects Cash as their payment method. If asked to use another payment platform, refuse and report it."
+    },
+    {
+      "q": "Reporting an incident",
+      "a": "Use the Report Customer button in Job History or contact support directly. All reports are confidential and reviewed by FixMi."
+    },
+    {
+      "q": "Emergency contacts",
+      "a": "Police: 199 | FixMi Emergency: tap the Support button. Always trust your instincts — your safety comes first, before any job."
+    }
+  ]
+}

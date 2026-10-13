@@ -25,7 +25,7 @@ async function withdraw(req, res, next) {
   try {
     const { amountKobo } = req.body;
     if (!amountKobo || Number(amountKobo) <= 0) return res.status(400).json({ error: "A positive amountKobo is required." });
-    const account = await prisma.user.findUnique({ where: { id: req.user.id }, select: { bankAccountNumber: true } });
+    const account = await prisma.user.findUnique({ where: { id: req.user.id }, select: { bankAccountNumber: true, bankName: true, bankAccountName: true } });
     if (!account?.bankAccountNumber) {
       return res.status(400).json({ error: "Link a bank account before withdrawing." });
     }
@@ -36,7 +36,7 @@ async function withdraw(req, res, next) {
     const result = await prisma.$transaction(async (tx) => {
       await wallet.debitWallet(req.user.id, Number(amountKobo), "WITHDRAWAL", { reference, description: "Wallet withdrawal" }, tx);
       return tx.withdrawal.create({
-        data: { userId: req.user.id, walletId: w.id, amountKobo: Number(amountKobo), status: "PENDING", paystackRef: reference },
+        data: { userId: req.user.id, walletId: w.id, amountKobo: Number(amountKobo), status: "PENDING", paystackRef: reference, bankName: account.bankName, accountNumber: account.bankAccountNumber, accountName: account.bankAccountName },
       });
     });
 

@@ -3,6 +3,7 @@ const wallet = require("../services/wallet.service");
 const corporate = require("../services/corporate.service");
 const { notify } = require("../services/notifications.service");
 const { generateReference } = require("../utils/reference");
+const settings = require("../services/settings.service");
 
 function view(plan) {
   if (!plan) return null;
@@ -23,7 +24,7 @@ async function getCorporate(req, res, next) {
       : [];
     const spentKobo = jobs.filter((j) => ["COMPLETED", "CONFIRMED", "DISPUTED"].includes(j.status)).reduce((n, j) => n + (j.agreedPriceKobo || 0), 0);
     const reservedKobo = jobs.filter((j) => !["COMPLETED", "CONFIRMED", "DISPUTED", "CANCELLED", "DECLINED"].includes(j.status)).reduce((n, j) => n + (j.escrowKobo || 0), 0);
-    res.json({ plans: corporate.PLANS, plan: view(plan), jobs, spentKobo, reservedKobo });
+    res.json({ plans: await settings.get("corporate.plans"), plan: view(plan), jobs, spentKobo, reservedKobo });
   } catch (err) {
     next(err);
   }
@@ -33,7 +34,7 @@ async function getCorporate(req, res, next) {
 async function subscribe(req, res, next) {
   try {
     const key = String(req.body?.plan || "").toLowerCase();
-    const def = corporate.PLANS[key];
+    const def = (await settings.get("corporate.plans"))[key];
     if (!def) return res.status(400).json({ error: "Choose Basic, Standard or VIP Annual." });
     const categories = Array.isArray(req.body?.categories) ? [...new Set(req.body.categories.map(String).filter(Boolean))] : [];
     if (def.maxCategories && !categories.length) return res.status(400).json({ error: "Select the services your business needs." });

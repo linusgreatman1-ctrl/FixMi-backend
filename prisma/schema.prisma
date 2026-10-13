@@ -60,6 +60,8 @@ model User {
   emergencyContacts EmergencyContact[]
   safetyReports     SafetyReport[]
   featureBoosts     FeatureBoost[]
+  passwordResets    PasswordReset[]
+  appReview         AppReview?
 
   @@index([role])
 }
@@ -321,7 +323,16 @@ model Withdrawal {
   createdAt   DateTime         @default(now())
   processedAt DateTime?
 
+  // Bank details at the time of the request, and who processed it.
+  bankName        String?
+  accountNumber   String?
+  accountName     String?
+  processedById   String?
+  rejectionReason String?
+  adminNote       String?
+
   @@index([userId])
+  @@index([status])
 }
 
 // Weekly platform commission owed by an artisan on completed jobs — mirrors
@@ -368,6 +379,7 @@ model Rating {
   rateeUserId String
   stars       Int
   comment     String?
+  hidden      Boolean   @default(false)
   createdAt   DateTime  @default(now())
 
   @@unique([bookingId, raterId])
@@ -404,6 +416,8 @@ model SupportTicket {
   resolution             String?
   refundAmountKobo       Int?
   resolvedAt             DateTime?
+  adminReply             String?
+  repliedAt              DateTime?
 
   @@index([userId])
   @@index([status])
@@ -475,9 +489,16 @@ model ChatMessage {
   @@index([threadId])
 }
 
+// Admin-editable app content and config (service list, FAQs, safety guides,
+// plans, fees, contact details). The public GET /api/config/app serves these
+// merged over built-in defaults, so the app shows whatever is saved here.
 model AppSetting {
-  key   String @id
-  value Json
+  key         String   @id
+  value       Json
+  category    String?
+  description String?
+  updatedById String?
+  updatedAt   DateTime @default(now()) @updatedAt
 }
 
 // ---- Sidebar features (Profile, Settings, Safety & Trust, Promote My Page) ----
@@ -630,6 +651,52 @@ model Announcement {
   sentById       String
   sentByName     String
   recipientCount Int
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ---- Account recovery, app feedback, outreach ----
+
+// One-time code sent by SMS/email for "Forgot password". Only a hash is kept.
+model PasswordReset {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  attempts  Int       @default(0)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// "Rate FixMi": one review of the app per user; admins can answer or hide it.
+model AppReview {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stars         Int
+  comment       String?
+  adminResponse String?
+  respondedAt   DateTime?
+  hidden        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Summary of a bulk email or SMS sent from the admin panel.
+model BulkMessage {
+  id             String   @id @default(uuid())
+  channel        String
+  subject        String?
+  body           String
+  targetRoles    String[] @default([])
+  recipientCount Int
+  failedCount    Int      @default(0)
+  sentById       String
+  sentByName     String
   createdAt      DateTime @default(now())
 
   @@index([createdAt])
