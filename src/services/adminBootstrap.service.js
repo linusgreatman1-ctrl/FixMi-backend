@@ -7,17 +7,20 @@ const { hashPassword, comparePassword } = require("../utils/password");
 async function ensureAdminFromEnv() {
   const email = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD || "";
+  // Optional: ADMIN_NAME sets the admin's display name. Otherwise the name is left alone
+  // (the admin can also change it under "My account" in the panel).
+  const configuredName = (process.env.ADMIN_NAME || "").trim();
   if (!email || password.length < 8) return;
   const existing = await prisma.user.findUnique({ where: { email } });
   if (!existing) {
-    await prisma.user.create({ data: { name: "FixMi Admin", email, role: "ADMIN", status: "ACTIVE", isSuperAdmin: true, passwordHash: await hashPassword(password) } });
+    await prisma.user.create({ data: { name: configuredName || "FixMi Admin", email, role: "ADMIN", status: "ACTIVE", isSuperAdmin: true, passwordHash: await hashPassword(password) } });
     console.log("[admin] admin account created from ADMIN_EMAIL");
     return;
   }
   const samePassword = existing.passwordHash && (await comparePassword(password, existing.passwordHash));
   await prisma.user.update({
     where: { id: existing.id },
-    data: { role: "ADMIN", status: "ACTIVE", isSuperAdmin: true, ...(samePassword ? {} : { passwordHash: await hashPassword(password) }) },
+    data: { role: "ADMIN", status: "ACTIVE", isSuperAdmin: true, ...(configuredName ? { name: configuredName } : {}), ...(samePassword ? {} : { passwordHash: await hashPassword(password) }) },
   });
   console.log("[admin] admin account ready for ADMIN_EMAIL");
 }

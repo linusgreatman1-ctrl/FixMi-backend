@@ -6822,7 +6822,7 @@ async function openCorporate() {
 }
 function renderCorpChips() {
   var box = document.getElementById('corp-svc-chips'); if (!box) return;
-  box.innerHTML = serviceNames().map(function (sv) {
+  box.innerHTML = serviceNames().concat([{ name: 'Others', ico: '🔧' }]).map(function (sv) {
     var on = _corpSel.indexOf(sv.name) !== -1;
     return '<button type="button" class="search-chip' + (on ? ' on' : '') + '" onclick="toggleCorpSvc(this,' + attrJson(sv.name) + ')">' + sv.ico + ' ' + escapeHtml(sv.name) + '</button>';
   }).join('');
@@ -6831,7 +6831,9 @@ function toggleCorpSvc(el, name) {
   var i = _corpSel.indexOf(name);
   if (i === -1) _corpSel.push(name); else _corpSel.splice(i, 1);
   el.classList.toggle('on', i === -1);
-  setText('corp-svc-hint', _corpSel.length + ' selected — Basic covers up to 3, Standard up to 6, VIP Annual covers every service.');
+  var cp = (APP_CFG && APP_CFG.corporatePlans) || {};
+  var limits = Object.keys(cp).map(function (k) { return cp[k].label + (cp[k].maxCategories ? ' covers up to ' + cp[k].maxCategories : ' covers every service'); }).join(', ');
+  setText('corp-svc-hint', _corpSel.length + ' selected' + (limits ? ' — ' + limits + '.' : ''));
 }
 function choosePlan(key) {
   var p = _corp && _corp.plans && _corp.plans[key]; if (!p) { openCorporate(); return; }

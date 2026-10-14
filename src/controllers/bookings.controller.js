@@ -88,6 +88,12 @@ async function requestViewFor(bookingId, artisanId) {
   return { ...booking, myOffer };
 }
 
+// "Others" is for jobs that fit no listed trade: every artisan can see and
+// answer them. Any other request only reaches artisans in its own category.
+const OTHERS = "Others";
+const categoryMatches = (bookingCategory, artisanCategory) => bookingCategory === OTHERS || bookingCategory === artisanCategory;
+const categoryFilter = (bookingCategory) => (bookingCategory === OTHERS ? {} : { category: bookingCategory });
+
 // Online, verified artisans in the request's category who haven't declined
 // it — or just the chosen artisan for a direct booking.
 async function requestRecipients(booking) {
@@ -95,7 +101,7 @@ async function requestRecipients(booking) {
     isAvailable: true,
     isVerified: true,
     kycStatus: "APPROVED",
-    category: booking.category,
+    ...categoryFilter(booking.category),
     user: { status: "ACTIVE" },
     userId: { not: booking.customerId },
     offers: { none: { bookingId: booking.id, status: { in: ["DECLINED", "REJECTED", "CLOSED"] } } },
@@ -117,7 +123,7 @@ async function pushRequestToArtisan(sock, bookingId, artisan) {
 }
 
 async function closeRequestForArtisans(sock, booking, exceptArtisanId) {
-  const artisans = await prisma.artisanProfile.findMany({ where: { category: booking.category }, select: { id: true, userId: true } });
+  const artisans = await prisma.artisanProfile.findMany({ where: categoryFilter(booking.category), select: { id: true, userId: true } });
   for (const a of artisans) {
     if (a.id !== exceptArtisanId) sock?.to(`user:${a.userId}`).emit("request:closed", { bookingId: booking.id });
   }
@@ -253,7 +259,7 @@ async function listOpenBookings(req, res, next) {
     const bookings = await prisma.booking.findMany({
       where: {
         status: { in: OPEN },
-        category: me.category,
+        category: { in: [me.category, OTHERS] },
         customerId: { not: req.user.id },
         OR: [{ artisanId: null }, { artisanId: me.id }],
         offers: { none: { artisanId: me.id, status: { in: ["DECLINED", "REJECTED", "CLOSED"] } } },
@@ -304,7 +310,7 @@ async function getBooking(req, res, next) {
     if (me && booking.artisanId === me.id && booking.status !== "REQUESTED") {
       return res.json({ booking: await prisma.booking.findUnique({ where: { id: booking.id }, include: JOB_VIEW }) });
     }
-    if (me && booking.status === "REQUESTED" && booking.category === me.category && (!booking.artisanId || booking.artisanId === me.id)) {
+    if (me && booking.status === "REQUESTED" && categoryMatches(booking.category, me.category) && (!booking.artisanId || booking.artisanId === me.id)) {
       return res.json({ booking: await requestViewFor(booking.id, me.id) });
     }
     res.status(403).json({ error: "Not your booking." });
@@ -369,7 +375,7 @@ async function artisanRespond(req, res, next) {
     const booking = await prisma.booking.findUnique({ where: { id: req.params.id } });
     if (!booking) return res.status(404).json({ error: "Request not found." });
     if (booking.status !== "REQUESTED") return res.status(409).json({ error: "This request is no longer open." });
-    if (booking.category !== me.category) return res.status(403).json({ error: "This request isn't in your category." });
+    if (!categoryMatches(booking.category, me.category)) return res.status(403).json({ error: "This request isn't in your category." });
     if (booking.artisanId && booking.artisanId !== me.id) return res.status(403).json({ error: "This request was sent to another artisan." });
     if (booking.customerId === req.user.id) return res.status(400).json({ error: "You can't respond to your own request." });
 
