@@ -14,12 +14,17 @@ header{background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-it
 header b{font-size:20px}header b span{color:var(--g)}
 header small{opacity:.6;flex:1}
 #shell{display:flex;min-height:calc(100vh - 54px)}
-nav{width:190px;background:var(--card);border-right:1px solid var(--line);padding:10px;flex-shrink:0}
+nav{width:210px;background:var(--card);border-right:1px solid var(--line);padding:10px;flex-shrink:0;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;display:flex;flex-direction:column}
+nav .sp{flex:1}
+nav .me{border-top:1px solid var(--line);padding:10px 4px 4px;font-size:12px;color:var(--muted);word-break:break-all}
+nav .me b{display:block;color:var(--text);font-size:13px}
+.pw{position:relative}.pw input{padding-right:64px}.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:5px 9px;font-size:12px}
+mark{background:#FDE68A;color:#000}
 nav button{display:flex;justify-content:space-between;width:100%;text-align:left;background:none;color:var(--text);padding:9px 10px;margin-bottom:2px;border-radius:8px;font-weight:600}
-nav button.on{background:var(--navy);color:#fff}
+nav button.on{background:var(--g);color:#fff}
 nav .cnt{background:var(--red);color:#fff;border-radius:10px;padding:0 7px;font-size:11px;line-height:18px}
 main{flex:1;min-width:0;padding:16px;max-width:1100px}
-@media (max-width:760px){#shell{flex-direction:column}nav{width:auto;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}nav button{white-space:nowrap;width:auto;margin-right:4px}}
+@media (max-width:760px){#shell{flex-direction:column}nav{width:auto;height:auto;position:static;flex-direction:row;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--line)}nav button{white-space:nowrap;width:auto;margin-right:4px}nav .sp,nav .me{display:none}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text)}
@@ -54,7 +59,7 @@ th{color:var(--muted);font-weight:600}
     <div id="login" class="card" hidden style="max-width:420px;margin:30px auto">
       <h3 style="margin-top:0">Admin sign in</h3>
       <label for="em">Email</label><input id="em" type="email" autocomplete="username">
-      <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+      <label for="pw">Password</label><div class="pw"><input id="pw" type="password" autocomplete="current-password"><button type="button" class="l" data-act="eye" data-id="pw">Show</button></div>
       <div class="err" id="lerr"></div>
       <button class="g" data-act="signin">Sign in</button>
     </div>
@@ -86,19 +91,20 @@ function closeModal() { $('modal').style.display = 'none'; }
 function val(id) { var e = $(id); return e ? e.value : ''; }
 
 var SECTIONS = [
-  ['dashboard', 'Dashboard'], ['users', 'Users'], ['artisans', 'Artisan approvals'], ['bookings', 'Bookings'], ['disputes', 'Disputes'],
-  ['withdrawals', 'Withdrawals'], ['money', 'Money'], ['kyc', 'ID reviews'], ['safety', 'Safety'], ['tickets', 'Support'],
-  ['ratings', 'Ratings'], ['appreviews', 'App reviews'], ['content', 'App content'], ['announce', 'Announcements'], ['sms', 'Bulk SMS'],
-  ['admins', 'Admins'], ['audit', 'Audit log']
+  ['dashboard', 'Dashboard'], ['reports', 'Reports'], ['users', 'Users'], ['artisans', 'Artisans'], ['bookings', 'Bookings'], ['disputes', 'Disputes'],
+  ['commissions', 'Commissions'], ['escrow', 'Escrow'], ['ratings', 'Ratings'], ['appreviews', 'App Reviews'], ['payments', 'Payments'], ['subscriptions', 'Subscriptions'],
+  ['tickets', 'Support Tickets'], ['withdrawals', 'Withdrawals'], ['manualpayments', 'Manual Bank Transfers'], ['codeeditor', 'Code Editor', 1], ['codes', 'Codes', 1], ['livepreview', 'Live Preview', 1],
+  ['kyc', 'KYC Documents'], ['safety', 'Safety'], ['content', 'App Settings'], ['announce', 'Announcements'], ['bulkemail', 'Bulk Email'], ['sms', 'Bulk SMS'],
+  ['livechat', 'Live Chat'], ['admins', 'Admins'], ['audit', 'Audit Log']
 ];
 var LOAD = {};
 var badges = {};
 
 function buildNav() {
-  $('nav').innerHTML = SECTIONS.map(function (s) {
-    var n = badges[s[0]];
-    return '<button class="' + (s[0] === current ? 'on' : '') + '" data-act="tab" data-id="' + s[0] + '"><span>' + s[1] + '</span>' + (n ? '<span class="cnt">' + n + '</span>' : '') + '</button>';
-  }).join('');
+  $('nav').innerHTML = SECTIONS.filter(function (x) { return !x[2] || (me && me.isSuperAdmin); }).map(function (x) {
+    var n = badges[x[0]];
+    return '<button class="' + (x[0] === current ? 'on' : '') + '" data-act="tab" data-id="' + x[0] + '"><span>' + x[1] + '</span>' + (n ? '<span class="cnt">' + n + '</span>' : '') + '</button>';
+  }).join('') + '<div class="sp"></div>' + (me ? '<div class="me"><b>' + esc(me.name) + '</b>' + esc(me.email || '') + '<br>' + (me.isSuperAdmin ? 'Super admin' : 'Admin') + '<div style="margin-top:6px"><button class="l" data-act="account" style="padding:6px 10px;font-size:12px">My account</button></div></div>' : '');
 }
 function tab(name) {
   current = name; buildNav(); setList('<div class="muted">Loading…</div>');
@@ -110,7 +116,7 @@ function show() {
   var signedIn = !!tok;
   $('login').hidden = signedIn; $('app').hidden = !signedIn; $('nav').hidden = !signedIn; $('out').hidden = !signedIn;
   if (signedIn) {
-    api('/auth/me').then(function (d) { me = d.user; $('who').textContent = me.name + (me.isSuperAdmin ? ' · super admin' : ''); loadBadges(); tab(current); }).catch(function (e) { fail(e); });
+    api('/auth/me').then(function (d) { me = d.user; $('who').textContent = 'FixMi Admin' + (me.isSuperAdmin ? ' (Super Admin)' : ''); loadBadges(); tab(current); }).catch(function (e) { fail(e); });
   }
 }
 function loadBadges() {
@@ -171,6 +177,7 @@ function userDetail(id) {
       '<div class="side"><b>Wallet ' + naira(w ? w.balanceKobo : 0) + '</b> · ' + d.bookingsAsCustomer + ' jobs as customer' + (d.bookingsAsArtisan ? ', ' + d.bookingsAsArtisan + ' as artisan' : '') + '</div>';
     if (u.id !== me.id) {
       h += '<div class="row" style="margin:8px 0">' + (u.status === 'ACTIVE' ? btn('Suspend', 'ustatus', u.id, 'r', ' data-v="SUSPENDED"') : btn('Reactivate', 'ustatus', u.id, 'g', ' data-v="ACTIVE"'));
+      h += btn('Message', 'umsg', u.id, 'n');
       if (me.isSuperAdmin) h += btn('Delete account', 'udelete', u.id, 'r');
       h += '</div>';
       if (me.isSuperAdmin) h += '<div class="card"><b>Adjust wallet</b><div class="muted">Positive adds money, negative deducts. A reason is required and is logged.</div><div class="row"><div style="flex:1"><input id="adj-amt" type="number" placeholder="₦ amount e.g. 500 or -500"></div><div style="flex:2"><input id="adj-why" placeholder="Reason"></div>' + btn('Apply', 'uadjust', u.id, 'n') + '</div><div class="err" id="adj-err"></div></div>';
@@ -220,7 +227,7 @@ var disputesOpen = true;
 function photos(urls, who) { return String(urls || '').split('\n').filter(Boolean).map(function (u) { return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="' + who + ' evidence"></a>'; }).join(''); }
 LOAD.disputes = function () {
   api('/admin/disputes' + (disputesOpen ? '' : '?open=false')).then(function (d) {
-    var head = '<div class="row" style="margin-bottom:12px">' + btn('Open disputes', 'dopen', '1', disputesOpen ? 'n' : 'l') + btn('All disputes', 'dopen', '0', disputesOpen ? 'l' : 'n') + '</div>';
+    var head = '<div class="row" style="margin-bottom:12px">' + btn('Open disputes', 'dopen', '1', disputesOpen ? 'g' : 'l') + btn('All disputes', 'dopen', '0', disputesOpen ? 'l' : 'g') + '</div>';
     if (!d.disputes.length) return setList(head + '<div class="card muted">No ' + (disputesOpen ? 'open ' : '') + 'disputes.</div>');
     setList(head + d.disputes.map(function (t) {
       var b = t.booking || {};
@@ -243,7 +250,7 @@ var wdStatus = 'PENDING';
 LOAD.withdrawals = function () {
   api('/admin/withdrawals?status=' + wdStatus).then(function (d) {
     var head = '<div class="card muted">Send the money from the company bank account, then press <b>Mark paid</b>. <b>Decline</b> returns the money to the user’s wallet.</div><div class="row" style="margin-bottom:12px">' +
-      ['PENDING', 'PAID', 'FAILED'].map(function (s) { return btn(s === 'FAILED' ? 'Declined' : s.charAt(0) + s.slice(1).toLowerCase(), 'wdfilter', s, s === wdStatus ? 'n' : 'l'); }).join('') + '</div>';
+      ['PENDING', 'PAID', 'FAILED'].map(function (s) { return btn(s === 'FAILED' ? 'Declined' : s.charAt(0) + s.slice(1).toLowerCase(), 'wdfilter', s, s === wdStatus ? 'g' : 'l'); }).join('') + '</div>';
     if (!d.withdrawals.length) return setList(head + '<div class="card muted">Nothing here.</div>');
     setList(head + d.withdrawals.map(function (w) {
       var bank = w.accountNumber ? esc(w.bankName || '') + ' · <b>' + esc(w.accountNumber) + '</b> · ' + esc(w.accountName || '') : (w.user && w.user.bankAccountNumber ? esc(w.user.bankName || '') + ' · <b>' + esc(w.user.bankAccountNumber) + '</b> · ' + esc(w.user.bankAccountName || '') : '<span class="err">No bank details</span>');
@@ -255,15 +262,6 @@ LOAD.withdrawals = function () {
       return h + '</div>';
     }).join(''));
   }).catch(fail);
-};
-
-/* ---------- Money ---------- */
-var moneyView = 'transactions';
-LOAD.money = function () {
-  var head = '<div class="row" style="margin-bottom:12px">' + [['transactions', 'Wallet transactions'], ['escrow', 'Escrow'], ['commissions', 'Commission']].map(function (v) { return btn(v[1], 'moneyview', v[0], v[0] === moneyView ? 'n' : 'l'); }).join('') + '</div>';
-  if (moneyView === 'transactions') api('/admin/transactions?limit=100').then(function (d) { setList(head + '<div class="card">' + table(['When', 'Who', 'Type', 'Amount', 'Note'], d.transactions.map(function (t) { return [when(t.createdAt), esc(t.wallet.user.name), esc(t.type), naira(t.amountKobo), esc(t.description || '')]; })) + '</div>'); }).catch(fail);
-  else if (moneyView === 'escrow') api('/admin/escrow?limit=100').then(function (d) { setList(head + '<div class="grid">' + d.totals.map(function (t) { return '<div class="stat"><b>' + naira(t.amountKobo) + '</b><span>' + esc(t.status) + ' (' + t.count + ')</span></div>'; }).join('') + '</div><div class="card">' + table(['When', 'Job', 'Amount', 'Status', 'To', ''], d.holds.map(function (h) { return [when(h.createdAt), esc(h.booking.category), naira(h.amountKobo), esc(h.status), h.payeeId ? 'artisan' : 'FixMi', btn('Job', 'booking', h.bookingId)]; })) + '</div>'); }).catch(fail);
-  else api('/admin/commissions?limit=100').then(function (d) { setList(head + '<div class="grid"><div class="stat"><b>' + naira(d.totalKobo) + '</b><span>Total commission earned</span></div></div><div class="card">' + table(['Released', 'Job', 'Commission'], d.commissions.map(function (c) { return [when(c.releasedAt), esc(c.booking.category), naira(c.amountKobo)]; })) + '</div>'); }).catch(fail);
 };
 
 /* ---------- ID reviews ---------- */
@@ -380,9 +378,255 @@ LOAD.audit = function () {
   }).catch(fail);
 };
 
+
+/* ---------- Reports ---------- */
+var reportRange = { from: '', to: '' };
+function isoDay(d) { return new Date(d).toISOString().slice(0, 10); }
+function pct(x) { return Math.round((x || 0) * 100) + '%'; }
+LOAD.reports = function () {
+  var to = reportRange.to || isoDay(Date.now()), from = reportRange.from || isoDay(Date.now() - 29 * 86400000);
+  api('/admin/reports?from=' + from + '&to=' + to).then(function (d) {
+    var t = d.totals;
+    function stat(v, l) { return '<div class="stat"><b>' + v + '</b><span>' + l + '</span></div>'; }
+    setList('<div class="card"><div class="row"><div><label style="margin-top:0">From</label><input id="rp-from" type="date" value="' + from + '"></div><div><label style="margin-top:0">To</label><input id="rp-to" type="date" value="' + to + '"></div>' +
+      '<div style="align-self:flex-end">' + btn('Run report', 'reportrun', '', 'n') + ' ' + btn('Download CSV', 'reportcsv', '', 'l') + '</div></div></div>' +
+      '<div class="grid">' + stat(t.bookings, 'Bookings') + stat(t.completed + ' (' + pct(t.completionRate) + ')', 'Completed') + stat(t.cancelled + ' (' + pct(t.cancellationRate) + ')', 'Cancelled') + stat(naira(t.jobValueKobo), 'Completed job value') + stat(naira(t.commissionKobo), 'Commission earned') + '</div>' +
+      '<div class="grid">' + stat(t.newCustomers, 'New customers') + stat(t.newArtisans, 'New artisans') + stat(naira(t.depositsKobo) + ' (' + t.depositCount + ')', 'Deposits') + stat(naira(t.withdrawalsPaidKobo) + ' (' + t.withdrawalsPaidCount + ')', 'Withdrawals paid') + stat(t.ratingCount ? t.averageRating.toFixed(1) + '★ (' + t.ratingCount + ')' : '—', 'Artisan rating') + '</div>' +
+      '<div class="card"><b>By service</b>' + table(['Service', 'Bookings', 'Completed', 'Cancelled', 'Value'], d.byCategory.map(function (c) { return [esc(c.category), c.bookings, c.completed, c.cancelled, naira(c.valueKobo)]; })) + '</div>' +
+      '<div class="card"><b>Top artisans</b>' + table(['Artisan', 'Service', 'Jobs', 'Value'], d.topArtisans.map(function (a) { return [esc(a.name), esc(a.category), a.jobs, naira(a.valueKobo)]; })) + '</div>' +
+      '<div class="card"><b>By day</b>' + table(['Date', 'Bookings', 'Completed', 'Value', 'Commission', 'Sign-ups'], d.byDay.map(function (r) { return [r.date, r.bookings, r.completed, naira(r.valueKobo), naira(r.commissionKobo), r.signups]; })) + '</div>');
+    window._reportDays = d.byDay;
+  }).catch(fail);
+};
+
+/* ---------- Commissions / Escrow / Payments ---------- */
+var escrowFilter = '', payType = '', payQ = '';
+function chips(list, current, act) {
+  return '<div class="row" style="margin-bottom:12px">' + list.map(function (c) { return btn(c[1], act, c[0], c[0] === current ? 'g' : 'l'); }).join('') + '</div>';
+}
+LOAD.commissions = function () {
+  api('/admin/commissions?limit=200').then(function (d) {
+    setList('<div class="grid"><div class="stat"><b>' + naira(d.totalKobo) + '</b><span>Total commission earned</span></div></div><div class="card">' +
+      table(['Released', 'Job', 'Commission'], d.commissions.map(function (c) { return [when(c.releasedAt), esc(c.booking.category) + ' ' + btn('Job', 'booking', c.bookingId), naira(c.amountKobo)]; })) + '</div>');
+  }).catch(fail);
+};
+LOAD.escrow = function () {
+  api('/admin/escrow?limit=200' + (escrowFilter ? '&status=' + escrowFilter : '')).then(function (d) {
+    var head = chips([['', 'All'], ['HELD', 'Held'], ['DISPUTED', 'Disputed'], ['RELEASED', 'Released'], ['REFUNDED', 'Refunded']], escrowFilter, 'escrowfilter');
+    setList(head + '<div class="grid">' + d.totals.map(function (t) { return '<div class="stat"><b>' + naira(t.amountKobo) + '</b><span>' + esc(t.status) + ' (' + t.count + ')</span></div>'; }).join('') + '</div><div class="card">' +
+      table(['When', 'Job', 'Amount', 'Status', 'To', ''], d.holds.map(function (h) { return [when(h.createdAt), esc(h.booking.category), naira(h.amountKobo), tag(h.status, h.status === 'RELEASED' ? 'ok' : h.status === 'DISPUTED' ? 'bad' : ''), h.payeeId ? 'artisan' : 'FixMi', btn('Job', 'booking', h.bookingId)]; })) + '</div>');
+  }).catch(fail);
+};
+LOAD.payments = function () {
+  api('/admin/transactions?limit=300' + (payType ? '&type=' + payType : '')).then(function (d) {
+    var head = chips([['', 'All'], ['DEPOSIT', 'Deposits'], ['WITHDRAWAL', 'Withdrawals'], ['ESCROW_HOLD', 'Escrow holds'], ['ESCROW_RELEASE', 'Escrow releases'], ['ESCROW_REFUND', 'Refunds'], ['PAYOUT', 'Payouts'], ['ADJUSTMENT', 'Adjustments']], payType, 'paytype');
+    var q = payQ.toLowerCase();
+    var rows = d.transactions.filter(function (t) { return !q || (t.wallet.user.name + ' ' + (t.description || '') + ' ' + (t.reference || '')).toLowerCase().indexOf(q) !== -1; });
+    setList(head + '<div class="card"><input id="pq" placeholder="Search by name, note or reference" value="' + esc(payQ) + '" style="margin-bottom:10px"><div class="row" style="margin-bottom:8px">' + btn('Search', 'paysearch', '', 'n') + '<span class="muted">' + rows.length + ' shown</span></div>' +
+      table(['When', 'Who', 'Type', 'Amount', 'Balance after', 'Reference', 'Note'], rows.map(function (t) { return [when(t.createdAt), esc(t.wallet.user.name), esc(t.type), naira(t.amountKobo), naira(t.balanceAfterKobo), esc(t.reference || ''), esc(t.description || '')]; })) + '</div>');
+  }).catch(fail);
+};
+
+/* ---------- Subscriptions (corporate plans) ---------- */
+LOAD.subscriptions = function () {
+  api('/admin/subscriptions').then(function (d) {
+    setList('<div class="card">' + table(['Business', 'Plan', 'Price', 'Escrow left', 'Calls', 'Ends', 'Status'], d.subscriptions.map(function (s) {
+      return [esc(s.user ? s.user.name : '') + '<div class="muted">' + esc(s.user ? s.user.phone || s.user.email || '' : '') + '</div>', esc(s.label), naira(s.priceKobo), naira(s.escrowKobo), s.callsTotal ? s.callsUsed + '/' + s.callsTotal : 'unlimited', new Date(s.endsAt).toLocaleDateString(), tag(s.active ? 'active' : 'ended', s.active ? 'ok' : '')];
+    })) + '</div>');
+  }).catch(fail);
+};
+
+/* ---------- Manual bank transfers ---------- */
+var mpStatus = 'PENDING';
+LOAD.manualpayments = function () {
+  api('/admin/manual-payments?status=' + mpStatus).then(function (d) {
+    var head = '<div class="card muted">Customers who top up by bank transfer appear here. Match the amount and reference to your bank statement, then press <b>Confirm</b> to credit their wallet. Set the account they pay into under <b>App settings → bank.company</b>.</div>' +
+      chips([['PENDING', 'Waiting'], ['CONFIRMED', 'Confirmed'], ['REJECTED', 'Rejected']], mpStatus, 'mpfilter');
+    if (!d.payments.length) return setList(head + '<div class="card muted">Nothing here.</div>');
+    setList(head + d.payments.map(function (p) {
+      var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + naira(p.amountKobo) + ' — ' + esc(p.user.name) + '</b>' + tag(p.status, p.status === 'CONFIRMED' ? 'ok' : p.status === 'REJECTED' ? 'bad' : '') + '</div>' +
+        '<div class="muted">' + when(p.createdAt) + ' · reference <b>' + esc(p.reference) + '</b> · ' + esc(p.user.phone || p.user.email || '') + '</div>' +
+        '<div class="side">Sender: ' + esc(p.senderName || '—') + (p.note ? '<br>' + esc(p.note) : '') + '</div>';
+      if (p.rejectionReason) h += '<div class="muted">Rejected: ' + esc(p.rejectionReason) + '</div>';
+      if (p.status === 'PENDING') h += '<input id="mpr-' + p.id + '" placeholder="Reason (needed to reject)"><div class="err" id="mpe-' + p.id + '"></div><div class="row" style="margin-top:6px">' + btn('Confirm and credit wallet', 'mpconfirm', p.id, 'g') + btn('Reject', 'mpreject', p.id, 'r') + '</div>';
+      return h + '</div>';
+    }).join(''));
+  }).catch(fail);
+};
+
+/* ---------- Live chat ---------- */
+LOAD.livechat = function () {
+  api('/admin/chat-threads').then(function (d) {
+    if (!d.threads.length) return setList('<div class="card muted">No conversations yet. Open a user and press <b>Message</b> to start one.</div>');
+    setList('<div class="card">' + table(['Who', 'Job', 'Last message', ''], d.threads.map(function (t) {
+      var who = t.participants.map(function (p) { return esc(p.user.name) + ' <span class="muted">(' + esc(p.user.role.toLowerCase()) + ')</span>'; }).join('<br>');
+      var last = t.messages[0];
+      return [who, t.booking ? esc(t.booking.category) : 'Support', last ? esc(last.body.slice(0, 80)) + '<div class="muted">' + when(last.createdAt) + '</div>' : '<span class="muted">No messages</span>', btn('Open', 'chatopen', t.id, 'n')];
+    })) + '</div>');
+  }).catch(fail);
+};
+function openChat(id) {
+  api('/admin/chat-threads/' + id + '/messages').then(function (d) {
+    var names = {};
+    d.thread.participants.forEach(function (p) { names[p.user.id] = p.user.name; });
+    openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + d.thread.participants.map(function (p) { return esc(p.user.name); }).join(' & ') + '</h3><button class="l" data-act="close">Close</button></div>' +
+      '<div style="max-height:50vh;overflow:auto;margin:12px 0">' + (d.messages.length ? d.messages.map(function (m) { return '<div class="side"><b>' + esc(names[m.senderId] || 'Support') + '</b> <span class="muted">' + when(m.createdAt) + '</span><br>' + esc(m.body) + '</div>'; }).join('') : '<div class="muted">No messages yet.</div>') + '</div>' +
+      '<textarea id="chat-reply" placeholder="Write a message as FixMi support"></textarea><div class="err" id="chat-err"></div>' + btn('Send', 'chatsend', id, 'g'));
+  }).catch(function (e) { alert(e.message); });
+}
+
+/* ---------- Bulk email ---------- */
+LOAD.bulkemail = function () {
+  api('/admin/bulk-messages').then(function (d) {
+    var canSend = me && me.isSuperAdmin;
+    setList((canSend ? '<div class="card"><h3 style="margin-top:0">Bulk email</h3><div class="muted">Needs the SMTP variables on the server.</div><label>Subject</label><input id="em-s" maxlength="150"><label>Message</label><textarea id="em-b" style="min-height:140px"></textarea>' +
+      '<label>Send to</label><select id="em-r"><option value="">Everyone with an email</option><option value="CUSTOMER">Customers</option><option value="ARTISAN">Artisans</option></select><div class="err" id="em-e"></div>' + btn('Send email', 'bulkemail', '', 'g') + '</div>' : '<div class="card muted">Only a super admin can send email.</div>') +
+      '<div class="card">' + table(['When', 'Subject', 'Sent', 'Failed', 'By'], d.messages.filter(function (m) { return m.channel === 'EMAIL'; }).map(function (m) { return [when(m.createdAt), esc(m.subject || ''), m.recipientCount, m.failedCount, esc(m.sentByName)]; })) + '</div>');
+  }).catch(fail);
+};
+
+/* ---------- Code editor, Codes, Live preview (super admin) ---------- */
+var FEATURE_INDEX = [
+  { label: 'Login screen', query: 'id="login-screen"', screen: 'login-screen' },
+  { label: 'Customer home', query: '<div class="s" id="home">', screen: 'home' },
+  { label: 'Service request', query: 'id="request"', screen: 'request' },
+  { label: 'Artisan dashboard', query: 'id="artisan-dash"', screen: 'artisan-dash' },
+  { label: 'Wallet', query: 'id="wallet"', screen: 'wallet' },
+  { label: 'Profile', query: 'id="profile"', screen: 'profile' },
+  { label: 'Help & Support', query: 'id="help"', screen: 'help' },
+  { label: 'Corporate plan', query: 'id="corp-plan"', screen: 'corp-plan' },
+  { label: 'Safety Centre', query: 'id="safety-center"', screen: 'safety-center' },
+  { label: 'Report issue', query: 'id="report-issue"', screen: 'report-issue' }
+];
+var CE_FILES = ['app/index.html', 'admin/index.html', 'app-dev/index.html', 'admin-dev/index.html'];
+var ceFile = 'app/index.html', ceSel = null;
+function fileOptions() { return CE_FILES.map(function (f) { return '<option value="' + f + '">' + f + '</option>'; }).join(''); }
+function needSuper(name) {
+  if (me && me.isSuperAdmin) return false;
+  setList('<div class="card"><b>' + name + '</b><div class="muted" style="margin-top:6px">Only a super admin can use this tool.</div></div>');
+  return true;
+}
+LOAD.codeeditor = function () {
+  if (needSuper('Code Editor')) return;
+  setList('<div class="card"><b>Code Editor</b><div class="muted">Find and replace text in the live app and admin files. Every change is backed up first and checked for valid script syntax; a bad edit is rejected. Edits stay live until the next deploy, so keep anything permanent in git.</div>' +
+    '<div class="row" style="margin-top:10px"><div><select id="ce-file">' + fileOptions() + '</select></div><div style="flex:1;min-width:200px"><input id="ce-query" placeholder="Text to find"></div>' + btn('Search', 'cesearch', '', 'n') + '</div>' +
+    '<div class="row" style="margin-top:10px">' + FEATURE_INDEX.map(function (f, i) { return btn(esc(f.label), 'cechip', String(i), 'l'); }).join('') + '</div></div>' +
+    '<div id="ce-results"></div><div id="ce-form"></div><div class="card"><b>Backups</b><div id="ce-backups" class="muted">Loading…</div></div>');
+  $('ce-file').value = ceFile;
+  $('ce-file').onchange = function () { ceFile = $('ce-file').value; $('ce-results').innerHTML = ''; $('ce-form').innerHTML = ''; ceBackups(); };
+  ceBackups();
+};
+function ceSearch() {
+  ceFile = $('ce-file').value; var q = $('ce-query').value;
+  if (!q) { $('ce-results').innerHTML = '<div class="card muted">Type something to search for.</div>'; return; }
+  api('/admin/files/search', { file: ceFile, query: q, contextChars: 60 }).then(function (d) {
+    ceSel = null;
+    if (!d.matches.length) { $('ce-results').innerHTML = '<div class="card muted">No matches.</div>'; $('ce-form').innerHTML = ''; return; }
+    $('ce-results').innerHTML = '<div class="card"><div class="muted">' + d.totalOccurrences + ' occurrence(s). Click one to select it.</div>' + d.matches.map(function (m) {
+      return '<div class="side" style="cursor:pointer;font-family:ui-monospace,Consolas,monospace;font-size:12px" data-act="cesel" data-id="' + m.occurrenceIndex + '">#' + m.occurrenceIndex + ' ' + esc(m.before) + '<mark>' + esc(m.match) + '</mark>' + esc(m.after) + '</div>';
+    }).join('') + '</div>';
+    $('ce-form').innerHTML = '<div class="card"><label style="margin-top:0">Find (exact)</label><input id="ce-find" value="' + esc(q) + '"><label>Replace with</label><textarea id="ce-with" style="min-height:80px;font-family:ui-monospace,Consolas,monospace"></textarea>' +
+      '<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="ce-all" style="width:auto"> Replace all ' + d.totalOccurrences + ' occurrences</label><div class="err" id="ce-err"></div>' + btn('Replace', 'cereplace', '', 'g') + '</div>';
+  }).catch(function (e) { $('ce-results').innerHTML = '<div class="card err">' + esc(e.message) + '</div>'; });
+}
+function ceReplace() {
+  var all = $('ce-all').checked;
+  if (!confirm('Replace ' + (all ? 'ALL occurrences' : ceSel !== null ? 'occurrence #' + ceSel : 'this text') + ' in ' + ceFile + '? A backup is taken first.')) return;
+  var body = { file: ceFile, find: $('ce-find').value, replaceWith: $('ce-with').value, replaceAll: all };
+  if (!all && ceSel !== null) body.occurrenceIndex = ceSel;
+  api('/admin/files/replace', body).then(function (d) { alert('Replaced ' + d.replacedCount + ' occurrence(s). Backup: ' + d.backupName); LOAD.codeeditor(); })
+    .catch(function (e) { $('ce-err').textContent = e.message; });
+}
+function ceBackups() {
+  api('/admin/files/backups?file=' + encodeURIComponent(ceFile)).then(function (d) {
+    var el = $('ce-backups'); if (!el) return;
+    el.innerHTML = d.backups.length ? table(['Backup', 'Size', 'Created', ''], d.backups.map(function (b) { return ['<span style="font-size:11px">' + esc(b.name) + '</span>', Math.round(b.sizeBytes / 1024) + ' KB', when(b.createdAt), btn('Restore', 'cerestore', b.name, 'l')]; })) : 'No backups yet for this file.';
+  }).catch(function (e) { var el = $('ce-backups'); if (el) el.textContent = e.message; });
+}
+var codesFile = 'app/index.html', codesDirty = false, codesFrom = 0;
+LOAD.codes = function () {
+  if (needSuper('Codes')) return;
+  codesDirty = false;
+  setList('<div class="card"><b>Codes</b><div class="muted">Load a file’s full source, edit it and save. A backup is taken before every save and the save is rejected if the script has a syntax error.</div>' +
+    '<div class="row" style="margin-top:10px"><div><select id="codes-file">' + fileOptions() + '</select></div>' + btn('Load', 'codesload', '', 'n') + '<div style="flex:1;min-width:180px"><input id="codes-find" placeholder="Find in loaded text"></div>' + btn('Find next', 'codesfind', '', 'l') + btn('Save', 'codessave', '', 'g') + '</div><div class="err" id="codes-err"></div></div>' +
+    '<textarea id="codes-ta" spellcheck="false" style="min-height:62vh;font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre;tab-size:2" placeholder="Choose a file and press Load"></textarea>');
+  $('codes-file').value = codesFile;
+  $('codes-ta').oninput = function () { codesDirty = true; };
+};
+function codesLoad() {
+  codesFile = $('codes-file').value; $('codes-err').textContent = '';
+  fetch('/api/admin/files/content?file=' + encodeURIComponent(codesFile), { headers: { Authorization: 'Bearer ' + tok } })
+    .then(function (r) { if (!r.ok) throw new Error('Could not load (' + r.status + ')'); return r.text(); })
+    .then(function (t) { $('codes-ta').value = t; codesDirty = false; codesFrom = 0; })
+    .catch(function (e) { $('codes-err').textContent = e.message; });
+}
+function codesFind() {
+  var ta = $('codes-ta'), q = $('codes-find').value.toLowerCase(); if (!q) return;
+  var hay = ta.value.toLowerCase(), i = hay.indexOf(q, codesFrom);
+  if (i === -1) i = hay.indexOf(q, 0);
+  if (i === -1) { alert('Not found.'); codesFrom = 0; return; }
+  ta.focus(); ta.setSelectionRange(i, i + q.length);
+  ta.scrollTop = Math.max(0, (ta.value.slice(0, i).split('\n').length - 5) * 16);
+  codesFrom = i + q.length;
+}
+function codesSave(force) {
+  var content = $('codes-ta').value; $('codes-err').textContent = '';
+  if (!content) { $('codes-err').textContent = 'Nothing loaded. Press Load first.'; return; }
+  if (!force && !confirm('Save changes to ' + codesFile + '? A backup is taken first.')) return;
+  fetch('/api/admin/files/save?file=' + encodeURIComponent(codesFile) + (force ? '&confirmDrasticShrink=true' : ''), { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'text/plain' }, body: content })
+    .then(function (r) { return r.json().then(function (d) { return { r: r, d: d }; }); })
+    .then(function (x) {
+      if (x.r.status === 409 && x.d.newSizeBytes !== undefined) { if (confirm('The new content is far smaller than the current file (' + Math.round(x.d.newSizeBytes / 1024) + ' KB vs ' + Math.round(x.d.currentSizeBytes / 1024) + ' KB). Save anyway?')) codesSave(true); return; }
+      if (!x.r.ok) throw new Error(x.d.error || 'Save failed');
+      codesDirty = false; alert('Saved. Backup: ' + x.d.backupName);
+    }).catch(function (e) { $('codes-err').textContent = e.message; });
+}
+var lpFile = 'app-dev/index.html';
+LOAD.livepreview = function () {
+  if (needSuper('Live Preview')) return;
+  setList('<div class="card"><b>Live Preview</b><div class="muted">Shows the real page so you can check a change. Use the -dev files to try an edit before touching the live file.</div>' +
+    '<div class="row" style="margin-top:10px"><div><select id="lp-file">' + fileOptions() + '</select></div><div><select id="lp-jump"><option value="">Jump to screen…</option>' + FEATURE_INDEX.map(function (f) { return '<option value="' + f.screen + '">' + esc(f.label) + '</option>'; }).join('') + '</select></div>' + btn('Go', 'lpjump', '', 'n') + btn('Reload', 'lpreload', '', 'l') + '</div></div>' +
+    '<iframe id="lp-frame" src="/' + lpFile.replace('/index.html', '/') + '" style="width:100%;height:75vh;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe>');
+  $('lp-file').value = lpFile;
+  $('lp-file').onchange = function () { lpFile = $('lp-file').value; $('lp-frame').src = '/' + lpFile.replace('/index.html', '/'); };
+};
+
 /* ---------- Click handling ---------- */
 function done(p, msgId) { return p.then(function () { loadBadges(); refresh(); }).catch(function (err) { var e = msgId && $(msgId); if (e) e.textContent = err.message; else alert(err.message); }); }
+function accountModal() {
+  openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">My account</h3><button class="l" data-act="close">Close</button></div>' +
+    '<label>Name</label><input id="acc-name" value="' + esc(me.name) + '"><div class="err" id="acc-nerr"></div>' + btn('Save name', 'accname', '', 'g') +
+    '<label style="margin-top:20px">Change password</label><div class="pw"><input id="acc-cur" type="password" placeholder="Current password"><button type="button" class="l" data-act="eye" data-id="acc-cur">Show</button></div>' +
+    '<div class="pw" style="margin-top:8px"><input id="acc-new" type="password" placeholder="New password (8+ characters)"><button type="button" class="l" data-act="eye" data-id="acc-new">Show</button></div><div class="err" id="acc-perr"></div>' + btn('Change password', 'accpass', '', 'g'));
+}
 var ACT = {
+  eye: function (id, el) { var i = $(id); i.type = i.type === 'password' ? 'text' : 'password'; el.textContent = i.type === 'password' ? 'Show' : 'Hide'; },
+  account: accountModal,
+  accname: function () { var n = val('acc-name').trim(); if (n.length < 2) { $('acc-nerr').textContent = 'Enter your name.'; return; } api('/users/me', { name: n }, 'PATCH').then(function (d) { me.name = d.user.name; buildNav(); closeModal(); }).catch(function (e) { $('acc-nerr').textContent = e.message; }); },
+  accpass: function () { if (val('acc-new').length < 8) { $('acc-perr').textContent = 'Use at least 8 characters.'; return; } api('/auth/change-password', { currentPassword: val('acc-cur'), newPassword: val('acc-new') }).then(function () { closeModal(); alert('Password changed.'); }).catch(function (e) { $('acc-perr').textContent = e.message; }); },
+  umsg: function (id) { api('/admin/chat-threads/for-user/' + id, {}).then(function (d) { openChat(d.threadId); }).catch(function (e) { alert(e.message); }); },
+  chatopen: openChat,
+  chatsend: function (id) { api('/admin/chat-threads/' + id + '/messages', { body: val('chat-reply') }).then(function () { openChat(id); }).catch(function (e) { $('chat-err').textContent = e.message; }); },
+  reportrun: function () { reportRange = { from: val('rp-from'), to: val('rp-to') }; LOAD.reports(); },
+  reportcsv: function () {
+    var rows = [['Date', 'Bookings', 'Completed', 'Value (NGN)', 'Commission (NGN)', 'Signups']].concat((window._reportDays || []).map(function (r) { return [r.date, r.bookings, r.completed, r.valueKobo / 100, r.commissionKobo / 100, r.signups]; }));
+    var blob = new Blob([rows.map(function (r) { return r.join(','); }).join('\n')], { type: 'text/csv' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fixmi-report.csv'; a.click();
+  },
+  escrowfilter: function (id) { escrowFilter = id; LOAD.escrow(); },
+  paytype: function (id) { payType = id; LOAD.payments(); },
+  paysearch: function () { payQ = val('pq').trim(); LOAD.payments(); },
+  mpfilter: function (id) { mpStatus = id; LOAD.manualpayments(); },
+  mpconfirm: function (id) { if (!confirm('Confirm you received this transfer? The wallet is credited immediately.')) return; done(api('/admin/manual-payments/' + id + '/confirm', {}), 'mpe-' + id); },
+  mpreject: function (id) { if (!val('mpr-' + id).trim()) { $('mpe-' + id).textContent = 'Write the reason first.'; return; } done(api('/admin/manual-payments/' + id + '/reject', { reason: val('mpr-' + id) }), 'mpe-' + id); },
+  bulkemail: function () { var r = val('em-r'); if (!confirm('Send this email to ' + (r ? r.toLowerCase() + 's' : 'everyone with an email') + '?')) return; done(api('/admin/bulk-email', { subject: val('em-s'), body: val('em-b'), roles: r ? [r] : [] }), 'em-e'); },
+  cesearch: ceSearch, cechip: function (i) { $('ce-query').value = FEATURE_INDEX[Number(i)].query; ceSearch(); },
+  cesel: function (i, el) { ceSel = Number(i); document.querySelectorAll('[data-act="cesel"]').forEach(function (x) { x.style.borderLeftColor = x === el ? 'var(--g)' : ''; }); },
+  cereplace: ceReplace,
+  cerestore: function (name) { if (!confirm('Restore ' + ceFile + ' from ' + name + '? The current version is backed up first.')) return; api('/admin/files/restore', { file: ceFile, backupName: name }).then(function () { alert('Restored.'); ceBackups(); }).catch(function (e) { alert(e.message); }); },
+  codesload: codesLoad, codesfind: codesFind, codessave: function () { codesSave(false); },
+  lpjump: function () { var sc = val('lp-jump'); if (!sc) return; try { $('lp-frame').contentWindow.go(sc); } catch (e) { alert('Could not jump: ' + e.message); } },
+  lpreload: function () { var f = $('lp-frame'); if (f) f.src = f.src; },
   signin: signIn, signout: signOut, close: closeModal,
   tab: function (id) { tab(id); },
   user: userDetail, booking: bookingDetail,

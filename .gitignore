@@ -8,3 +8,6 @@ android/
 ios/
 desktop/dist/
 desktop/node_modules/
+
+public/app-dev/
+public/admin-dev/

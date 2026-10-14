@@ -23,6 +23,7 @@ const DEFAULTS = {
   "corporate.plans": { value: CORPORATE_PLANS, category: "pricing", description: "Corporate plans: {key: {label, priceKobo, period, days, callsTotal, maxCategories}}", type: "object" },
   support: { value: { phone: "", email: "", whatsapp: "", hours: "" }, category: "contact", description: "Support contact details shown in the app", type: "object" },
   banner: { value: { enabled: false, text: "", tone: "info" }, category: "home", description: "Notice bar on the home screen: {enabled, text, tone}", type: "object" },
+  "bank.company": { value: { bankName: "", accountNumber: "", accountName: "" }, category: "payments", description: "Company bank account shown to customers who top up their wallet by bank transfer", type: "object" },
   maintenance: { value: { enabled: false, message: "FixMi is being updated. Please try again shortly." }, category: "system", description: "Maintenance mode message", type: "object" },
 };
 

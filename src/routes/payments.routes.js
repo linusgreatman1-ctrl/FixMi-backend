@@ -1,6 +1,7 @@
 const express = require("express");
 const { requireAuth } = require("../middleware/auth");
 const ctrl = require("../controllers/payments.controller");
+const manual = require("../controllers/manualPayments.controller");
 
 const router = express.Router();
 
@@ -12,5 +13,8 @@ router.use(requireAuth);
 router.post("/wallet-deposit", ctrl.initializeWalletDeposit);
 router.post("/wallet-deposit/dev", ctrl.devTopUp);
 router.get("/verify/:reference", ctrl.verifyPayment);
+router.get("/manual/info", manual.info);
+router.get("/manual", manual.listMine);
+router.post("/manual", manual.create);
 
 module.exports = router;

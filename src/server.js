@@ -83,6 +83,10 @@ app.use("/api", globalLimiter);
 app.use("/uploads", express.static(UPLOAD_DIR));
 app.use("/app", express.static(path.join(__dirname, "..", "public", "app")));
 app.use("/admin", express.static(path.join(__dirname, "..", "public", "admin")));
+// Preview copies used by the admin Code Editor and Live Preview.
+require("./controllers/adminFiles.controller").ensureDevCopies();
+app.use("/app-dev", express.static(path.join(__dirname, "..", "public", "app-dev")));
+app.use("/admin-dev", express.static(path.join(__dirname, "..", "public", "admin-dev")));
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: "fixmi-backend" }));
 app.get("/", (req, res) => res.json({ service: "fixmi-backend", status: "ok", app: "/app", health: "/health", api: "/api" }));

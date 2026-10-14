@@ -62,6 +62,7 @@ model User {
   featureBoosts     FeatureBoost[]
   passwordResets    PasswordReset[]
   appReview         AppReview?
+  manualPayments    ManualPaymentRequest[]
 
   @@index([role])
 }
@@ -700,4 +701,31 @@ model BulkMessage {
   createdAt      DateTime @default(now())
 
   @@index([createdAt])
+}
+
+enum ManualPaymentStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+// Wallet top-up by bank transfer to the company account. The user quotes the
+// reference in their transfer, an admin matches it to the bank statement and
+// confirms, which credits the wallet. Works without a payment gateway.
+model ManualPaymentRequest {
+  id              String              @id @default(uuid())
+  userId          String
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountKobo      Int
+  reference       String              @unique
+  senderName      String?
+  note            String?
+  status          ManualPaymentStatus @default(PENDING)
+  processedById   String?
+  processedAt     DateTime?
+  rejectionReason String?
+  createdAt       DateTime            @default(now())
+
+  @@index([userId])
+  @@index([status])
 }
