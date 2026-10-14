@@ -678,6 +678,22 @@ body{background:#fff}
 </div>
 
 
+
+<!-- ████ ADD FUNDS BY BANK TRANSFER ████ -->
+<div class="s" id="bank-transfer">
+  <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Bank Transfer</div><div class="tb-space"></div></div>
+  <div style="padding:18px">
+    <div id="bt-account" class="card" style="margin-bottom:14px"></div>
+    <div class="info blue" style="margin-bottom:14px"><span>ℹ️</span><span>Transfer the amount, then tell us below. Once we confirm it, the money appears in your wallet.</span></div>
+    <div class="fg"><label class="label" for="bt-amount">Amount you sent (₦)</label><input class="input" id="bt-amount" type="number" inputmode="numeric" min="1000" placeholder="e.g. 5000"></div>
+    <div class="fg"><label class="label" for="bt-sender">Name on the sending account</label><input class="input" id="bt-sender" placeholder="Optional"></div>
+    <button class="btn btn-g" onclick="submitBankTransfer(this)">I’ve sent the money</button>
+    <div id="bt-ref-note" class="job-hint" style="margin-top:12px"></div>
+    <div class="sec-title" style="margin:20px 0 10px">Your transfers</div>
+    <div id="bt-list"></div>
+  </div>
+</div>
+
 <!-- ████ FORGOT PASSWORD ████ -->
 <div class="s" id="forgot-password">
   <div class="topbar"><button class="back" onclick="go('login-screen')" aria-label="Back">←</button><div class="tb-title">Forgot Password</div><div class="tb-space"></div></div>
@@ -808,8 +824,8 @@ body{background:#fff}
   <div class="hero-band">
     <div class="greeting" id="home-greeting">Hello,</div>
     <div class="hero-name" id="home-user-name"></div>
+    <div class="loc" style="margin:2px 0 12px"><button type="button" class="loc-btn" onclick="go('edit-profile')" aria-label="Change your location">📍 <b id="home-location">Add your location</b></button> &nbsp;·&nbsp; <span id="home-online-count">–</span> <span id="home-online-lbl">artisans online now</span></div>
     <label class="search-bar" for="home-search"><span>🔍</span><input id="home-search" type="search" autocomplete="off" placeholder="Search for a service or artisan..." oninput="homeSearch(this.value)"></label>
-    <div class="loc"><button type="button" class="loc-btn" onclick="go('edit-profile')" aria-label="Change your location">📍 <b id="home-location">Add your location</b></button> &nbsp;·&nbsp; <span id="home-online-count">–</span> <span id="home-online-lbl">artisans online now</span></div>
   </div>
 
   <div class="strip">
@@ -1596,12 +1612,38 @@ body{background:#fff}
       <div class="prof-ava" id="user-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div>
       <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-size:12px">📷</div>
     </div>
-    <div class="prof-name" id="cust-prof-name">Chukwuemeka Obi</div>
+    <div class="prof-name" id="cust-prof-name"></div>
+    <div class="prof-email" id="cust-prof-address" style="color:rgba(255,255,255,.75)"></div>
     <div class="prof-email" id="cust-prof-contact"></div>
     <div class="prof-stats">
       <div class="ps"><div class="ps-n" id="cust-stat-jobs">12</div><div class="ps-l">Jobs Booked</div></div>
       <div class="ps"><div class="ps-n" id="cust-stat-spent">₦52K</div><div class="ps-l">Total Spent</div></div>
       <div class="ps"><div class="ps-n" id="cust-stat-rating">4.9★</div><div class="ps-l">Avg Rating</div></div>
+      <div class="ps" onclick="document.getElementById('prof-wallet-card').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="ps-n" id="pw-escrow-chip" style="color:#F5A623">₦0</div><div class="ps-l">Escrow 🔒</div></div>
+    </div>
+  </div>
+  <div id="prof-wallet-card" style="margin:16px 16px 0;background:linear-gradient(135deg,#0B1A2E,#12304F);border-radius:20px;padding:18px;color:#fff">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div>
+        <div style="font-size:11px;color:rgba(0,198,94,.85);font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px">FixMi Wallet</div>
+        <div id="pw-balance" style="font-family:'AppFont',sans-serif;font-size:32px;font-weight:800;margin-bottom:2px">₦0</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.55)">Available to pay for jobs</div>
+      </div>
+      <div style="background:rgba(0,198,94,.15);border:1.5px solid rgba(0,198,94,.35);border-radius:12px;padding:8px 12px;text-align:center"><div style="font-size:20px">🔒</div><div style="font-size:10px;color:#00C65E;font-weight:700;margin-top:2px">SECURED</div></div>
+    </div>
+    <div style="background:rgba(0,0,0,.25);border-radius:12px;padding:12px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:#00C65E;margin-bottom:6px">🛠️ Jobs paid through escrow</div>
+      <div id="pw-orders" style="color:#fff"><div style="font-size:12px;color:rgba(255,255,255,.5);text-align:center;padding:8px 0">Loading…</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="flex:1;background:rgba(0,198,94,.1);border:1px solid rgba(0,198,94,.2);border-radius:10px;padding:10px;text-align:center"><div id="pw-held" style="font-size:16px;font-weight:900;color:#00C65E">₦0</div><div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:2px">In Escrow</div></div>
+      <div style="flex:1;background:rgba(59,159,232,.1);border:1px solid rgba(59,159,232,.2);border-radius:10px;padding:10px;text-align:center"><div id="pw-released" style="font-size:16px;font-weight:900;color:#3B9FE8">₦0</div><div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:2px">Released</div></div>
+      <div style="flex:1;background:rgba(232,57,46,.1);border:1px solid rgba(232,57,46,.2);border-radius:10px;padding:10px;text-align:center"><div id="pw-disputed" style="font-size:16px;font-weight:900;color:#F87171">₦0</div><div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:2px">Disputed</div></div>
+    </div>
+    <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:11px 13px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:#00C65E;margin-bottom:6px">🔒 How your escrow works</div><div style="font-size:12px;color:rgba(255,255,255,.65);line-height:1.6">When you book, your budget moves into escrow and the artisan can’t touch it. It is released when you confirm the job, or automatically <span data-releasetext>shortly after</span> the artisan marks it done. If something is wrong, report it and we hold the money until it’s sorted. FixMi keeps <span data-commission>10%</span>.</div></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="openWallet()" style="flex:1;background:rgba(0,198,94,.18);border:1.5px solid rgba(0,198,94,.4);border-radius:12px;padding:11px;font-weight:700;font-size:13px;color:#00C65E;cursor:pointer;font-family:inherit">+ Add Funds</button>
+      <button onclick="openWithdraw()" style="flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:11px;font-weight:700;font-size:13px;color:#fff;cursor:pointer;font-family:inherit">Withdraw</button>
     </div>
   </div>
   <div class="menu">
@@ -3182,6 +3224,7 @@ body{background:#fff}
     </div>
     <div class="fg"><label class="label" for="topup-amount">Amount (₦)</label><input class="input" id="topup-amount" type="number" min="100" step="100" inputmode="numeric" placeholder="e.g. 10000"></div>
     <button class="btn btn-g" onclick="topUpWallet()">Top Up Wallet</button>
+    <button class="btn" style="margin-top:10px;background:var(--gray);color:var(--navy)" onclick="openBankTransfer()">🏦 Add funds by bank transfer</button>
     <div class="sec-title" style="margin:22px 0 10px">Transactions</div>
     <div id="wallet-tx"></div>
   </div>
@@ -4989,6 +5032,7 @@ function applyAccountMode(user) {
   var contact = [user.email, user.phone].filter(Boolean).join(' · ');
   setText('cust-prof-name', user.name);
   setText('cust-prof-contact', contact);
+  setText('cust-prof-address', userLocationText(user) ? '📍 ' + userLocationText(user) : '');
   setText('art-prof-name', user.name);
   setText('art-prof-contact', contact);
   setValue('ep-name', user.name);
@@ -5651,6 +5695,7 @@ function takeHomeKobo(kobo) { return Math.round((kobo || 0) * (100 - APP_CFG.com
 function applyCommissionText() {
   document.querySelectorAll('[data-commission]').forEach(function (el) { el.textContent = APP_CFG.commissionPercent + '%'; });
   document.querySelectorAll('[data-takehome]').forEach(function (el) { el.textContent = (100 - APP_CFG.commissionPercent) + '%'; });
+  document.querySelectorAll('[data-releasetext]').forEach(function (el) { el.textContent = 'within ' + releaseWindowText(); });
 }
 
 // Mins:secs left before the escrow releases on its own.
@@ -6966,7 +7011,7 @@ async function saveBankAccount(btn) {
   } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
 }
 
-var WD_STATUS = { PENDING: '⏳ Pending', PROCESSING: '⏳ Processing', SUCCESS: '✓ Paid', COMPLETED: '✓ Paid', FAILED: '✕ Failed', REVERSED: '↩ Reversed' };
+var WD_STATUS = { PENDING: '⏳ Pending', PAID: '✓ Paid', PROCESSING: '⏳ Processing', SUCCESS: '✓ Paid', COMPLETED: '✓ Paid', FAILED: '✕ Failed', REVERSED: '↩ Reversed' };
 async function openWithdraw() {
   go('artisan-withdraw');
   var u = window.currentUser || {};
@@ -7079,6 +7124,7 @@ async function confirmPromoPayment() {
 
 /* ---------------- Boot ---------------- */
 (function boot() {
+  addPasswordEyes();
   loadAppConfig();
   // Resume a stored session only if the server still accepts it, so an
   // expired or revoked login lands on the splash screen instead of a
@@ -7104,6 +7150,7 @@ async function confirmPromoPayment() {
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
     if (id === 'corp-plan') renderCorpChips();
     if (id === 'artisan-settings') loadSettings();
+    if (id === 'profile') loadProfileWallet();
     if (id === 'artisan-promote') loadPromoStatus();
     if (id === 'edit-profile') fillProfileForms();
     if (id === 'artisan-dash') setWdPeriod(_wdPeriod);
@@ -7400,6 +7447,92 @@ async function submitAppReview(btn) {
   btn.disabled = true;
   try { await apiFetch('/app-reviews', { method: 'POST', body: { stars: _rateStars, comment: document.getElementById('ra-comment').value } }); toast('✅ Thank you for rating FixMi'); goBack(); }
   catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+/* ---------------- Password eye on every password field ---------------- */
+function addPasswordEyes() {
+  document.querySelectorAll('input[type="password"]').forEach(function (inp) {
+    if (inp.dataset.eye) return;
+    inp.dataset.eye = '1';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:relative;display:block;width:100%';
+    inp.parentNode.insertBefore(wrap, inp);
+    wrap.appendChild(inp);
+    inp.style.paddingRight = '46px';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Show password');
+    b.textContent = '👁';
+    b.style.cssText = 'position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;padding:8px;opacity:.6;line-height:1';
+    b.onclick = function () {
+      var show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      b.textContent = show ? '🙈' : '👁';
+      b.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* ---------------- Profile wallet card (like Handa's customer dashboard) ---------------- */
+async function loadProfileWallet() {
+  if (!getAccess() || isArtisanUser()) return;
+  var card = document.getElementById('prof-wallet-card');
+  if (!card) return;
+  try {
+    var s = await apiFetch('/wallet/summary');
+    setText('pw-balance', fmtNaira(s.balanceKobo));
+    setText('pw-held', fmtNaira(s.inEscrowKobo));
+    setText('pw-released', fmtNaira(s.releasedKobo));
+    setText('pw-disputed', fmtNaira(s.disputedKobo));
+    setText('pw-escrow-chip', fmtNaira(s.inEscrowKobo));
+    setHTML('pw-orders', s.activeOrders.length ? s.activeOrders.map(function (o) {
+      return '<div onclick="openBookingDetail(' + attrJson(o.bookingId) + ')" style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px"><span><b>' +
+        escapeHtml(o.category) + '</b><br><span style="color:var(--muted);font-size:12px">' + (o.artisanName ? escapeHtml(o.artisanName) + ' · ' : '') + (o.disputed ? 'Frozen, under review' : 'Held safely') + '</span></span><b>' + fmtNaira(o.amountKobo) + '</b></div>';
+    }).join('') : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No money is in escrow right now.</div>');
+  } catch (e) { /* the card keeps its placeholders */ }
+}
+
+/* ---------------- Add funds by bank transfer ---------------- */
+async function openBankTransfer() {
+  if (!requireLogin()) return;
+  go('bank-transfer');
+  setText('bt-ref-note', '');
+  try {
+    var info = await apiFetch('/payments/manual/info');
+    var b = info.bank || {};
+    window._btMin = info.minKobo;
+    setHTML('bt-account', b.accountNumber
+      ? '<div style="font-size:12px;color:var(--muted)">Pay into this account</div><div style="font-weight:800;font-size:15px;color:var(--navy);margin-top:4px">' + escapeHtml(b.bankName || '') + '</div>' +
+        '<div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:26px;letter-spacing:1px;color:var(--navy);margin:2px 0">' + escapeHtml(b.accountNumber) + '</div><div style="font-size:13px;color:var(--muted)">' + escapeHtml(b.accountName || '') + '</div>' +
+        '<button class="btn" style="margin-top:10px;padding:10px;font-size:13px;background:var(--gray);color:var(--navy)" onclick="copyText(' + attrJson(b.accountNumber) + ')">Copy account number</button>'
+      : '<div class="empty-note">Bank transfer isn’t set up yet. Please try again later or contact support.</div>');
+  } catch (e) { toast('❌ ' + e.message); }
+  loadMyTransfers();
+}
+function copyText(t) {
+  try { navigator.clipboard.writeText(String(t)); toast('Copied'); } catch (e) { toast(String(t)); }
+}
+var BT_STATUS = { PENDING: '⏳ Waiting for confirmation', CONFIRMED: '✓ Added to your wallet', REJECTED: '✕ Not confirmed' };
+async function loadMyTransfers() {
+  try {
+    var l = (await apiFetch('/payments/manual')).payments || [];
+    setHTML('bt-list', l.length ? l.map(function (p) {
+      return '<div class="tx-row"><div style="min-width:0"><div class="tx-title">' + fmtNaira(p.amountKobo) + ' · ' + escapeHtml(p.reference) + '</div><div class="tx-time">' + (BT_STATUS[p.status] || p.status) + (p.rejectionReason ? ' · ' + escapeHtml(p.rejectionReason) : '') + ' · ' + new Date(p.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' }) + '</div></div></div>';
+    }).join('') : '<div class="empty-note">No transfers yet.</div>');
+  } catch (e) {}
+}
+async function submitBankTransfer(btn) {
+  var kobo = priceInput('bt-amount');
+  if (!kobo || kobo < (window._btMin || 100000)) { toast('The minimum bank transfer is ₦1,000'); return; }
+  btn.disabled = true;
+  try {
+    var d = await apiFetch('/payments/manual', { method: 'POST', body: { amountKobo: kobo, senderName: document.getElementById('bt-sender').value } });
+    setText('bt-ref-note', 'Put ' + d.payment.reference + ' in your transfer narration. Your wallet is credited as soon as we confirm the payment.');
+    document.getElementById('bt-amount').value = '';
+    toast('✅ Request sent. We’ll confirm your transfer shortly.');
+    loadMyTransfers();
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
 }
 </script>
 </body>

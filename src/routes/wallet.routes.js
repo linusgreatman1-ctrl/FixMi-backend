@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(requireAuth);
 router.get("/", ctrl.getWallet);
+router.get("/summary", ctrl.summary);
 router.get("/transactions", ctrl.listTransactions);
 router.post("/withdraw", ctrl.withdraw);
 router.get("/withdrawals", ctrl.listWithdrawals);

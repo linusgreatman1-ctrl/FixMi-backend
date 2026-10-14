@@ -11,6 +11,34 @@ async function getWallet(req, res, next) {
   }
 }
 
+// The profile "Wallet" card: balance, what is held in escrow for jobs you paid
+// for, what has been released, what is frozen in a dispute, and the live orders.
+async function summary(req, res, next) {
+  try {
+    const w = await wallet.getOrCreateWallet(req.user.id);
+    const holds = await prisma.escrowHold.findMany({
+      where: { payerId: req.user.id },
+      select: { amountKobo: true, status: true, bookingId: true, booking: { select: { id: true, category: true, status: true, artisan: { select: { user: { select: { name: true } } } } } } },
+    });
+    const total = (status) => holds.filter((h) => h.status === status).reduce((n, h) => n + h.amountKobo, 0);
+    const active = {};
+    for (const h of holds.filter((x) => x.status === "HELD" || x.status === "DISPUTED")) {
+      const a = (active[h.bookingId] = active[h.bookingId] || { bookingId: h.bookingId, category: h.booking.category, status: h.booking.status, artisanName: h.booking.artisan?.user?.name || null, amountKobo: 0, disputed: false });
+      a.amountKobo += h.amountKobo;
+      if (h.status === "DISPUTED") a.disputed = true;
+    }
+    res.json({
+      balanceKobo: w.balanceKobo,
+      inEscrowKobo: total("HELD"),
+      releasedKobo: total("RELEASED"),
+      disputedKobo: total("DISPUTED"),
+      activeOrders: Object.values(active),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function listTransactions(req, res, next) {
   try {
     const w = await wallet.getOrCreateWallet(req.user.id);
@@ -58,4 +86,5 @@ async function listWithdrawals(req, res, next) {
   }
 }
 
-module.exports = { getWallet, listTransactions, withdraw, listWithdrawals };
+module.exports = {
+  summary, getWallet, listTransactions, withdraw, listWithdrawals };
