@@ -694,6 +694,38 @@ body{background:#fff}
   </div>
 </div>
 
+
+<!-- ████ ESCROW PAYMENT (choose how to pay) ████ -->
+<div id="escrow-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(11,26,46,.55);align-items:flex-end;justify-content:center" onclick="if(event.target===this)cancelEscrowModal()">
+  <div style="background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:20px 18px 22px;max-height:92vh;overflow:auto;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div id="em-title" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:17px;color:var(--navy)">🔒 Pay into Escrow</div><button type="button" onclick="cancelEscrowModal()" aria-label="Close" style="background:var(--gray);border:none;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer">✕</button></div>
+    <div style="background:var(--gray);border-radius:14px;padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--muted)">Amount to pay</div>
+      <div id="em-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:28px;color:var(--navy)">₦0</div>
+      <div id="em-sub" style="font-size:12px;color:var(--muted);margin-bottom:6px"></div>
+      <div id="em-breakdown"></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Pay with</div>
+    <div id="em-methods"></div>
+    <div id="em-wallet-line" style="font-size:12px;color:#DC2626;margin-bottom:10px"></div>
+    <button type="button" id="em-confirm" class="btn btn-g" disabled style="opacity:.45" onclick="confirmEscrowModal()">🔒 Confirm Payment</button>
+  </div>
+</div>
+
+<!-- ████ BANK TRANSFER PAYMENT ████ -->
+<div class="s" id="pay-transfer">
+  <div class="topbar"><button class="back" onclick="go('home')" aria-label="Back">←</button><div class="tb-title">Pay by Bank Transfer</div><div class="tb-space"></div></div>
+  <div style="padding:18px">
+    <div style="text-align:center;margin-bottom:14px"><div style="font-size:12px;color:var(--muted)">Amount</div><div id="xf-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:32px;color:var(--navy)">₦0</div></div>
+    <div id="xf-account" class="card" style="margin-bottom:12px"></div>
+    <div class="card" style="margin-bottom:12px"><div style="font-size:12px;color:var(--muted)">Put this reference in your transfer narration</div><div style="display:flex;justify-content:space-between;align-items:center"><b id="xf-ref" style="font-size:18px;letter-spacing:.5px"></b><button class="btn" style="width:auto;padding:8px 14px;font-size:13px;background:var(--gray);color:var(--navy)" onclick="copyText(document.getElementById('xf-ref').textContent)">Copy</button></div></div>
+    <div class="info blue" style="margin-bottom:14px"><span>🔒</span><span>Your money is held in FixMi escrow once we confirm the transfer. Nothing is released to the artisan until you confirm the job.</span></div>
+    <div id="xf-status" class="job-hint" style="margin-bottom:12px;text-align:center"></div>
+    <button class="btn btn-g" onclick="iMadeTheTransfer(this)">I’ve made the transfer</button>
+    <button id="xf-cancel" class="btn" style="margin-top:10px;background:#FEE2E2;color:#DC2626" onclick="cancelTransferBooking(this)">Cancel this request</button>
+  </div>
+</div>
+
 <!-- ████ FORGOT PASSWORD ████ -->
 <div class="s" id="forgot-password">
   <div class="topbar"><button class="back" onclick="go('login-screen')" aria-label="Back">←</button><div class="tb-title">Forgot Password</div><div class="tb-space"></div></div>
@@ -5377,14 +5409,29 @@ async function startFindingOrDirect() {
   if (when && !/soon/i.test(when)) issue = issue.trim() + ' (Needed: ' + when + ')';
   var body = { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: budgetKobo };
   if (directArtisan && directArtisan.id) body.artisanId = directArtisan.id;
+  var direct = directArtisan;
+  // Pay into escrow first (like Handa); artisans only see the request once the money is held.
+  openEscrowModal({
+    total: budgetKobo, title: '🔒 Pay into Escrow', sub: 'Held safely until the job is done. Then you search for an artisan.',
+    rows: [['Your budget, held in escrow', budgetKobo], ['FixMi keeps ' + (APP_CFG.commissionPercent || 10) + '% of the final price, paid by the artisan. You pay nothing extra.', null]],
+    onConfirm: function (method) { sendBooking(body, method, direct); }
+  });
+}
+async function sendBooking(body, method, direct) {
   var btn = document.getElementById('req-find-btn');
   var label = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   try {
+    body.paymentMethod = method;
     var data = await apiFetch('/bookings', { method: 'POST', body: body });
     document.getElementById('issue-text').value = '';
+    if (data.payment) {
+      _booking = data.booking; window._activeBookingId = data.booking.id; updateActiveBanner();
+      continuePayment(data.payment, { purpose: 'BOOKING_PAYMENT', bookingId: data.booking.id });
+      return;
+    }
     showCustomerBooking(data.booking);
-    if (body.artisanId) toast('📨 Request sent to ' + firstName(directArtisan.name));
+    if (body.artisanId && direct) toast('📨 Request sent to ' + firstName(direct.name));
     else if (!data.notified) toast('No ' + body.category + ' is online right now — your request stays open.');
     else toast('📨 Sent to ' + data.notified + ' ' + body.category + (data.notified > 1 ? 's' : '') + ' near you');
   } catch (e) {
@@ -5571,7 +5618,12 @@ function stepsHtml(b) {
 function renderCustJob(b) {
   var a = b.artisan, u = a && a.user, fn = firstName(u && u.name), look = categoryLook(b.category);
   var tag, title, panel = '', cancel = false;
-  if (b.status === 'CANCELLED') {
+  if (b.status === 'PENDING_PAYMENT') {
+    cancel = true;
+    tag = 'Awaiting payment'; title = 'Pay to send your request';
+    panel = '<div class="job-panel orange">Your ' + fmtNaira(b.priceKobo) + ' budget goes into escrow once it is paid. Artisans see your request the moment the payment is confirmed. Nothing has been charged yet.</div>' +
+      '<button class="btn btn-g" style="margin-top:10px" onclick="payPendingBooking()">💳 Pay now</button>';
+  } else if (b.status === 'CANCELLED') {
     tag = 'Cancelled'; title = 'This booking was cancelled';
     panel = '<div class="job-panel grey">Any escrow for it has been returned to your wallet.</div><button class="btn btn-g" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
   } else if (b.status === 'IN_PROGRESS') {
@@ -6615,13 +6667,16 @@ async function topUpWallet() {
     openWallet();
   } catch (e) {
     if (e.status !== 403) { toast('❌ ' + e.message); return; }
-    // Real payments: hand over to Paystack checkout.
-    try {
-      var d = await apiFetch('/payments/wallet-deposit', { method: 'POST', body: { amountKobo: kobo } });
-      window.location.href = d.authorizationUrl;
-    } catch (err) {
-      toast('❌ ' + err.message);
-    }
+    // Real payments: choose card, USSD or bank transfer.
+    openEscrowModal({
+      total: kobo, title: '💰 Add funds', sub: 'The money goes into your wallet.', rows: [], allow: ['CARD', 'USSD', 'BANK_TRANSFER'],
+      onConfirm: async function (method) {
+        try {
+          var d = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'WALLET_DEPOSIT', method: method, amountKobo: kobo } });
+          continuePayment(d, { purpose: 'WALLET_DEPOSIT' });
+        } catch (err) { toast('❌ ' + err.message); }
+      }
+    });
   }
 }
 
@@ -6629,7 +6684,7 @@ async function topUpWallet() {
 var HISTORY_FILTER = {
   all: null,
   completed: ['CONFIRMED'],
-  pending: ['REQUESTED', 'ACCEPTED', 'PAID', 'IN_PROGRESS', 'COMPLETED'],
+  pending: ['PENDING_PAYMENT', 'REQUESTED', 'ACCEPTED', 'PAID', 'IN_PROGRESS', 'COMPLETED'],
   cancelled: ['CANCELLED', 'DECLINED']
 };
 function filterHistory(btn, screenId, key) {
@@ -6645,7 +6700,7 @@ function filterHistory(btn, screenId, key) {
   screen.querySelectorAll('.hist-empty').forEach(function (e) { e.hidden = shown > 0; });
 }
 var CUSTOMER_STATUS = {
-  REQUESTED: '⏳ Waiting for artisans', ACCEPTED: '✓ Artisan booked', PAID: '✓ Artisan booked', IN_PROGRESS: '🔧 In progress',
+  PENDING_PAYMENT: '💳 Awaiting payment', REQUESTED: '⏳ Waiting for artisans', ACCEPTED: '✓ Artisan booked', PAID: '✓ Artisan booked', IN_PROGRESS: '🔧 In progress',
   COMPLETED: '💳 Payment pending', CONFIRMED: '✓ Completed', CANCELLED: '✕ Booking cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Disputed'
 };
 var ARTISAN_STATUS = {
@@ -6655,7 +6710,7 @@ var ARTISAN_STATUS = {
 function statusColors(s) {
   if (s === 'CONFIRMED') return ['var(--g3)', 'var(--g2)'];
   if (s === 'CANCELLED' || s === 'DECLINED') return ['var(--gray)', 'var(--muted)'];
-  if (s === 'COMPLETED' || s === 'REQUESTED') return ['#FFF3ED', 'var(--orange)'];
+  if (s === 'COMPLETED' || s === 'REQUESTED' || s === 'PENDING_PAYMENT') return ['#FFF3ED', 'var(--orange)'];
   return ['#EFF6FF', '#1E40AF'];
 }
 var _historyCache = {};
@@ -6706,7 +6761,7 @@ async function openBookingDetail(id) {
     ['Requested', new Date(b.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })],
     ['Budget', fmtNaira(b.priceKobo)],
     ['Agreed price', b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'Price on Hold' : '—')],
-    ['Payment', { CONFIRMED: asArtisan ? fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' paid to you (after ' + APP_CFG.commissionPercent + '% fee)' : 'Released to artisan', COMPLETED: asArtisan ? 'Waiting for the customer to confirm' : 'Pending your confirmation', CANCELLED: 'Escrow refunded', DISPUTED: 'Held in escrow — under review' }[b.status] || (b.escrowKobo ? fmtNaira(b.escrowKobo) + ' held in escrow' : '—')]
+    ['Payment', { PENDING_PAYMENT: 'Payment pending (not charged yet)', CONFIRMED: asArtisan ? fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' paid to you (after ' + APP_CFG.commissionPercent + '% fee)' : 'Released to artisan', COMPLETED: asArtisan ? 'Waiting for the customer to confirm' : 'Pending your confirmation', CANCELLED: 'Escrow refunded', DISPUTED: 'Held in escrow — under review' }[b.status] || (b.escrowKobo ? fmtNaira(b.escrowKobo) + ' held in escrow' : '—')]
   ];
   if (b.cancelReason) rows.push(['Reason', escapeHtml(b.cancelReason)]);
   var actions = '';
@@ -7114,19 +7169,26 @@ async function confirmPromoPayment() {
   var pkg = (document.getElementById('promo-pkg') || {}).textContent || '';
   var plan = PROMO_PLAN_KEYS[pkg];
   if (!plan) { toast('Choose a promotion package first'); go('artisan-promote'); return; }
-  try {
-    var data = await apiFetch('/users/me/promote', { method: 'POST', body: { plan: plan } });
-    var until = new Date(data.artisanProfile.featuredUntil).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
-    toast('✅ ' + data.plan + ' active — you’re featured until ' + until);
-    setTimeout(function () { go('artisan-dash'); loadArtisanDash(); }, 1800);
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
+  var def = ((APP_CFG && APP_CFG.promotionPlans) || {})[plan] || {};
+  openEscrowModal({
+    total: def.priceKobo || 0, title: '🚀 Pay for ' + pkg, sub: 'Your page is featured on the customer home page for ' + (def.days || '') + ' days.',
+    rows: [[pkg, def.priceKobo || 0]],
+    onConfirm: async function (method) {
+      try {
+        var data = await apiFetch('/users/me/promote', { method: 'POST', body: { plan: plan, paymentMethod: method } });
+        if (data.payment) { continuePayment(data.payment, { purpose: 'FEATURE_BOOST_PAYMENT', plan: plan }); return; }
+        var until = new Date(data.artisanProfile.featuredUntil).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
+        toast('✅ ' + data.plan + ' active — you’re featured until ' + until);
+        setTimeout(function () { go('artisan-dash'); loadArtisanDash(); }, 1800);
+      } catch (e) { toast('❌ ' + e.message); }
+    }
+  });
 }
 
 /* ---------------- Boot ---------------- */
 (function boot() {
   addPasswordEyes();
+  setTimeout(handlePayReturn, 900);
   loadAppConfig();
   // Resume a stored session only if the server still accepts it, so an
   // expired or revoked login lands on the splash screen instead of a
@@ -7535,6 +7597,187 @@ async function submitBankTransfer(btn) {
     toast('✅ Request sent. We’ll confirm your transfer shortly.');
     loadMyTransfers();
   } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+/* ---------------- Escrow payment (like Handa): choose how to pay ---------------- */
+var _em = null;
+var PAY_LABELS = {
+  WALLET: ['💰', 'Wallet balance'],
+  CARD: ['💳', 'Card'],
+  USSD: ['📲', 'USSD'],
+  BANK_TRANSFER: ['🏦', 'Bank transfer']
+};
+function emBreakdownHtml(rows) {
+  return (rows || []).map(function (r) {
+    if (r[1] == null) return '<div style="padding:6px 0 0;font-size:12px;color:var(--muted);font-style:italic">' + escapeHtml(r[0]) + '</div>';
+    return '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">' + escapeHtml(r[0]) + '</span><b>' + fmtNaira(r[1]) + '</b></div>';
+  }).join('');
+}
+async function openEscrowModal(opts) {
+  _em = { total: opts.total, title: opts.title, rows: opts.rows, onConfirm: opts.onConfirm, onCancel: opts.onCancel || null, method: null, allow: opts.allow || null };
+  setText('em-title', opts.title || '🔒 Pay into Escrow');
+  setText('em-amount', fmtNaira(opts.total));
+  setText('em-sub', opts.sub || 'Held safely until the job is done.');
+  setHTML('em-breakdown', emBreakdownHtml(opts.rows));
+  setHTML('em-methods', '<div class="empty-note">Loading payment options…</div>');
+  setText('em-wallet-line', '');
+  var cb = document.getElementById('em-confirm'); cb.disabled = true; cb.style.opacity = '.45';
+  document.getElementById('escrow-modal').style.display = 'flex';
+  try {
+    var m = await apiFetch('/payments/methods');
+    _em.m = m;
+    var short = m.balanceKobo < opts.total && !m.devBypass;
+    var list = ['WALLET', 'CARD', 'USSD', 'BANK_TRANSFER'].filter(function (k) {
+      if (_em.allow && _em.allow.indexOf(k) === -1) return false;
+      return k === 'WALLET' || (k === 'CARD' && m.card) || (k === 'USSD' && m.ussd) || (k === 'BANK_TRANSFER' && m.bankTransfer);
+    });
+    setHTML('em-methods', list.map(function (k) {
+      var dis = k === 'WALLET' && short;
+      var sub = k === 'WALLET' ? ('Balance ' + fmtNaira(m.balanceKobo) + (short ? ' · not enough' : ' · pay instantly')) : k === 'CARD' ? 'Pay securely online' : k === 'USSD' ? 'Pay with your bank’s USSD code' : 'Send to our account, then we confirm';
+      return '<button type="button" data-method="' + k + '"' + (dis ? ' disabled' : '') + ' onclick="selectEscrowMethod(this)" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;margin-bottom:9px;border-radius:13px;border:1.5px solid var(--border);background:#fff;cursor:' + (dis ? 'not-allowed' : 'pointer') + ';opacity:' + (dis ? '.5' : '1') + ';font-family:inherit"><span style="font-size:22px">' + PAY_LABELS[k][0] + '</span><span><b style="font-size:14px;color:var(--navy)">' + PAY_LABELS[k][1] + '</b><br><small style="color:var(--muted)">' + sub + '</small></span></button>';
+    }).join(''));
+    if (short) {
+      setText('em-wallet-line', 'Your wallet balance is ' + fmtNaira(m.balanceKobo) + ', which is not enough for this. Pick another method' + (m.card || m.bankTransfer ? '' : ' or add funds to your wallet first') + '.');
+      if (!m.card && !m.bankTransfer) setHTML('em-methods', document.getElementById('em-methods').innerHTML + '<button class="btn btn-g" onclick="cancelEscrowModal();openWallet()">+ Add funds to wallet</button>');
+    }
+  } catch (e) {
+    setHTML('em-methods', '<div class="empty-note">' + escapeHtml(e.message) + '</div>');
+  }
+}
+function selectEscrowMethod(btn) {
+  _em.method = btn.getAttribute('data-method');
+  document.querySelectorAll('#em-methods button[data-method]').forEach(function (b) {
+    var on = b === btn;
+    b.style.borderColor = on ? 'var(--g)' : 'var(--border)';
+    b.style.background = on ? 'var(--g3)' : '#fff';
+  });
+  var cb = document.getElementById('em-confirm'); cb.disabled = false; cb.style.opacity = '1';
+}
+function cancelEscrowModal() {
+  document.getElementById('escrow-modal').style.display = 'none';
+  var fn = _em && _em.onCancel; _em = null;
+  if (fn) fn();
+}
+function confirmEscrowModal() {
+  if (!_em || !_em.method) return;
+  var method = _em.method, fn = _em.onConfirm;
+  document.getElementById('escrow-modal').style.display = 'none';
+  _em = null;
+  fn(method);
+}
+
+/* What happens after a card/USSD link or a bank-transfer request is created. */
+function continuePayment(payment, ctx) {
+  if (payment && payment.authorizationUrl) {
+    try { sessionStorage.setItem('fixmi_pay_ctx', JSON.stringify(Object.assign({ ref: payment.reference }, ctx))); } catch (e) {}
+    toast('Opening secure payment…');
+    window.location.href = payment.authorizationUrl;
+    return;
+  }
+  if (payment && payment.manual) { showTransferScreen(payment, ctx); return; }
+  toast('❌ Could not start the payment');
+}
+
+/* Bank transfer for a booking, boost or top-up: show the account, reference and wait for confirmation. */
+var _xfer = null, _xferTimer = null;
+function showTransferScreen(p, ctx) {
+  _xfer = { id: p.requestId, ctx: ctx || {}, amountKobo: p.amountKobo };
+  var b = p.bank || {};
+  setText('xf-amount', fmtNaira(p.amountKobo));
+  setText('xf-ref', p.reference);
+  setHTML('xf-account', '<div style="font-size:12px;color:var(--muted)">Send exactly this amount to</div><div style="font-weight:800;font-size:15px;color:var(--navy);margin-top:4px">' + escapeHtml(b.bankName || '') + '</div>' +
+    '<div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:26px;letter-spacing:1px;color:var(--navy);margin:2px 0">' + escapeHtml(b.accountNumber || '') + '</div><div style="font-size:13px;color:var(--muted)">' + escapeHtml(b.accountName || '') + '</div>' +
+    '<button class="btn" style="margin-top:10px;padding:10px;font-size:13px;background:var(--gray);color:var(--navy)" onclick="copyText(' + attrJson(b.accountNumber || '') + ')">Copy account number</button>');
+  setText('xf-status', '⏳ Waiting for your transfer');
+  document.getElementById('xf-cancel').style.display = ctx && ctx.purpose === 'BOOKING_PAYMENT' ? 'block' : 'none';
+  go('pay-transfer');
+  clearInterval(_xferTimer);
+  _xferTimer = setInterval(pollTransfer, 6000);
+}
+async function pollTransfer() {
+  if (!_xfer) return clearInterval(_xferTimer);
+  try {
+    var r = (await apiFetch('/payments/manual/' + _xfer.id)).request;
+    if (r.status === 'PENDING') return;
+    clearInterval(_xferTimer);
+    var ctx = _xfer.ctx; _xfer = null;
+    if (r.status === 'REJECTED') { toast('❌ Transfer not confirmed' + (r.rejectionReason ? ': ' + r.rejectionReason : '')); go('home'); return; }
+    finishPayment(ctx);
+  } catch (e) {}
+}
+async function iMadeTheTransfer(btn) {
+  if (!_xfer) return;
+  btn.disabled = true;
+  try {
+    // While DEV_BYPASS_PAYMENTS is on (testing) the payer can confirm their own transfer; in production an admin confirms it.
+    await apiFetch('/payments/manual/' + _xfer.id + '/dev-confirm', { method: 'POST', body: {} });
+    pollTransfer();
+  } catch (e) {
+    setText('xf-status', '⏳ Thanks. We’ll confirm your transfer as soon as it reaches our account. You can leave this page; we’ll notify you.');
+  } finally { btn.disabled = false; }
+}
+async function cancelTransferBooking(btn) {
+  if (!_xfer || !_xfer.ctx.bookingId) return;
+  btn.disabled = true;
+  try {
+    await apiFetch('/bookings/' + _xfer.ctx.bookingId + '/cancel', { method: 'POST', body: {} });
+    clearInterval(_xferTimer); _xfer = null; _booking = null; updateActiveBanner();
+    toast('Request cancelled'); go('home');
+  } catch (e) { toast('❌ ' + e.message); } finally { btn.disabled = false; }
+}
+
+/* A payment has been confirmed: carry on with whatever it was for. */
+async function finishPayment(ctx) {
+  ctx = ctx || {};
+  if (ctx.purpose === 'BOOKING_PAYMENT' && ctx.bookingId) {
+    try {
+      var b = (await apiFetch('/bookings/' + ctx.bookingId)).booking;
+      toast('✅ Payment received. Your request is live.');
+      showCustomerBooking(b);
+    } catch (e) { go('home'); }
+  } else if (ctx.purpose === 'FEATURE_BOOST_PAYMENT') {
+    toast('✅ Payment received. Your page is now featured.');
+    go('artisan-dash'); try { loadArtisanDash(); } catch (e) {}
+  } else {
+    toast('✅ Payment received. Your wallet is updated.');
+    openWallet();
+  }
+}
+
+/* Back from the card page: confirm with the server and continue. */
+async function handlePayReturn() {
+  var ref = null;
+  try { ref = new URLSearchParams(location.search).get('pay_ref') || new URLSearchParams(location.search).get('reference'); } catch (e) {}
+  var ctx = null;
+  try { ctx = JSON.parse(sessionStorage.getItem('fixmi_pay_ctx') || 'null'); } catch (e) {}
+  if (!ref && ctx) ref = ctx.ref;
+  if (!ref || !getAccess()) return;
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  try { sessionStorage.removeItem('fixmi_pay_ctx'); } catch (e) {}
+  try {
+    var r = await apiFetch('/payments/verify/' + encodeURIComponent(ref));
+    finishPayment({ purpose: r.purpose || (ctx && ctx.purpose), bookingId: r.bookingId || (ctx && ctx.bookingId) });
+  } catch (e) {
+    if (e.status === 402) { toast('Payment was not completed.'); if (ctx && ctx.bookingId) resumeCustomerBooking(true); }
+    else toast('❌ ' + e.message);
+  }
+}
+
+/* A request that is waiting for its escrow payment: pay now. */
+function payPendingBooking() {
+  var b = _booking;
+  if (!b || b.status !== 'PENDING_PAYMENT') return;
+  openEscrowModal({
+    total: b.priceKobo, title: '🔒 Pay into Escrow', sub: 'Artisans see your request as soon as this is paid.',
+    rows: [['Your budget, held in escrow', b.priceKobo], ['FixMi keeps ' + (APP_CFG.commissionPercent || 10) + '% of the final price, paid by the artisan.', null]],
+    onConfirm: async function (method) {
+      try {
+        var r = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'BOOKING_PAYMENT', bookingId: b.id, method: method } });
+        if (r.paid) { finishPayment({ purpose: 'BOOKING_PAYMENT', bookingId: b.id }); return; }
+        continuePayment(r, { purpose: 'BOOKING_PAYMENT', bookingId: b.id });
+      } catch (e) { toast('❌ ' + e.message); }
+    }
+  });
 }
 </script>
 </body>

@@ -129,7 +129,7 @@ const PROMOTION_PLANS = {
   vip: { label: "VIP Annual", days: 365, priceKobo: 4000000 },
 };
 
-async function promoteMe(req, res, next) {
+async function promoteMe_old_unused(req, res, next) {
   try {
     if (!req.user.artisanProfile) return res.status(403).json({ error: "No artisan profile found." });
     const plans = await settings.get("promotion.plans");
@@ -164,6 +164,28 @@ async function listPromotions(req, res, next) {
     ]);
     const active = !!profile.featuredUntil && profile.featuredUntil > new Date();
     res.json({ plans: await settings.get("promotion.plans"), featuredUntil: profile.featuredUntil, active, history });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// "Promote My Page". Pay with the wallet (instant) or by card, USSD or bank
+// transfer: the same choices as the booking escrow.
+async function promoteMe(req, res, next) {
+  try {
+    if (!req.user.artisanProfile) return res.status(403).json({ error: "No artisan profile found." });
+    const pay = require("../services/paymentApply.service");
+    const planKey = String(req.body?.plan || "");
+    const plans = await settings.get("promotion.plans");
+    const plan = plans[planKey];
+    if (!plan) return res.status(400).json({ error: "Choose a promotion plan." });
+    const method = String(req.body.paymentMethod || "WALLET").toUpperCase();
+    if (method === "WALLET") {
+      const done = await pay.purchaseBoost(req.user.id, planKey);
+      return res.json(done);
+    }
+    const payment = await pay.startCheckout({ user: req.user, purpose: "FEATURE_BOOST_PAYMENT", method, amountKobo: plan.priceKobo, targetId: planKey, req });
+    res.json({ payment, plan: plan.label });
   } catch (err) {
     next(err);
   }

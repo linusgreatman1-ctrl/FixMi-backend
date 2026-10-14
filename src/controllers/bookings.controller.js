@@ -27,7 +27,7 @@ const { logAdminAction } = require("../services/auditLog.service");
 
 const MIN_PRICE_KOBO = 50000; // ₦500
 const OPEN = ["REQUESTED"];
-const ACTIVE = ["REQUESTED", "ACCEPTED", "PAID", "IN_PROGRESS", "COMPLETED"];
+const ACTIVE = ["PENDING_PAYMENT", "REQUESTED", "ACCEPTED", "PAID", "IN_PROGRESS", "COMPLETED"];
 
 const ARTISAN_PUBLIC = {
   id: true,
@@ -160,6 +160,35 @@ async function settleEscrow(tx, booking, priceKobo) {
 
 // ---------------------------------------------------------------- create
 
+// Sends a funded request to the artisans who can take it.
+async function activateBooking(sock, bookingId) {
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  const recipients = await requestRecipients(booking);
+  for (const a of recipients) {
+    await pushRequestToArtisan(sock, booking.id, a);
+    notify(sock, a.userId, "BOOKING", "New job request", `${booking.category}: ${booking.issue}. The customer offers ${naira(booking.priceKobo)}`, { bookingId: booking.id }).catch(() => {});
+  }
+  return recipients.length;
+}
+
+// A card, USSD or bank-transfer payment for a PENDING_PAYMENT booking has landed
+// (and been credited to the wallet): lock the budget in escrow and go live.
+// Safe to call twice; only the first call does anything.
+async function fundPendingBooking(sock, bookingId) {
+  const funded = await prisma.$transaction(async (tx) => {
+    const claimed = await tx.booking.updateMany({ where: { id: bookingId, status: "PENDING_PAYMENT" }, data: { status: "REQUESTED", paidAt: new Date() } });
+    if (!claimed.count) return null;
+    const b = await tx.booking.findUnique({ where: { id: bookingId } });
+    await wallet.debitWallet(b.customerId, b.priceKobo, "ESCROW_HOLD", { bookingId: b.id, reference: generateReference("ESC"), description: `Escrow for ${b.category} request` }, tx);
+    return tx.booking.update({ where: { id: b.id }, data: { escrowKobo: b.priceKobo } });
+  });
+  if (!funded) return null;
+  const notified = await activateBooking(sock, bookingId);
+  pushToCustomer(sock, await customerView(bookingId));
+  notify(sock, funded.customerId, "PAYMENT", "Payment received ✅", `${naira(funded.priceKobo)} is held safely in escrow while artisans respond.`, { bookingId }).catch(() => {});
+  return { booking: funded, notified };
+}
+
 async function createBooking(req, res, next) {
   try {
     const { issue, address, lat, lng, priceKobo, scheduledAt, artisanId } = req.body;
@@ -191,6 +220,14 @@ async function createBooking(req, res, next) {
       if (corporate.callsLeft(plan) === 0) return res.status(409).json({ error: "You've used all the service calls on your plan for this period." });
     }
 
+    // How the escrow is paid. Wallet (and a corporate plan) lock the money at once.
+    // Card, USSD and bank transfer first create the booking as PENDING_PAYMENT;
+    // artisans only see it once the money has really arrived.
+    const method = String(req.body.paymentMethod || "WALLET").toUpperCase();
+    if (!["WALLET", "CARD", "USSD", "BANK_TRANSFER"].includes(method)) return res.status(400).json({ error: "Choose a payment method." });
+    if (plan && method !== "WALLET") return res.status(400).json({ error: "Corporate jobs are paid from your plan's escrow." });
+    const payLater = !plan && method !== "WALLET";
+
     const booking = await prisma.$transaction(async (tx) => {
       const created = await tx.booking.create({
         data: {
@@ -201,8 +238,9 @@ async function createBooking(req, res, next) {
           lat: lat !== undefined ? Number(lat) : null,
           lng: lng !== undefined ? Number(lng) : null,
           priceKobo: budget,
-          escrowKobo: budget,
-          paidAt: new Date(),
+          status: payLater ? "PENDING_PAYMENT" : undefined,
+          escrowKobo: payLater ? 0 : budget,
+          paidAt: payLater ? null : new Date(),
           scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
           artisanId: direct ? direct.id : null,
           corporatePlanId: plan ? plan.id : null,
@@ -211,7 +249,7 @@ async function createBooking(req, res, next) {
       if (plan) {
         await corporate.debitPlan(tx, plan.id, budget);
         await tx.corporatePlan.update({ where: { id: plan.id }, data: { callsUsed: { increment: 1 } } });
-      } else {
+      } else if (!payLater) {
         await wallet.debitWallet(req.user.id, budget, "ESCROW_HOLD", {
           bookingId: created.id,
           reference: generateReference("ESC"),
@@ -221,13 +259,16 @@ async function createBooking(req, res, next) {
       return created;
     });
 
-    const recipients = await requestRecipients(booking);
-    for (const a of recipients) {
-      await pushRequestToArtisan(io(req), booking.id, a);
-      notify(io(req), a.userId, "BOOKING", "New job request", `${category}: ${issue} — customer offers ${naira(budget)}`, { bookingId: booking.id }).catch(() => {});
+    if (payLater) {
+      // Hand over to the payment step; the booking goes live when it is paid.
+      const checkout = await require("../services/paymentApply.service").startCheckout({
+        user: req.user, purpose: "BOOKING_PAYMENT", method, amountKobo: budget, targetId: booking.id, req,
+      });
+      return res.status(201).json({ booking: await customerView(booking.id), payment: checkout, notified: 0 });
     }
 
-    res.status(201).json({ booking: await customerView(booking.id), notified: recipients.length });
+    const notified = await activateBooking(io(req), booking.id);
+    res.status(201).json({ booking: await customerView(booking.id), notified });
   } catch (err) {
     next(err);
   }
@@ -239,7 +280,7 @@ async function listMyBookings(req, res, next) {
   try {
     const asArtisan = req.user.role === "ARTISAN" && req.user.artisanProfile;
     const where = asArtisan
-      ? { artisanId: req.user.artisanProfile.id, NOT: { status: "REQUESTED" } }
+      ? { artisanId: req.user.artisanProfile.id, NOT: { status: { in: ["REQUESTED", "PENDING_PAYMENT"] } } }
       : { customerId: req.user.id };
     const bookings = await prisma.booking.findMany({ where, include: asArtisan ? JOB_VIEW : CUSTOMER_VIEW, orderBy: { createdAt: "desc" } });
     res.json({ bookings });
@@ -307,7 +348,7 @@ async function getBooking(req, res, next) {
     if (booking.customerId === req.user.id) return res.json({ booking });
 
     const me = req.user.artisanProfile;
-    if (me && booking.artisanId === me.id && booking.status !== "REQUESTED") {
+    if (me && booking.artisanId === me.id && !["REQUESTED", "PENDING_PAYMENT"].includes(booking.status)) {
       return res.json({ booking: await prisma.booking.findUnique({ where: { id: booking.id }, include: JOB_VIEW }) });
     }
     if (me && booking.status === "REQUESTED" && categoryMatches(booking.category, me.category) && (!booking.artisanId || booking.artisanId === me.id)) {
@@ -481,7 +522,7 @@ async function cancelBooking(req, res, next) {
     const isArtisan = req.user.artisanProfile && booking.artisanId === req.user.artisanProfile.id && booking.status !== "REQUESTED";
     if (!isOwner && !isArtisan) return res.status(403).json({ error: "Not your booking." });
 
-    const cancellable = booking.status === "REQUESTED" || (booking.status === "ACCEPTED" && booking.agreedPriceKobo == null);
+    const cancellable = booking.status === "PENDING_PAYMENT" || booking.status === "REQUESTED" || (booking.status === "ACCEPTED" && booking.agreedPriceKobo == null);
     if (!cancellable) {
       return res.status(409).json({ error: "The price has been agreed, so this job can't be cancelled in the app. Contact support if there's a problem." });
     }
@@ -830,6 +871,8 @@ async function listDisputes(req, res, next) {
 }
 
 module.exports = {
+  activateBooking,
+  fundPendingBooking,
   openDispute,
   getDispute,
   respondDispute,

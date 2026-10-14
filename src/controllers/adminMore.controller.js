@@ -118,18 +118,11 @@ const listManualPayments = wrap(async (req, res) => {
 });
 
 const confirmManualPayment = wrap(async (req, res) => {
-  const result = await prisma.$transaction(async (tx) => {
-    const claimed = await tx.manualPaymentRequest.updateMany({
-      where: { id: req.params.id, status: "PENDING" },
-      data: { status: "CONFIRMED", processedById: req.user.id, processedAt: new Date() },
-    });
-    if (!claimed.count) throw Object.assign(new Error("This transfer is already processed or does not exist."), { status: 409 });
-    const row = await tx.manualPaymentRequest.findUnique({ where: { id: req.params.id } });
-    await wallet.creditWallet(row.userId, row.amountKobo, "DEPOSIT", { reference: row.reference, description: "Bank transfer confirmed" }, tx);
-    return row;
-  });
-  await logAdminAction(req.user, "MANUAL_PAYMENT_CONFIRMED", "ManualPaymentRequest", result.id, `${naira(result.amountKobo)} ref ${result.reference}`);
-  notify(req.app.get("io"), result.userId, "PAYMENT", "Wallet funded ✅", `${naira(result.amountKobo)} from your bank transfer is now in your wallet.`, { reference: result.reference }).catch(() => {});
+  // Credits the wallet, then does what the transfer was for (top-up, booking escrow or featured boost).
+  const result = await require("./payments.controller").confirmManualRequest(req.params.id, req.user.id, req.app.get("io"));
+  await logAdminAction(req.user, "MANUAL_PAYMENT_CONFIRMED", "ManualPaymentRequest", result.id, `${naira(result.amountKobo)} ref ${result.reference} (${result.purpose})`);
+  const what = result.purpose === "BOOKING_PAYMENT" ? "Your job request is now live." : result.purpose === "FEATURE_BOOST_PAYMENT" ? "Your featured boost is active." : "The money is in your wallet.";
+  notify(req.app.get("io"), result.userId, "PAYMENT", "Bank transfer confirmed ✅", `${naira(result.amountKobo)} received. ${what}`, { reference: result.reference }).catch(() => {});
   res.json({ payment: result });
 });
 

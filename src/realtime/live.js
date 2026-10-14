@@ -160,6 +160,15 @@ function attachLiveSocket(httpServer) {
     } catch (err) {
       console.error("[booking] auto-release finalize sweep failed:", err);
     }
+    try {
+      // A request that was never paid (card page abandoned, transfer never sent) holds no money; close it after a day.
+      await require("../config/db").booking.updateMany({
+        where: { status: "PENDING_PAYMENT", createdAt: { lt: new Date(Date.now() - 24 * 3600 * 1000) } },
+        data: { status: "CANCELLED", cancelledAt: new Date(), cancelReason: "Payment not completed" },
+      });
+    } catch (err) {
+      console.error("[booking] stale payment sweep failed:", err);
+    }
   }, sweepMs);
 
   return io;

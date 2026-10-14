@@ -88,6 +88,12 @@ require("./controllers/adminFiles.controller").ensureDevCopies();
 app.use("/app-dev", express.static(path.join(__dirname, "..", "public", "app-dev")));
 app.use("/admin-dev", express.static(path.join(__dirname, "..", "public", "admin-dev")));
 
+// Tab icon for every page (the admin and the app), including browsers that ask for /favicon.ico.
+const FAVICON_SVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#00C65E'/><path d='M22 14h24v8H31v7h13v8H31v13h-9z' fill='#fff'/></svg>";
+for (const route of ["/favicon.svg", "/favicon.ico"]) {
+  app.get(route, (req, res) => res.type("image/svg+xml").set("Cache-Control", "public, max-age=86400").send(FAVICON_SVG));
+}
+
 app.get("/health", (req, res) => res.json({ status: "ok", service: "fixmi-backend" }));
 app.get("/", (req, res) => res.json({ service: "fixmi-backend", status: "ok", app: "/app", health: "/health", api: "/api" }));
 

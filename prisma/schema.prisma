@@ -126,6 +126,7 @@ model ArtisanProfile {
 }
 
 enum BookingStatus {
+  PENDING_PAYMENT // created, waiting for the escrow payment (card, USSD or bank transfer); artisans cannot see it yet
   REQUESTED // customer submitted, broadcast to nearby available artisans
   ACCEPTED // an artisan accepted, awaiting payment
   PAID // customer paid into escrow, artisan can start
@@ -718,6 +719,9 @@ model ManualPaymentRequest {
   user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   amountKobo      Int
   reference       String              @unique
+  // What the transfer is for: WALLET_DEPOSIT, BOOKING_PAYMENT or FEATURE_BOOST_PAYMENT.
+  purpose         String              @default("WALLET_DEPOSIT")
+  targetId        String?
   senderName      String?
   note            String?
   status          ManualPaymentStatus @default(PENDING)

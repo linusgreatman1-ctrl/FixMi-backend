@@ -2,7 +2,7 @@
 // PAYSTACK_SECRET_KEY to be set — in its absence (e.g. local dev with no
 // keys yet) callers get a clear error rather than a silent fake success,
 // since this touches real money.
-const PAYSTACK_BASE = "https://api.paystack.co";
+const PAYSTACK_BASE = process.env.PAYSTACK_BASE_URL || "https://api.paystack.co"; // override only for local testing
 
 function requireKey() {
   const key = process.env.PAYSTACK_SECRET_KEY;
@@ -50,10 +50,10 @@ async function listBanks() {
 // Initializes a hosted checkout for an order/booking/wallet-deposit —
 // returns { authorization_url, access_code, reference } for the frontend
 // to redirect to / open in Paystack's inline popup.
-async function initializeTransaction({ email, amountKobo, reference, metadata }) {
+async function initializeTransaction({ email, amountKobo, reference, metadata, callbackUrl, channels }) {
   return paystackFetch("/transaction/initialize", {
     method: "POST",
-    body: JSON.stringify({ email, amount: amountKobo, reference, metadata }),
+    body: JSON.stringify({ email, amount: amountKobo, reference, metadata, ...(callbackUrl ? { callback_url: callbackUrl } : {}), ...(channels ? { channels } : {}) }),
   });
 }
 
