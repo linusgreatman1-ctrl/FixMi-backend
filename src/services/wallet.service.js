@@ -21,12 +21,10 @@ async function creditWallet(userId, amountKobo, type, { bookingId, reference, de
   return updated;
 }
 
-// DEV_BYPASS_PAYMENTS=true lets every "pay by wallet" step succeed
-// regardless of balance, so the full customer -> artisan booking lifecycle
-// can be clicked through end-to-end without needing real Paystack funds
-// first. The wallet still goes negative and every transaction is still
-// logged normally; this only removes the block, not the bookkeeping. Unset
-// (or "false") before treating this as production.
+// DEV_BYPASS_PAYMENTS=true only switches on the testing shortcuts for ADDING money
+// (an instant dev top-up, and a payer confirming their own bank transfer).
+// It never lets money be spent that isn't there: a wallet can't go below zero,
+// so a request that hasn't been paid for into escrow can't go through.
 function devBypassEnabled() {
   return process.env.DEV_BYPASS_PAYMENTS === "true";
 }
@@ -34,7 +32,7 @@ function devBypassEnabled() {
 async function debitWallet(userId, amountKobo, type, { bookingId, reference, description } = {}, tx = prisma) {
   if (amountKobo <= 0) throw Object.assign(new Error("Debit amount must be positive."), { status: 400 });
   const wallet = await getOrCreateWallet(userId, tx);
-  if (wallet.balanceKobo < amountKobo && !devBypassEnabled()) {
+  if (wallet.balanceKobo < amountKobo) {
     throw Object.assign(new Error("Insufficient wallet balance."), { status: 400, shortfallKobo: amountKobo - wallet.balanceKobo });
   }
   const updated = await tx.wallet.update({ where: { id: wallet.id }, data: { balanceKobo: { decrement: amountKobo } } });
