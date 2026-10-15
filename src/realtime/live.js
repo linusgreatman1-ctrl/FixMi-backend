@@ -147,9 +147,9 @@ function attachLiveSocket(httpServer) {
   // Server-side escrow auto-release — replaces a frontend client setTimeout
   // countdown, which stops running the moment a tab closes and would
   // otherwise strand an artisan's payout forever.
-  // Every 10s so the 90-second window (ESCROW_AUTO_RELEASE_SECONDS) is
+  // Every 5s so the 90-second window (ESCROW_AUTO_RELEASE_SECONDS) is
   // honoured to within a few seconds.
-  const sweepMs = 10 * 1000;
+  const sweepMs = 5 * 1000;
   // Release first, then close out the bookings whose money just moved, in
   // the same tick so a booking flips to CONFIRMED as soon as it's paid.
   setInterval(async () => {
