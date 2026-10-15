@@ -73,12 +73,15 @@ function attachLiveSocket(httpServer) {
     socket.on("artisan:location", async ({ lat, lng }) => {
       if (!user.artisanProfile || typeof lat !== "number" || typeof lng !== "number") return;
       await prisma.artisanProfile.update({ where: { id: user.artisanProfile.id }, data: { lat, lng } });
+      // Only while the artisan is on the way (price agreed, not yet arrived) or working.
       const activeBookings = await prisma.booking.findMany({
-        where: { artisanId: user.artisanProfile.id, status: { in: ["PAID", "IN_PROGRESS"] } },
-        select: { id: true },
+        where: { artisanId: user.artisanProfile.id, status: { in: ["ACCEPTED", "PAID", "IN_PROGRESS"] } },
+        select: { id: true, customerId: true },
       });
-      const payload = { artisanId: user.artisanProfile.id, lat, lng, at: new Date().toISOString() };
-      activeBookings.forEach((b) => io.to(`booking:${b.id}`).emit("artisan:location", payload));
+      activeBookings.forEach((bk) => {
+        const payload = { artisanId: user.artisanProfile.id, bookingId: bk.id, lat, lng, at: new Date().toISOString() };
+        io.to([`booking:${bk.id}`, `user:${bk.customerId}`]).emit("artisan:location", payload);
+      });
     });
 
     // Ad-hoc 1:1 call between a customer and their assigned artisan — the
@@ -144,9 +147,9 @@ function attachLiveSocket(httpServer) {
   // Server-side escrow auto-release — replaces a frontend client setTimeout
   // countdown, which stops running the moment a tab closes and would
   // otherwise strand an artisan's payout forever.
-  // Every 30s so the 5-minute window (ESCROW_AUTO_RELEASE_MINUTES) is
-  // honoured to within half a minute.
-  const sweepMs = 30 * 1000;
+  // Every 10s so the 90-second window (ESCROW_AUTO_RELEASE_SECONDS) is
+  // honoured to within a few seconds.
+  const sweepMs = 10 * 1000;
   // Release first, then close out the bookings whose money just moved, in
   // the same tick so a booking flips to CONFIRMED as soon as it's paid.
   setInterval(async () => {

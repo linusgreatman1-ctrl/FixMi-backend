@@ -45,7 +45,7 @@ const ARTISAN_PUBLIC = {
 // for calls), and the live offers.
 const CUSTOMER_VIEW = {
   customer: { select: { id: true, name: true, avatarUrl: true, phone: true } },
-  artisan: { select: { ...ARTISAN_PUBLIC, user: { select: { id: true, name: true, avatarUrl: true, phone: true } } } },
+  artisan: { select: { ...ARTISAN_PUBLIC, lat: true, lng: true, user: { select: { id: true, name: true, avatarUrl: true, phone: true } } } },
   offers: { where: { status: { in: ["PENDING", "ACCEPTED"] } }, include: { artisan: { select: ARTISAN_PUBLIC } }, orderBy: { updatedAt: "desc" } },
 };
 
@@ -194,6 +194,8 @@ async function createBooking(req, res, next) {
     const { issue, address, lat, lng, priceKobo, scheduledAt, artisanId } = req.body;
     let { category } = req.body;
     const budget = Number(priceKobo);
+    // Up to 5 photos of the issue, only ones this server stored (see POST /support/evidence).
+    const cleanPhotos = (Array.isArray(req.body.photos) ? req.body.photos : []).filter((u) => typeof u === "string" && /^\/uploads\/[A-Za-z0-9._-]+$/.test(u)).slice(0, 5);
 
     let direct = null;
     if (artisanId) {
@@ -238,6 +240,7 @@ async function createBooking(req, res, next) {
           lat: lat !== undefined ? Number(lat) : null,
           lng: lng !== undefined ? Number(lng) : null,
           priceKobo: budget,
+          photos: cleanPhotos,
           status: payLater ? "PENDING_PAYMENT" : undefined,
           escrowKobo: payLater ? 0 : budget,
           paidAt: payLater ? null : new Date(),
@@ -262,7 +265,7 @@ async function createBooking(req, res, next) {
     if (payLater) {
       // Hand over to the payment step; the booking goes live when it is paid.
       const checkout = await require("../services/paymentApply.service").startCheckout({
-        user: req.user, purpose: "BOOKING_PAYMENT", method, amountKobo: budget, targetId: booking.id, req,
+        user: req.user, purpose: "BOOKING_PAYMENT", method, amountKobo: budget, targetId: booking.id, gatewayName: req.body.gateway, req,
       });
       return res.status(201).json({ booking: await customerView(booking.id), payment: checkout, notified: 0 });
     }
@@ -519,13 +522,17 @@ async function cancelBooking(req, res, next) {
     const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: JOB_VIEW });
     if (!booking) return res.status(404).json({ error: "Booking not found." });
     const isOwner = booking.customerId === req.user.id;
-    const isArtisan = req.user.artisanProfile && booking.artisanId === req.user.artisanProfile.id && booking.status !== "REQUESTED";
+    const isArtisan = req.user.artisanProfile && booking.artisanId === req.user.artisanProfile.id && !["REQUESTED", "PENDING_PAYMENT"].includes(booking.status);
     if (!isOwner && !isArtisan) return res.status(403).json({ error: "Not your booking." });
 
-    const cancellable = booking.status === "PENDING_PAYMENT" || booking.status === "REQUESTED" || (booking.status === "ACCEPTED" && booking.agreedPriceKobo == null);
+    // Either side can cancel until the artisan taps "Start work". After that it can't be cancelled in the app.
+    if (["CANCELLED", "DECLINED", "CONFIRMED"].includes(booking.status)) return res.status(409).json({ error: `This booking is already ${booking.status === "CONFIRMED" ? "completed" : "closed"}.` });
+    const cancellable = ["PENDING_PAYMENT", "REQUESTED", "ACCEPTED", "PAID"].includes(booking.status) && !booking.startedAt;
     if (!cancellable) {
-      return res.status(409).json({ error: "The price has been agreed, so this job can't be cancelled in the app. Contact support if there's a problem." });
+      return res.status(409).json({ error: "The artisan has already started the job, so it can no longer be cancelled in the app. Contact support if there's a problem." });
     }
+    const givenReason = String(req.body?.reason || "").trim().slice(0, 300);
+    if (["ACCEPTED", "PAID"].includes(booking.status) && !givenReason) return res.status(400).json({ error: "Please tell us why you're cancelling." });
 
     const updated = await prisma.$transaction(async (tx) => {
       const fresh = await tx.booking.findUnique({ where: { id: booking.id } });
@@ -543,7 +550,7 @@ async function cancelBooking(req, res, next) {
       await tx.bookingOffer.updateMany({ where: { bookingId: fresh.id, status: { in: ["PENDING", "ACCEPTED"] } }, data: { status: "CLOSED" } });
       return tx.booking.update({
         where: { id: fresh.id },
-        data: { status: "CANCELLED", cancelledAt: new Date(), escrowKobo: 0, cancelReason: req.body?.reason || (isOwner ? "Cancelled by customer" : "Cancelled by artisan") },
+        data: { status: "CANCELLED", cancelledAt: new Date(), escrowKobo: 0, cancelReason: givenReason || (isOwner ? "Cancelled by customer" : "Cancelled by artisan") },
         include: JOB_VIEW,
       });
     });
@@ -552,10 +559,10 @@ async function cancelBooking(req, res, next) {
     pushJobToArtisan(io(req), updated);
     await closeRequestForArtisans(io(req), updated);
     if (isOwner && updated.artisan) {
-      notify(io(req), updated.artisan.userId, "BOOKING", "Job cancelled", `The customer cancelled the ${updated.category} job.`, { bookingId: updated.id }).catch(() => {});
+      notify(io(req), updated.artisan.userId, "BOOKING", "Job cancelled", `The customer cancelled the ${updated.category} job.${givenReason ? " Reason: " + givenReason : ""}`, { bookingId: updated.id }).catch(() => {});
     }
     if (isArtisan) {
-      notify(io(req), updated.customerId, "BOOKING", "Artisan cancelled", `${req.user.name} cancelled. Your escrow of ${naira(booking.escrowKobo)} is back in your wallet.`, { bookingId: updated.id }).catch(() => {});
+      notify(io(req), updated.customerId, "BOOKING", "Artisan cancelled", `${req.user.name} cancelled. Your escrow of ${naira(booking.escrowKobo)} is back in your wallet.${givenReason ? " Reason: " + givenReason : ""}`, { bookingId: updated.id }).catch(() => {});
     }
     res.json({ booking: isOwner ? await customerView(updated.id) : updated });
   } catch (err) {
@@ -793,6 +800,30 @@ async function getDispute(req, res, next) {
   }
 }
 
+// "Chat with FixMi about this": a private conversation between one party and the admins.
+async function openDisputeChat(req, res, next) {
+  try {
+    const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: { artisan: { select: { userId: true } } } });
+    if (!booking) return res.status(404).json({ error: "Booking not found." });
+    const isCustomer = booking.customerId === req.user.id;
+    const isArtisan = booking.artisan?.userId === req.user.id;
+    if (!isCustomer && !isArtisan) return res.status(403).json({ error: "Not your booking." });
+    const ticket = await disputeFor(booking.id);
+    if (!ticket) return res.status(409).json({ error: "There is no dispute on this booking." });
+    const party = isCustomer ? "CUSTOMER" : "ARTISAN";
+    let thread = await prisma.chatThread.findFirst({ where: { ticketId: ticket.id, party } });
+    let created = false;
+    if (!thread) {
+      thread = await prisma.chatThread.create({ data: { ticketId: ticket.id, party, participants: { create: [{ userId: req.user.id }] } } });
+      created = true;
+    }
+    if (created) notifyAllAdmins(io(req), "💬 Dispute chat opened", `${req.user.name} wants to talk about a ${booking.category} dispute.`, { bookingId: booking.id, ticketId: ticket.id, threadId: thread.id }).catch(() => {});
+    res.json({ thread });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function respondDispute(req, res, next) {
   try {
     const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: { artisan: { select: { userId: true } } } });
@@ -871,6 +902,7 @@ async function listDisputes(req, res, next) {
 }
 
 module.exports = {
+  openDisputeChat,
   activateBooking,
   fundPendingBooking,
   openDispute,

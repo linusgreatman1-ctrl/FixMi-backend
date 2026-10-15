@@ -389,6 +389,8 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .js-step span{display:block;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin-bottom:6px}
 .js-step.done{color:rgba(255,255,255,.85)}
 .js-step.done span{background:var(--g)}
+.photo-strip{display:flex;gap:8px;overflow-x:auto;margin:8px 0 4px}
+.photo-strip img{width:84px;height:84px;object-fit:cover;border-radius:10px;cursor:zoom-in;flex-shrink:0;border:1px solid var(--border)}
 .job-person{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 .job-person:empty{display:none}
 .job-money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
@@ -710,14 +712,16 @@ body{background:#fff}
     </div>
     <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Pay with</div>
     <div id="em-methods"></div>
+    <div id="em-gateway"></div>
     <div id="em-wallet-line" style="font-size:12px;color:#DC2626;margin-bottom:10px"></div>
+    <div id="em-test-note" style="font-size:12px;color:var(--muted);margin-bottom:10px;font-style:italic"></div>
     <button type="button" id="em-confirm" class="btn btn-g" disabled style="opacity:.45" onclick="confirmEscrowModal()">🔒 Confirm Payment</button>
   </div>
 </div>
 
 <!-- ████ BANK TRANSFER PAYMENT ████ -->
 <div class="s" id="pay-transfer">
-  <div class="topbar"><button class="back" onclick="go('home')" aria-label="Back">←</button><div class="tb-title">Pay by Bank Transfer</div><div class="tb-space"></div></div>
+  <div class="topbar"><button class="back" onclick="leaveTransfer()" aria-label="Back">←</button><div class="tb-title">Pay by Bank Transfer</div><div class="tb-space"></div></div>
   <div style="padding:18px">
     <div style="text-align:center;margin-bottom:14px"><div style="font-size:12px;color:var(--muted)">Amount</div><div id="xf-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:32px;color:var(--navy)">₦0</div></div>
     <div id="xf-account" class="card" style="margin-bottom:12px"></div>
@@ -726,6 +730,33 @@ body{background:#fff}
     <div id="xf-status" class="job-hint" style="margin-bottom:12px;text-align:center"></div>
     <button class="btn btn-g" onclick="iMadeTheTransfer(this)">I’ve made the transfer</button>
     <button id="xf-cancel" class="btn" style="margin-top:10px;background:#FEE2E2;color:#DC2626" onclick="cancelTransferBooking(this)">Cancel this request</button>
+  </div>
+</div>
+
+<!-- ████ CANCEL (with a reason) ████ -->
+<div id="cancel-modal" style="display:none;position:fixed;inset:0;z-index:620;background:rgba(11,26,46,.55);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeCancelModal()">
+  <div style="background:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:20px 18px 22px;max-height:92vh;overflow:auto;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div id="cm-title" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:17px;color:var(--navy)">Cancel?</div><button type="button" onclick="closeCancelModal()" aria-label="Close" style="background:var(--gray);border:none;border-radius:50%;width:32px;height:32px;font-size:15px;cursor:pointer">✕</button></div>
+    <div id="cm-sub" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Why are you cancelling?</div>
+    <div id="cm-reasons"></div>
+    <textarea id="cm-other" class="input" style="display:none;min-height:70px;margin-bottom:10px" placeholder="Tell us more"></textarea>
+    <button type="button" class="btn" style="background:#DC2626;color:#fff;margin-top:6px" onclick="confirmCancelModal()">Yes, cancel</button>
+    <button type="button" class="btn" style="background:var(--gray);color:var(--navy);margin-top:8px" onclick="closeCancelModal()">Keep it</button>
+  </div>
+</div>
+
+
+<!-- ████ TRACK THE ARTISAN ON THE MAP ████ -->
+<div class="s" id="track-map">
+  <div class="topbar"><button class="back" onclick="closeTrackMap()" aria-label="Back">←</button><div class="tb-title" id="trk-title">Track your artisan</div><div class="tb-space"></div></div>
+  <div id="trk-map" style="height:52vh;min-height:260px;background:var(--gray)"></div>
+  <div style="padding:16px 18px">
+    <div class="card" style="margin-bottom:12px">
+      <div id="trk-status" style="font-weight:800;font-size:15px;color:var(--navy)">Waiting for the artisan’s location…</div>
+      <div id="trk-sub" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
+    </div>
+    <div id="trk-contact"></div>
   </div>
 </div>
 
@@ -1278,7 +1309,7 @@ body{background:#fff}
     <button class="back w" style="margin-bottom:16px" onclick="goBack()">←</button>
     <div style="display:inline-block;background:rgba(0,198,94,.2);color:var(--g);border-radius:20px;padding:4px 13px;font-size:12px;font-weight:700;margin-bottom:10px">Artisan Price Offer</div>
     <div style="font-family:'AppFont',sans-serif;color:#fff;font-size:21px;font-weight:800">Review &amp; Negotiate</div>
-    <div style="color:rgba(255,255,255,.4);font-size:13px;margin-top:4px">Accept or propose a counter offer</div>
+    <div style="color:rgba(255,255,255,.4);font-size:13px;margin-top:4px">Accept or offer your own price</div>
   </div>
   <div style="padding:0 18px">
     <div class="match-card" style="margin-top:-20px">
@@ -1295,7 +1326,7 @@ body{background:#fff}
         <div style="font-size:12px;color:var(--muted);margin-top:4px">For the job described</div>
       </div>
       <div style="margin-bottom:16px">
-        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:9px">Your Counter Offer (optional)</div>
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:9px">Offer your price (optional)</div>
         <input id="counter-input" type="number" placeholder="Enter your price e.g. 4500" style="width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:11px;font-size:16px;font-weight:700;font-family:'AppFont',sans-serif;color:var(--navy);outline:none;margin-bottom:8px;box-sizing:border-box">
         <button onclick="sendCounterOffer()" style="width:100%;background:var(--navy);color:#fff;border:none;border-radius:11px;padding:13px;font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;cursor:pointer">Send Counter Offer</button>
         <div id="counter-status" style="display:none;margin-top:9px;background:#EFF6FF;border-radius:9px;padding:10px 12px;font-size:13px;color:#1E40AF;line-height:1.5"></div>
@@ -1675,7 +1706,7 @@ body{background:#fff}
       <div style="flex:1;background:rgba(59,159,232,.1);border:1px solid rgba(59,159,232,.2);border-radius:10px;padding:10px;text-align:center"><div id="pw-released" style="font-size:16px;font-weight:900;color:#3B9FE8">₦0</div><div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:2px">Released</div></div>
       <div style="flex:1;background:rgba(232,57,46,.1);border:1px solid rgba(232,57,46,.2);border-radius:10px;padding:10px;text-align:center"><div id="pw-disputed" style="font-size:16px;font-weight:900;color:#F87171">₦0</div><div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:2px">Disputed</div></div>
     </div>
-    <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:11px 13px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:#00C65E;margin-bottom:6px">🔒 How your escrow works</div><div style="font-size:12px;color:rgba(255,255,255,.65);line-height:1.6">When you book, your budget moves into escrow and the artisan can’t touch it. It is released when you confirm the job, or automatically <span data-releasetext>shortly after</span> the artisan marks it done. If something is wrong, report it and we hold the money until it’s sorted. FixMi keeps <span data-commission>10%</span>.</div></div>
+    <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:11px 13px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:#00C65E;margin-bottom:6px">🔒 How your escrow works</div><div style="font-size:12px;color:rgba(255,255,255,.65);line-height:1.6">When you book, your budget moves into escrow and the artisan can’t touch it. It is released when you confirm the job, or automatically <span data-releasetext>shortly after</span> the artisan marks it done. If something is wrong, report it and we hold the money until it’s sorted.</div></div>
     <div style="display:flex;gap:8px">
       <button onclick="openWallet()" style="flex:1;background:rgba(0,198,94,.18);border:1.5px solid rgba(0,198,94,.4);border-radius:12px;padding:11px;font-weight:700;font-size:13px;color:#00C65E;cursor:pointer;font-family:inherit">+ Add Funds</button>
       <button onclick="openWithdraw()" style="flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:11px;font-weight:700;font-size:13px;color:#fff;cursor:pointer;font-family:inherit">Withdraw</button>
@@ -2192,7 +2223,7 @@ body{background:#fff}
       </div>
     </div>
     <div style="background:var(--gray);border-radius:13px;padding:13px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.5">
-      ℹ️ This notification is for your information only. To respond to a job request, go back to your Dashboard where you can Accept, Counter Offer, or Set Price on Hold.
+      ℹ️ This notification is for your information only. To respond to a job request, go back to your Dashboard where you can Accept, Offer your price, or Set Price on Hold.
     </div>
     <button onclick="go('artisan-notifications')" class="btn" style="background:var(--gray);color:var(--navy)">← Back to Notifications</button>
     <div style="height:20px"></div>
@@ -3287,13 +3318,31 @@ function go(id) {
   if (id === 'finding') startFinding();
 }
 
+var AUTH_SCREENS = ['splash', 'role-screen', 'login-screen', 'reg-c', 'reg-a1', 'reg-a2', 'reg-a3', 'reg-a4', 'forgot-password', 'reset-password'];
+function homeScreenId() { return window.currentUser && window.currentUser.role === 'ARTISAN' ? 'artisan-dash' : 'home'; }
 function goBack() {
-  if (stack.length > 1) {
-    stack.pop();
-    go(stack[stack.length-1]);
-    stack.pop();
-  }
+  var signedIn = !!sessionGet('fixme_access');
+  stack.pop(); // the screen we are leaving
+  while (stack.length && signedIn && AUTH_SCREENS.indexOf(stack[stack.length - 1]) !== -1) stack.pop();
+  var target = stack.length ? stack.pop() : (signedIn ? homeScreenId() : 'splash');
+  go(target);
 }
+// The phone/browser back button steps back inside the app instead of leaving it.
+(function trapBrowserBack() {
+  try {
+    history.replaceState({ fixmi: 1 }, '', location.href);
+    history.pushState({ fixmi: 2 }, '', location.href);
+    window.addEventListener('popstate', function () {
+      history.pushState({ fixmi: 2 }, '', location.href);
+      var modals = ['escrow-modal', 'cancel-modal'];
+      for (var i = 0; i < modals.length; i++) { var m = document.getElementById(modals[i]); if (m && m.style.display === 'flex') { m.style.display = 'none'; return; } }
+      var on = document.querySelector('.s.on');
+      var topLevel = ['home', 'artisan-dash', 'login-screen', 'splash', 'role-screen'];
+      if (on && topLevel.indexOf(on.id) !== -1 && !!sessionGet('fixme_access')) return; // already home: stay
+      goBack();
+    });
+  } catch (e) {}
+})();
 
 function loginByRole() {
   var sel = document.getElementById('login-role');
@@ -3529,7 +3578,7 @@ function artisanCounterOffer() {
   sheet.style.cssText = "background:#fff;border-radius:22px 22px 0 0;padding:24px 18px 40px;width:100%;max-width:520px";
   var t = document.createElement('div');
   t.style.cssText = "font-family:'AppFont',sans-serif;font-weight:800;font-size:18px;color:#0B1A2E;margin-bottom:6px";
-  t.textContent = 'Your Counter Offer';
+  t.textContent = 'Offer your price';
   var sub = document.createElement('p');
   sub.style.cssText = 'font-size:13px;color:#7A8EA8;margin-bottom:16px';
   sub.textContent = 'Customer offered \u20a66,000. Enter your price.';
@@ -3544,7 +3593,7 @@ function artisanCounterOffer() {
   cancel.onclick = function(){ document.getElementById('counter-modal').remove(); };
   var send = document.createElement('button');
   send.style.cssText = "flex:2;background:#00C65E;color:#fff;border:none;border-radius:11px;padding:14px;font-family:'AppFont',sans-serif;font-weight:700;cursor:pointer";
-  send.textContent = 'Send Counter Offer';
+  send.textContent = 'Send my price';
   send.onclick = function(){
     var v = document.getElementById('_counter_inp');
     if (!v || !v.value) return;
@@ -4949,9 +4998,19 @@ function initSocket() {
   _socket.on('request:updated', function (b) { onRequestUpdated(b); });
   _socket.on('request:closed', function (d) { onRequestClosed(d && d.bookingId); });
   _socket.on('job:updated', function (b) { onJobUpdated(b); });
+  _socket.on('artisan:location', function (p) {
+    if (_trk && p && p.bookingId === _trk.bookingId) setArtisanPoint(p.lat, p.lng);
+  });
   _socket.on('chat:message', function (msg) {
-    if (window._activeChatThreadId && msg.threadId === window._activeChatThreadId) {
-      appendChatMessage(msg, window.currentUser && msg.senderId === window.currentUser.id);
+    var mine = window.currentUser && msg.senderId === window.currentUser.id;
+    var onScreen = (document.querySelector('.s.on') || {}).id;
+    if (window._activeChatThreadId && msg.threadId === window._activeChatThreadId && onScreen === 'chat') {
+      appendChatMessage(msg, mine);
+      if (!mine && _socket) _socket.emit('chat:join', { threadId: msg.threadId });
+    } else if (!mine) {
+      // Not looking at this conversation: keep the Messages list fresh.
+      if (onScreen === 'messages') loadChatThreads('chat-thread-list');
+      if (onScreen === 'artisan-messages') loadChatThreads('artisan-chat-thread-list');
     }
   });
   _socket.on('notification:new', function (n) {
@@ -5360,10 +5419,13 @@ async function startFindingOrDirect() {
   var body = { category: window._pendingCategory || 'General', issue: issue.trim(), address: address.trim(), priceKobo: budgetKobo };
   if (directArtisan && directArtisan.id) body.artisanId = directArtisan.id;
   var direct = directArtisan;
+  // The customer's position (when they allow it) lets the artisan see the distance and lets the customer follow them on the map later.
+  window._reqPos = null;
+  getPosition().then(function (pos) { if (pos && pos.lat != null) window._reqPos = pos; });
   // Pay into escrow first (like Handa); artisans only see the request once the money is held.
   openEscrowModal({
     total: budgetKobo, title: '🔒 Pay into Escrow', sub: 'Held safely until the job is done. Then you search for an artisan.',
-    rows: [['Your budget, held in escrow', budgetKobo], ['FixMi keeps ' + (APP_CFG.commissionPercent || 10) + '% of the final price, paid by the artisan. You pay nothing extra.', null]],
+    rows: [['Your budget, held in escrow', budgetKobo]],
     onConfirm: function (method) { sendBooking(body, method, direct); }
   });
 }
@@ -5372,8 +5434,11 @@ async function sendBooking(body, method, direct) {
   var label = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   try {
-    body.paymentMethod = method;
+    body.paymentMethod = method; body.gateway = window._payGateway;
+    if (mediaFiles.length) { if (btn) btn.textContent = 'Uploading photos…'; try { body.photos = await uploadRequestPhotos(); } catch (e) { toast('Photos could not be uploaded. Sending without them.'); } }
+    if (window._reqPos) { body.lat = window._reqPos.lat; body.lng = window._reqPos.lng; }
     var data = await apiFetch('/bookings', { method: 'POST', body: body });
+    mediaFiles = []; renderPreviews();
     document.getElementById('issue-text').value = '';
     if (data.payment) {
       _booking = data.booking; window._activeBookingId = data.booking.id; updateActiveBanner();
@@ -5461,7 +5526,7 @@ function drawOffers(b) {
   setHTML('co-summary',
     '<div class="co-cat">' + look[0] + ' ' + escapeHtml(b.category) + '</div>' +
     '<div class="co-issue">"' + escapeHtml(b.issue) + '"</div>' +
-    '<div class="co-addr">📍 ' + escapeHtml(b.address) + '</div>' +
+    '<div class="co-addr">📍 ' + escapeHtml(b.address) + '</div>' + photoStrip(b.photos) +
     '<div class="co-escrow">🔒 ' + fmtNaira(b.escrowKobo) + ' held in escrow · your budget ' + fmtNaira(b.priceKobo) + '</div>');
   var offers = (b.offers || []).filter(function (o) { return o.status === 'PENDING'; });
   var waiting = document.getElementById('co-waiting');
@@ -5486,7 +5551,7 @@ function offerCard(o, b) {
     body = '<div class="oc-price">' + fmtNaira(o.priceKobo) + '<small>' + (o.customerPriceKobo ? 'replied to your ' + fmtNaira(o.customerPriceKobo) : 'their price') + '</small></div>' + escrowNote(o.priceKobo, b.escrowKobo);
     actions = '<div class="oc-acts"><button class="oc-btn ghost" onclick="customerOfferAction(' + oid + ',\'reject\')">Decline</button>' +
       '<button class="oc-btn green" onclick="customerOfferAction(' + oid + ',\'accept\')">Accept ' + fmtNaira(o.priceKobo) + '</button></div>' +
-      '<button class="oc-btn blue wide" onclick="toggleCounter(' + oid + ')">💬 Counter Offer</button>';
+      '<button class="oc-btn blue wide" onclick="toggleCounter(' + oid + ')">💬 Offer your price</button>';
   } else {
     body = '<div class="oc-wait">You offered <b>' + fmtNaira(o.customerPriceKobo) + '</b> — waiting for ' + escapeHtml(fn) + ' to reply.' + (o.priceKobo ? ' Their price: ' + fmtNaira(o.priceKobo) + '.' : '') + '</div>';
     actions = '<div class="oc-acts"><button class="oc-btn ghost" onclick="customerOfferAction(' + oid + ',\'reject\')">Decline</button>' +
@@ -5530,22 +5595,45 @@ function customerCounter(offerId) {
 var _cancelArmed = 0;
 async function cancelActiveRequest(btn) {
   if (!_booking) return;
-  if (Date.now() - _cancelArmed > 4000) {
-    _cancelArmed = Date.now();
-    if (btn) { btn.dataset.label = btn.dataset.label || btn.textContent; btn.textContent = 'Tap again to cancel — ' + fmtNaira(_booking.escrowKobo) + ' returns to your wallet'; setTimeout(function () { btn.textContent = btn.dataset.label; }, 4000); }
-    return;
-  }
-  _cancelArmed = 0;
-  try {
-    var data = await apiFetch('/bookings/' + _booking.id + '/cancel', { method: 'POST', body: {} });
-    toast('Request cancelled — ' + fmtNaira(_booking.escrowKobo) + ' is back in your wallet');
-    _booking = data.booking;
-    updateActiveBanner();
-    go('home');
-    loadHomeFeed();
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
+  var b = _booking, matched = b.status === 'ACCEPTED' || b.status === 'PAID';
+  openCancelModal({
+    role: 'customer', title: 'Cancel this booking?', sub: b.escrowKobo ? fmtNaira(b.escrowKobo) + ' goes straight back to your wallet.' : 'Nothing has been charged.', needReason: matched,
+    onConfirm: async function (reason) {
+      try {
+        var data = await apiFetch('/bookings/' + b.id + '/cancel', { method: 'POST', body: { reason: reason } });
+        toast('Booking cancelled' + (b.escrowKobo ? ' — ' + fmtNaira(b.escrowKobo) + ' is back in your wallet' : ''));
+        _booking = data.booking; updateActiveBanner(); go('home'); loadHomeFeed();
+      } catch (e) { toast('❌ ' + e.message); }
+    }
+  });
+}
+
+/* A cancel sheet with reasons, like Handa's: a reason is always asked for. */
+var CANCEL_REASONS = {
+  customer: ['I changed my mind', 'I found someone else', 'Wrong details in my request', 'The artisan is taking too long', 'The price changed', 'Other'],
+  artisan: ['I can’t make it', 'The customer can’t be reached', 'The address is wrong', 'We couldn’t agree on the job', 'Safety concern', 'Other']
+};
+var _cm = null;
+function openCancelModal(o) {
+  _cm = { onConfirm: o.onConfirm, needReason: !!o.needReason, reason: null };
+  setText('cm-title', o.title || 'Cancel?'); setText('cm-sub', o.sub || '');
+  setHTML('cm-reasons', (CANCEL_REASONS[o.role] || CANCEL_REASONS.customer).map(function (r) {
+    return '<button type="button" onclick="pickCancelReason(this)" data-r="' + escapeHtml(r) + '" style="display:block;width:100%;text-align:left;padding:11px 13px;margin-bottom:7px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-family:inherit;cursor:pointer">' + escapeHtml(r) + '</button>';
+  }).join(''));
+  document.getElementById('cm-other').value = ''; document.getElementById('cm-other').style.display = 'none';
+  document.getElementById('cancel-modal').style.display = 'flex';
+}
+function pickCancelReason(btn) {
+  _cm.reason = btn.getAttribute('data-r');
+  document.querySelectorAll('#cm-reasons button').forEach(function (b) { var on = b === btn; b.style.borderColor = on ? '#DC2626' : 'var(--border)'; b.style.background = on ? '#FEF2F2' : '#fff'; });
+  document.getElementById('cm-other').style.display = _cm.reason === 'Other' ? 'block' : 'none';
+}
+function closeCancelModal() { document.getElementById('cancel-modal').style.display = 'none'; _cm = null; }
+function confirmCancelModal() {
+  if (!_cm) return;
+  var reason = _cm.reason === 'Other' ? (document.getElementById('cm-other').value.trim() || 'Other') : _cm.reason;
+  if (!reason) { toast('Pick a reason first'); return; }
+  var fn = _cm.onConfirm; closeCancelModal(); fn(reason);
 }
 
 // ---- job screen
@@ -5611,10 +5699,13 @@ function renderCustJob(b) {
     panel = '<div class="job-panel green">Agreed price ' + fmtNaira(b.agreedPriceKobo) + ' is held in escrow. Work starts shortly.</div>';
   } else {
     tag = 'Price Agreed'; title = fn + ' is on the way';
-    panel = '<div class="job-panel green">You agreed ' + fmtNaira(b.agreedPriceKobo) + ', held safely in escrow. You don’t pay anything else.</div>';
+    panel = '<div class="job-panel green">You agreed ' + fmtNaira(b.agreedPriceKobo) + ', held safely in escrow. You don’t pay anything else.</div>' +
+      '<button class="btn btn-g" style="margin-top:10px" onclick="openTrackMap()">🗺️ Track ' + escapeHtml(fn) + ' on the map</button>';
   }
-  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="cancelActiveRequest(this)">Cancel Booking</button>';
-  else if (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1) panel += '<div class="job-hint">The price is agreed, so this job can’t be cancelled in the app. Contact support if something goes wrong.</div>';
+  // Either side can cancel until the artisan taps "Start work".
+  cancel = ['PENDING_PAYMENT', 'REQUESTED', 'ACCEPTED', 'PAID'].indexOf(b.status) !== -1;
+  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="cancelActiveRequest(this)">Cancel Booking</button>' + (b.status === 'ACCEPTED' || b.status === 'PAID' ? '<div class="job-hint">You can cancel until the artisan starts the job. Your escrow comes straight back to your wallet.</div>' : '');
+  else if (b.status === 'IN_PROGRESS') panel += '<div class="job-hint">The job has started, so it can no longer be cancelled in the app. Contact support if something goes wrong.</div>';
 
   setText('cj-tag', tag);
   setText('cj-title', title);
@@ -5685,13 +5776,14 @@ async function realSubmitRating() {
 
 /* ---------------- Disputes & issue reports ---------------- */
 // Platform cut and the confirm window, from the server so the text always matches.
-var APP_CFG = { commissionPercent: 10, autoReleaseMinutes: 5 };
+var APP_CFG = { commissionPercent: 10, autoReleaseSeconds: 90 };
 function loadAppConfig() {
   apiFetch('/config/app').then(function (d) { if (d) { APP_CFG = d; applyCommissionText(); applyContent(d); } }).catch(function () {});
 }
 function releaseWindowText() {
-  var m = APP_CFG.autoReleaseMinutes;
-  return m >= 60 ? Math.round(m / 60) + ' hour' + (m >= 120 ? 's' : '') : m + ' minute' + (m === 1 ? '' : 's');
+  var n = APP_CFG.autoReleaseSeconds || 90;
+  if (n < 120) return n + ' seconds';
+  return n < 7200 ? Math.round(n / 60) + ' minutes' : Math.round(n / 3600) + ' hours';
 }
 function takeHomeKobo(kobo) { return Math.round((kobo || 0) * (100 - APP_CFG.commissionPercent) / 100); }
 function applyCommissionText() {
@@ -5703,7 +5795,7 @@ function applyCommissionText() {
 // Mins:secs left before the escrow releases on its own.
 function releaseCountdown(b) {
   if (!b.completedAt) return '';
-  var left = new Date(b.completedAt).getTime() + APP_CFG.autoReleaseMinutes * 60000 - Date.now();
+  var left = new Date(b.completedAt).getTime() + (APP_CFG.autoReleaseSeconds || 90) * 1000 - Date.now();
   if (left <= 0) return 'Releasing now…';
   var s = Math.ceil(left / 1000);
   return 'Releases automatically in ' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
@@ -5791,7 +5883,8 @@ async function fillDisputeBox(elId, booking, asArtisan) {
       (t.requestedRefundKobo ? '<div class="db-line">Refund asked: ' + fmtNaira(t.requestedRefundKobo) + '</div>' : '') +
       (t.secondPartyResponse ? '<div class="db-line">Artisan: “' + escapeHtml(t.secondPartyResponse) + '”</div>' : '<div class="db-line muted">Waiting for the artisan’s side</div>');
     if (t.resolvedAt) h += '<div class="db-res">Decision: ' + escapeHtml(disputeOutcomeText(t)) + '</div>';
-    else h += '<div class="db-line muted">' + fmtNaira(d.heldKobo) + ' held in escrow · FixMi is reviewing</div>';
+    else h += '<div class="db-line muted">' + fmtNaira(d.heldKobo) + ' held in escrow · FixMi is reviewing</div>' +
+      '<button class="btn" style="background:#EFF6FF;color:#1E40AF;border:1.5px solid #93C5FD;margin-top:10px" onclick="openDisputeChatFor(' + attrJson(booking.id) + ')">💬 Chat with FixMi about this</button>';
     if (asArtisan && !t.resolvedAt && !t.secondPartyResponse) {
       h += '<button class="btn" style="background:var(--orange);color:#fff;margin-top:10px" onclick="openDisputeForm(\'respond\',' + attrJson({ id: booking.id, agreedPriceKobo: booking.agreedPriceKobo }) + ')">Add Your Side</button>';
     }
@@ -6087,6 +6180,10 @@ async function loadChatThreads(listId) {
   if (!list) return;
   try {
     var data = await apiFetch('/chat/threads');
+    // Only conversations worth showing: ones with messages, or for a job that is still open. Newest first.
+    var LIVE = ['PENDING_PAYMENT', 'REQUESTED', 'ACCEPTED', 'PAID', 'IN_PROGRESS', 'COMPLETED', 'DISPUTED'];
+    data.threads = (data.threads || []).filter(function (t) { return (t.messages && t.messages.length) || !t.booking || LIVE.indexOf(t.booking.status) !== -1; })
+      .sort(function (x, y) { var xt = x.messages && x.messages[0] ? x.messages[0].createdAt : x.createdAt, yt = y.messages && y.messages[0] ? y.messages[0].createdAt : y.createdAt; return new Date(yt) - new Date(xt); });
     if (!data.threads.length) {
       // demo accounts still have their sample chats below
       list.innerHTML = document.body.classList.contains('fresh-acct') ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">No conversations yet — they start once a job is accepted.</div>' : '';
@@ -6094,7 +6191,8 @@ async function loadChatThreads(listId) {
     }
     list.innerHTML = data.threads.map(function (t) {
       var other = (t.participants || []).map(function (p) { return p.user; }).filter(function (u) { return u && window.currentUser && u.id !== window.currentUser.id; })[0];
-      var name = other ? escapeHtml(other.name) : 'Conversation';
+      var isSupport = !other || other.role === 'ADMIN';
+      var name = isSupport ? 'FixMi Support' : escapeHtml(other.name);
       var last = t.messages && t.messages[0] ? escapeHtml(t.messages[0].body) : 'No messages yet';
       return (
         '<div class="chat-item" onclick="openChatThread(' + attrJson(t.id) + ',' + attrJson(other ? other.name : 'Conversation') + ',' + attrJson(other || null) + ',' + attrJson(t.booking || null) + ')">' +
@@ -6164,7 +6262,9 @@ async function loadChatMessages(threadId) {
 function appendChatMessage(m, isMine, skipScroll) {
   var area = document.getElementById('msg-area');
   if (!area) return;
+  if (m.id && area.querySelector('[data-mid="' + m.id + '"]')) return; // already shown (the server echoes your own message back)
   var div = document.createElement('div');
+  if (m.id) div.setAttribute('data-mid', m.id);
   div.className = 'msg ' + (isMine ? 'sent' : 'recv');
   var time = document.createElement('div');
   time.className = 'msg-time';
@@ -6313,10 +6413,11 @@ function timeAgo(d) {
 function requestCard(b, where) {
   var look = categoryLook(b.category), mine = b.myOffer, id = attrJson(b.id), key = where + '-' + b.id;
   var onTable = mine && mine.lastBy === 'CUSTOMER' && mine.customerPriceKobo ? mine.customerPriceKobo : b.priceKobo;
-  var head = '<div class="rq-head"><span class="rq-tag">' + (b.artisanId ? '⭐ BOOKED YOU' : '🚨 NEW JOB') + '</span><span class="rq-time">' + timeAgo(b.createdAt) + '</span></div>' +
+  var head = '<div class="rq-head"><span class="rq-tag">' + (b.artisanId ? '⭐ BOOKED YOU' : '🚨 NEW JOB') + '</span><span class="rq-time">' + timeAgo(b.createdAt) + escapeHtml(distanceText(b)) + '</span></div>' +
     '<div class="rq-title">' + look[0] + ' ' + escapeHtml(b.category) + '</div>' +
     '<div class="rq-issue">"' + escapeHtml(b.issue) + '"</div>' +
-    '<div class="rq-addr">📍 ' + escapeHtml(b.address) + (b.customer ? ' · ' + escapeHtml(firstName(b.customer.name)) : '') + '</div>';
+    '<div class="rq-addr">📍 ' + escapeHtml(b.address) + (b.customer ? ' · ' + escapeHtml(firstName(b.customer.name)) : '') + '</div>' +
+    photoStrip(b.photos);
   var bodyHtml;
   if (mine && mine.status === 'PENDING' && mine.lastBy === 'ARTISAN') {
     bodyHtml = '<div class="rq-sent">' + (mine.isHold ? '⏸ You offered <b>Price on Hold</b>' : 'You offered <b>' + fmtNaira(mine.priceKobo) + '</b>') + ' — waiting for the customer.</div>' +
@@ -6326,10 +6427,10 @@ function requestCard(b, where) {
     var counter = mine && mine.lastBy === 'CUSTOMER';
     bodyHtml = '<div class="rq-price">' + (counter ? 'Customer counter-offer: ' : 'Customer offers: ') + fmtNaira(onTable) + '</div>' +
       '<div class="rq-take">You receive ' + fmtNaira(takeHomeKobo(onTable)) + ' after FixMi’s ' + APP_CFG.commissionPercent + '%</div>' +
-      '<div class="rq-help">Accept the price, send a counter offer, or put Price on Hold if you need to see the job first.</div>' +
+      '<div class="rq-help">Accept the price, offer your own price, or put Price on Hold if you need to see the job first.</div>' +
       '<div class="oc-acts"><button class="oc-btn ghost" onclick="artisanRespondTo(' + id + ',\'decline\')">Decline</button>' +
       '<button class="oc-btn green" onclick="artisanRespondTo(' + id + ',\'accept\')">Accept ' + fmtNaira(onTable) + '</button></div>' +
-      '<div class="oc-acts"><button class="oc-btn blue" onclick="toggleRqCounter(' + attrJson(key) + ')">💬 Counter Offer</button>' +
+      '<div class="oc-acts"><button class="oc-btn blue" onclick="toggleRqCounter(' + attrJson(key) + ')">💬 Offer your price</button>' +
       '<button class="oc-btn orange" onclick="artisanRespondTo(' + id + ',\'hold\')">⏸ Price on Hold</button></div>';
   }
   return '<div class="rq-card">' + head + bodyHtml +
@@ -6478,13 +6579,16 @@ function renderArtJob() {
     tag = 'Arrived'; title = 'Start the job when you’re ready';
     panel = '<button class="btn btn-g" onclick="artisanJobStep(' + id + ',\'start\')">🔧 Start Work</button>';
   }
-  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="artisanCancelJob(this,' + id + ')">Cancel Job</button>';
+  if (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt) { startLocationSharing(); panel += '<div class="job-hint">📡 The customer can follow you on the map while you’re on the way.</div>'; }
+  else stopLocationSharing();
+  if (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1) cancel = true; // until you tap Start Work
+  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="artisanCancelJob(this,' + id + ')">Cancel Job</button><div class="job-hint">You can cancel until you start the job.</div>';
   setText('aj-tag', tag);
   setText('aj-title', title);
   setHTML('aj-steps', b.status === 'CANCELLED' ? '' : stepsHtml(b));
   setHTML('aj-person',
     '<div class="feat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0);margin:0;width:52px;height:52px;font-size:26px">👤</div>' +
-    '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div></div>' +
+    '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div>' + photoStrip(b.photos) + '</div>' +
     contactButtons(c.name, c.phone, c.id, b.id, '👤'));
   setHTML('aj-money',
     '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : 'On hold') + '</b></div>' +
@@ -6509,24 +6613,17 @@ function artisanSubmitOnsite(bookingId) {
   if (!p) { toast('Enter the agreed price'); return; }
   artisanJobStep(bookingId, 'onsite-price', { priceKobo: p });
 }
-var _jobCancelArmed = 0;
 async function artisanCancelJob(btn, bookingId) {
-  if (Date.now() - _jobCancelArmed > 4000) {
-    _jobCancelArmed = Date.now();
-    btn.dataset.label = btn.dataset.label || btn.textContent;
-    btn.textContent = 'Tap again to cancel this job';
-    setTimeout(function () { btn.textContent = btn.dataset.label; }, 4000);
-    return;
-  }
-  _jobCancelArmed = 0;
-  try {
-    var data = await apiFetch('/bookings/' + bookingId + '/cancel', { method: 'POST', body: {} });
-    _job = data.booking;
-    renderArtJob();
-    toast('Job cancelled — the customer’s escrow was refunded');
-  } catch (e) {
-    toast('❌ ' + e.message);
-  }
+  openCancelModal({
+    role: 'artisan', title: 'Cancel this job?', sub: 'The customer’s escrow is refunded to them straight away.', needReason: true,
+    onConfirm: async function (reason) {
+      try {
+        var data = await apiFetch('/bookings/' + bookingId + '/cancel', { method: 'POST', body: { reason: reason } });
+        _job = data.booking; renderArtJob();
+        toast('Job cancelled — the customer’s escrow was refunded');
+      } catch (e) { toast('❌ ' + e.message); }
+    }
+  });
 }
 
 /* ---------------- Notifications ---------------- */
@@ -6623,7 +6720,7 @@ async function topUpWallet() {
       total: kobo, title: '💰 Add funds', sub: 'The money goes into your wallet.', rows: [], allow: ['CARD', 'USSD', 'BANK_TRANSFER'],
       onConfirm: async function (method) {
         try {
-          var d = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'WALLET_DEPOSIT', method: method, amountKobo: kobo } });
+          var d = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'WALLET_DEPOSIT', method: method, amountKobo: kobo, gateway: window._payGateway } });
           continuePayment(d, { purpose: 'WALLET_DEPOSIT' });
         } catch (err) { toast('❌ ' + err.message); }
       }
@@ -6707,7 +6804,7 @@ async function openBookingDetail(id) {
   var label = (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
   var other = asArtisan ? b.customer : (b.artisan && b.artisan.user);
   var rows = [
-    ['Description', escapeHtml(b.issue)],
+    ['Description', escapeHtml(b.issue) + photoStrip(b.photos)],
     ['Location', escapeHtml(b.address)],
     ['Requested', new Date(b.createdAt).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })],
     ['Budget', fmtNaira(b.priceKobo)],
@@ -7126,7 +7223,7 @@ async function confirmPromoPayment() {
     rows: [[pkg, def.priceKobo || 0]],
     onConfirm: async function (method) {
       try {
-        var data = await apiFetch('/users/me/promote', { method: 'POST', body: { plan: plan, paymentMethod: method } });
+        var data = await apiFetch('/users/me/promote', { method: 'POST', body: { plan: plan, paymentMethod: method, gateway: window._payGateway } });
         if (data.payment) { continuePayment(data.payment, { purpose: 'FEATURE_BOOST_PAYMENT', plan: plan }); return; }
         var until = new Date(data.artisanProfile.featuredUntil).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
         toast('✅ ' + data.plan + ' active — you’re featured until ' + until);
@@ -7590,6 +7687,15 @@ async function openEscrowModal(opts) {
       var sub = k === 'WALLET' ? ('Balance ' + fmtNaira(m.balanceKobo) + (short ? ' · not enough' : ' · pay instantly')) : k === 'CARD' ? 'Pay securely online' : k === 'USSD' ? 'Pay with your bank’s USSD code' : 'Send to our account, then we confirm';
       return '<button type="button" data-method="' + k + '"' + (dis ? ' disabled' : '') + ' onclick="selectEscrowMethod(this)" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;margin-bottom:9px;border-radius:13px;border:1.5px solid var(--border);background:#fff;cursor:' + (dis ? 'not-allowed' : 'pointer') + ';opacity:' + (dis ? '.5' : '1') + ';font-family:inherit"><span style="font-size:22px">' + PAY_LABELS[k][0] + '</span><span><b style="font-size:14px;color:var(--navy)">' + PAY_LABELS[k][1] + '</b><br><small style="color:var(--muted)">' + sub + '</small></span></button>';
     }).join(''));
+    _em.gateway = null;
+    var g = m.gateways || {};
+    if (g.paystack && g.flutterwave) {
+      _em.gateway = 'paystack';
+      setHTML('em-gateway', '<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:4px 0 8px">Pay card / USSD through</div><div style="display:flex;gap:8px;margin-bottom:12px">' +
+        ['paystack', 'flutterwave'].map(function (k) { return '<button type="button" data-gw="' + k + '" onclick="pickGateway(this)" style="flex:1;padding:10px;border-radius:12px;border:1.5px solid ' + (k === 'paystack' ? 'var(--g)' : 'var(--border)') + ';background:' + (k === 'paystack' ? 'var(--g3)' : '#fff') + ';font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;text-transform:capitalize">' + k + '</button>'; }).join('') + '</div>');
+    } else setHTML('em-gateway', '');
+    if (m.testMode) setText('em-test-note', 'Test mode: nothing real is charged. Every method completes so you can try the full flow.');
+    else setText('em-test-note', '');
     if (short) {
       setText('em-wallet-line', 'Your wallet balance is ' + fmtNaira(m.balanceKobo) + ', which is not enough for this. Pick another method' + (m.card || m.bankTransfer ? '' : ' or add funds to your wallet first') + '.');
       if (!m.card && !m.bankTransfer) setHTML('em-methods', document.getElementById('em-methods').innerHTML + '<button class="btn btn-g" onclick="cancelEscrowModal();openWallet()">+ Add funds to wallet</button>');
@@ -7597,6 +7703,11 @@ async function openEscrowModal(opts) {
   } catch (e) {
     setHTML('em-methods', '<div class="empty-note">' + escapeHtml(e.message) + '</div>');
   }
+}
+function pickGateway(btn) {
+  if (!_em) return;
+  _em.gateway = btn.getAttribute('data-gw');
+  document.querySelectorAll('#em-gateway button').forEach(function (b) { var on = b === btn; b.style.borderColor = on ? 'var(--g)' : 'var(--border)'; b.style.background = on ? 'var(--g3)' : '#fff'; });
 }
 function selectEscrowMethod(btn) {
   _em.method = btn.getAttribute('data-method');
@@ -7615,6 +7726,7 @@ function cancelEscrowModal() {
 function confirmEscrowModal() {
   if (!_em || !_em.method) return;
   var method = _em.method, fn = _em.onConfirm;
+  window._payGateway = (method === 'CARD' || method === 'USSD') ? _em.gateway : null;
   document.getElementById('escrow-modal').style.display = 'none';
   _em = null;
   fn(method);
@@ -7622,14 +7734,80 @@ function confirmEscrowModal() {
 
 /* What happens after a card/USSD link or a bank-transfer request is created. */
 function continuePayment(payment, ctx) {
-  if (payment && payment.authorizationUrl) {
-    try { sessionStorage.setItem('fixmi_pay_ctx', JSON.stringify(Object.assign({ ref: payment.reference }, ctx))); } catch (e) {}
-    toast('Opening secure payment…');
-    window.location.href = payment.authorizationUrl;
-    return;
-  }
+  if (payment && payment.authorizationUrl) { openCheckoutOverlay(payment, ctx || {}); return; }
+  if (payment && payment.testCheckout) { openTestCheckout(payment, ctx || {}); return; }
   if (payment && payment.manual) { showTransferScreen(payment, ctx); return; }
   toast('❌ Could not start the payment');
+}
+
+/* Card / USSD page shown inside the app (Paystack or Flutterwave), with the app checking in the background. */
+var _payPoll = null;
+function openCheckoutOverlay(payment, ctx) {
+  closeCheckoutOverlay(true);
+  var ov = document.createElement('div');
+  ov.id = 'checkout-ov';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:700;background:#fff;display:flex;flex-direction:column';
+  ov.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--navy);color:#fff"><button type="button" id="checkout-back" aria-label="Back" style="width:38px;height:38px;border-radius:11px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:18px;cursor:pointer">←</button>' +
+    '<div style="flex:1;font-weight:800;font-size:14px">🔒 Secure checkout</div><a href="' + escapeHtml(payment.authorizationUrl) + '" target="_blank" rel="noopener" style="font-size:11px;color:rgba(255,255,255,.7)">Open in new tab</a></div>' +
+    '<div id="checkout-status" style="padding:8px 14px;font-size:12px;color:var(--muted);background:var(--gray)">Complete your payment below. This page updates by itself.</div>' +
+    '<iframe src="' + escapeHtml(payment.authorizationUrl) + '" title="Checkout" allow="payment" style="flex:1;width:100%;border:0"></iframe>';
+  document.body.appendChild(ov);
+  var tries = 0;
+  _payPoll = setInterval(async function () {
+    tries++;
+    try {
+      var r = await apiFetch('/payments/verify/' + encodeURIComponent(payment.reference));
+      closeCheckoutOverlay(true);
+      finishPayment(Object.assign({ ref: payment.reference }, ctx, { purpose: r.purpose || ctx.purpose, bookingId: r.bookingId || ctx.bookingId }));
+    } catch (e) {
+      if (e.status !== 402 && e.status !== 404 && tries % 5 === 0) { var st = document.getElementById('checkout-status'); if (st) st.textContent = 'Still waiting for confirmation…'; }
+    }
+    if (tries > 150) closeCheckoutOverlay(true);
+  }, 4000);
+  document.getElementById('checkout-back').onclick = function () {
+    closeCheckoutOverlay(true);
+    // Check once more in the background: a payment that did go through is still recorded.
+    apiFetch('/payments/verify/' + encodeURIComponent(payment.reference)).then(function () { finishPayment(ctx); }).catch(function () {
+      toast('Payment cancelled. No money was taken.');
+      leavePaymentFlow(ctx);
+    });
+  };
+}
+function closeCheckoutOverlay(stopOnly) {
+  clearInterval(_payPoll); _payPoll = null;
+  var ov = document.getElementById('checkout-ov'); if (ov) ov.remove();
+}
+/* Backing out of a payment goes back to where it started, never out of the app. */
+function leavePaymentFlow(ctx) {
+  if (ctx && ctx.purpose === 'BOOKING_PAYMENT') { resumeCustomerBooking(true); return; }
+  goBack();
+}
+
+/* Test mode: a practice checkout so every payment method can be tried without real money. */
+function openTestCheckout(p, ctx) {
+  _xfer = { id: p.requestId, ctx: ctx, amountKobo: p.amountKobo };
+  var isUssd = p.channel === 'USSD';
+  closeCheckoutOverlay(true);
+  var ov = document.createElement('div');
+  ov.id = 'checkout-ov';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:700;background:#fff;display:flex;flex-direction:column;overflow:auto';
+  ov.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--navy);color:#fff"><button type="button" id="tc-back" aria-label="Back" style="width:38px;height:38px;border-radius:11px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:18px;cursor:pointer">←</button><div style="flex:1;font-weight:800;font-size:14px">🔒 Secure checkout <span style="background:#F59E0B;color:#000;border-radius:8px;padding:2px 7px;font-size:10px;margin-left:6px">TEST MODE</span></div></div>' +
+    '<div style="padding:18px;max-width:440px;margin:0 auto;width:100%"><div style="text-align:center;margin-bottom:14px"><div style="font-size:12px;color:var(--muted)">Amount</div><div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:30px;color:var(--navy)">' + fmtNaira(p.amountKobo) + '</div></div>' +
+    (isUssd
+      ? '<div class="card" style="margin-bottom:12px;text-align:center"><div style="font-size:12px;color:var(--muted)">Dial this code on your phone</div><div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:24px;margin:6px 0">*737*000*' + Math.round(p.amountKobo / 100) + '#</div><div style="font-size:12px;color:var(--muted)">Practice code. No real bank is called.</div></div>'
+      : '<div class="fg"><label class="label" for="tc-card">Card number</label><input class="input" id="tc-card" inputmode="numeric" placeholder="4084 0840 8408 4081" maxlength="23"></div><div style="display:flex;gap:10px"><div class="fg" style="flex:1"><label class="label" for="tc-exp">Expiry</label><input class="input" id="tc-exp" placeholder="MM/YY" maxlength="5"></div><div class="fg" style="flex:1"><label class="label" for="tc-cvv">CVV</label><input class="input" id="tc-cvv" inputmode="numeric" placeholder="408" maxlength="4"></div></div>') +
+    '<div class="info blue" style="margin:10px 0 14px"><span>ℹ️</span><span>Test mode: nothing real is charged. Use any details.</span></div>' +
+    '<button type="button" class="btn btn-g" id="tc-pay">' + (isUssd ? 'I’ve dialled the code' : 'Pay ' + fmtNaira(p.amountKobo)) + '</button><div id="tc-err" class="err" style="margin-top:10px;font-size:13px;color:#DC2626"></div></div>';
+  document.body.appendChild(ov);
+  document.getElementById('tc-back').onclick = function () { closeCheckoutOverlay(true); toast('Payment cancelled. No money was taken.'); leavePaymentFlow(ctx); _xfer = null; };
+  document.getElementById('tc-pay').onclick = async function () {
+    var btn = this; btn.disabled = true; btn.textContent = 'Processing…';
+    try {
+      await apiFetch('/payments/manual/' + p.requestId + '/dev-confirm', { method: 'POST', body: {} });
+      closeCheckoutOverlay(true); _xfer = null;
+      finishPayment(ctx);
+    } catch (e) { btn.disabled = false; btn.textContent = 'Try again'; document.getElementById('tc-err').textContent = e.message; }
+  };
 }
 
 /* Bank transfer for a booking, boost or top-up: show the account, reference and wait for confirmation. */
@@ -7647,6 +7825,11 @@ function showTransferScreen(p, ctx) {
   go('pay-transfer');
   clearInterval(_xferTimer);
   _xferTimer = setInterval(pollTransfer, 6000);
+}
+function leaveTransfer() {
+  clearInterval(_xferTimer);
+  var ctx = _xfer && _xfer.ctx; _xfer = null;
+  leavePaymentFlow(ctx || {});
 }
 async function pollTransfer() {
   if (!_xfer) return clearInterval(_xferTimer);
@@ -7689,7 +7872,7 @@ function topUpShortfall(e) {
     rows: [['Extra needed', short]], allow: ['CARD', 'USSD', 'BANK_TRANSFER'],
     onConfirm: async function (method) {
       try {
-        var d = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'WALLET_DEPOSIT', method: method, amountKobo: short } });
+        var d = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'WALLET_DEPOSIT', method: method, amountKobo: short, gateway: window._payGateway } });
         continuePayment(d, { purpose: 'WALLET_DEPOSIT', returnToBooking: true });
       } catch (err) { toast('❌ ' + err.message); }
     }
@@ -7742,10 +7925,10 @@ function payPendingBooking() {
   if (!b || b.status !== 'PENDING_PAYMENT') return;
   openEscrowModal({
     total: b.priceKobo, title: '🔒 Pay into Escrow', sub: 'Artisans see your request as soon as this is paid.',
-    rows: [['Your budget, held in escrow', b.priceKobo], ['FixMi keeps ' + (APP_CFG.commissionPercent || 10) + '% of the final price, paid by the artisan.', null]],
+    rows: [['Your budget, held in escrow', b.priceKobo]],
     onConfirm: async function (method) {
       try {
-        var r = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'BOOKING_PAYMENT', bookingId: b.id, method: method } });
+        var r = await apiFetch('/payments/checkout', { method: 'POST', body: { purpose: 'BOOKING_PAYMENT', bookingId: b.id, method: method, gateway: window._payGateway } });
         if (r.paid) { finishPayment({ purpose: 'BOOKING_PAYMENT', bookingId: b.id }); return; }
         continuePayment(r, { purpose: 'BOOKING_PAYMENT', bookingId: b.id });
       } catch (e) { toast('❌ ' + e.message); }
@@ -7774,6 +7957,123 @@ function renderCorpPlans() {
       '<div style="font-size:12px;color:' + textCol + ';line-height:1.8;margin-bottom:12px">✓ ' + escapeHtml(jobs) + '<br>✓ ' + cats + '<br>✓ Verified artisans only<br>✓ ' + fmtNaira(p.priceKobo) + ' corporate escrow, refundable if unused</div>' +
       '<button onclick="choosePlan(' + attrJson(k) + ')" style="width:100%;background:' + (dark || popular ? '#00C65E' : '#0B1A2E') + ';color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Choose ' + escapeHtml(p.label) + ' →</button></div>';
   }).join('');
+}
+
+/* ---------------- Photos of the issue ---------------- */
+function photoStrip(urls) {
+  if (!urls || !urls.length) return '';
+  return '<div class="photo-strip">' + urls.map(function (u) { return '<img src="' + escapeHtml(u) + '" alt="Photo of the issue" loading="lazy" onclick="openPhoto(' + attrJson(u) + ')">'; }).join('') + '</div>';
+}
+function openPhoto(url) {
+  var ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:14px';
+  ov.onclick = function () { ov.remove(); };
+  ov.innerHTML = '<img src="' + escapeHtml(url) + '" alt="Photo" style="max-width:100%;max-height:100%;border-radius:12px"><button type="button" aria-label="Close" style="position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer">✕</button>';
+  document.body.appendChild(ov);
+}
+// Uploads the photos chosen on the request form and returns their addresses.
+async function uploadRequestPhotos() {
+  var urls = [];
+  for (var i = 0; i < Math.min(mediaFiles.length, 5); i++) {
+    var blob = await (await fetch(mediaFiles[i].url)).blob();
+    var fd = new FormData();
+    fd.append('photo', blob, 'issue-' + (i + 1) + '.jpg');
+    urls.push((await apiFetch('/support/evidence', { method: 'POST', body: fd })).url);
+  }
+  return urls;
+}
+function kmBetween(lat1, lng1, lat2, lng2) {
+  var R = 6371, toRad = function (d) { return d * Math.PI / 180; };
+  var dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+function distanceText(b) {
+  var me = window._myCoords;
+  if (!me || b.lat == null || b.lng == null) return '';
+  var km = kmBetween(me.lat, me.lng, b.lat, b.lng);
+  return ' · ' + (km < 1 ? Math.max(0.1, Math.round(km * 10) / 10) + ' km' : km.toFixed(1) + ' km') + ' away';
+}
+
+/* ---------------- Live location and the map ---------------- */
+var _locWatch = null, _trk = null;
+function startLocationSharing() {
+  if (_locWatch !== null || !navigator.geolocation) return;
+  var last = 0;
+  _locWatch = navigator.geolocation.watchPosition(function (pos) {
+    window._myCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    var now = Date.now();
+    if (now - last < 5000) return;
+    last = now;
+    if (_socket) _socket.emit('artisan:location', window._myCoords);
+  }, function () {}, { enableHighAccuracy: true, maximumAge: 4000, timeout: 20000 });
+}
+function stopLocationSharing() {
+  if (_locWatch !== null && navigator.geolocation) navigator.geolocation.clearWatch(_locWatch);
+  _locWatch = null;
+}
+function loadLeaflet(cb) {
+  if (window.L) return cb();
+  var css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.appendChild(css);
+  var sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  sc.onload = function () { cb(); }; sc.onerror = function () { cb(new Error('The map could not load. Check your connection.')); };
+  document.head.appendChild(sc);
+}
+function trkIcon(emoji) { return L.divIcon({ html: '<div style="font-size:28px;line-height:28px;text-shadow:0 1px 3px rgba(0,0,0,.4)">' + emoji + '</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] }); }
+function openTrackMap() {
+  var b = _booking;
+  if (!b || !b.artisan) { toast('No artisan to track yet'); return; }
+  var u = b.artisan.user || {};
+  setText('trk-title', 'Tracking ' + firstName(u.name));
+  setHTML('trk-contact', contactButtons(u.name, u.phone, u.id, b.id, '👷'));
+  setText('trk-status', 'Waiting for ' + firstName(u.name) + '’s location…'); setText('trk-sub', '');
+  go('track-map');
+  if (_socket) _socket.emit('booking:join', { bookingId: b.id });
+  loadLeaflet(function (err) {
+    if (err) { setText('trk-status', err.message); return; }
+    initTrackMap(b);
+  });
+}
+function initTrackMap(b) {
+  var el = document.getElementById('trk-map');
+  if (_trk && _trk.map) { try { _trk.map.remove(); } catch (e) {} }
+  var art = b.artisan && b.artisan.lat != null ? [b.artisan.lat, b.artisan.lng] : null;
+  var dest = b.lat != null ? [b.lat, b.lng] : (window._reqPos ? [window._reqPos.lat, window._reqPos.lng] : null);
+  var map = L.map(el).setView(art || dest || [6.5244, 3.3792], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+  _trk = { map: map, bookingId: b.id, art: null, dest: null, last: null };
+  if (dest) _trk.dest = L.marker(dest, { icon: trkIcon('📍') }).addTo(map);
+  else getPosition().then(function (p) { if (p && p.lat != null && _trk && _trk.map === map) { _trk.dest = L.marker([p.lat, p.lng], { icon: trkIcon('📍') }).addTo(map); updateTrackInfo(); } });
+  if (art) setArtisanPoint(art[0], art[1]);
+  [300, 900, 1800].forEach(function (ms) { setTimeout(function () { if (_trk && _trk.map === map) { map.invalidateSize(); if (_trk.last && _trk.dest) map.fitBounds(L.latLngBounds([[_trk.last.lat, _trk.last.lng], _trk.dest.getLatLng()]), { padding: [40, 40], maxZoom: 16 }); } }, ms); });
+  window.addEventListener('resize', function () { if (_trk && _trk.map === map) map.invalidateSize(); });
+}
+function setArtisanPoint(lat, lng) {
+  if (!_trk || !window.L) return;
+  if (_trk.art) _trk.art.setLatLng([lat, lng]); else _trk.art = L.marker([lat, lng], { icon: trkIcon('🧑‍🔧') }).addTo(_trk.map);
+  _trk.last = { lat: lat, lng: lng };
+  if (_trk.dest) _trk.map.fitBounds(L.latLngBounds([[lat, lng], _trk.dest.getLatLng()]), { padding: [40, 40], maxZoom: 16 }); else _trk.map.setView([lat, lng], 15);
+  updateTrackInfo();
+}
+function updateTrackInfo() {
+  if (!_trk || !_trk.last) return;
+  var fn = _booking && _booking.artisan ? firstName(_booking.artisan.user.name) : 'The artisan';
+  if (!_trk.dest) { setText('trk-status', fn + ' is on the way'); return; }
+  var d = _trk.dest.getLatLng(), km = kmBetween(_trk.last.lat, _trk.last.lng, d.lat, d.lng);
+  var mins = Math.max(1, Math.round(km / 25 * 60));
+  setText('trk-status', km < 0.15 ? fn + ' is almost there' : fn + ' is about ' + mins + ' min away');
+  setText('trk-sub', (km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km') + ' from you · updates live');
+}
+function closeTrackMap() {
+  if (_trk && _trk.map) { try { _trk.map.remove(); } catch (e) {} }
+  _trk = null; goBack();
+}
+
+async function openDisputeChatFor(bookingId) {
+  try {
+    var d = await apiFetch('/bookings/' + bookingId + '/dispute/chat', { method: 'POST', body: {} });
+    openChatThread(d.thread.id, 'FixMi Support', null, null);
+  } catch (e) { toast('❌ ' + e.message); }
 }
 </script>
 </body>

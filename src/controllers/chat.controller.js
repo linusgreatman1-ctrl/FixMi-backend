@@ -48,7 +48,8 @@ async function sendMessage(req, res, next) {
     const message = await prisma.chatMessage.create({ data: { threadId: thread.id, senderId: req.user.id, body: body.trim() } });
 
     const io = req.app.get("io");
-    io?.to(`chat:${thread.id}`).emit("chat:message", message);
+    // Every participant (and the sender's other devices) gets it on their own channel, once.
+    io?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`)]).emit("chat:message", message);
     for (const p of thread.participants) {
       if (p.userId === req.user.id) continue;
       notify(io, p.userId, "CHAT", "New message", body.trim().slice(0, 80), { threadId: thread.id }).catch(() => {});

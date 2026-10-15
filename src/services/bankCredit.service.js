@@ -68,7 +68,8 @@ function verifySignature(provider, req) {
 async function waiting(now = new Date()) {
   const since = new Date(now.getTime() - WINDOW_MS);
   const rows = await prisma.manualPaymentRequest.findMany({ where: { status: "PENDING", createdAt: { gt: since } }, include: { user: { select: { name: true, phone: true } } } });
-  return rows.map((r) => ({ kind: "MANUAL", id: r.id, ref: r.reference, amountKobo: r.amountKobo, holder: r.senderName || (r.user && r.user.name), contact: r.user && r.user.phone, createdAt: r.createdAt, label: String(r.purpose || "").replace(/_/g, " ").toLowerCase() }));
+  // Only real bank transfers wait for money; practice card checkouts (test mode) never do.
+  return rows.filter((r) => !r.channel || r.channel === "BANK_TRANSFER").map((r) => ({ kind: "MANUAL", id: r.id, ref: r.reference, amountKobo: r.amountKobo, holder: r.senderName || (r.user && r.user.name), contact: r.user && r.user.phone, createdAt: r.createdAt, label: String(r.purpose || "").replace(/_/g, " ").toLowerCase() }));
 }
 
 const words = (t) => new Set((String(t || "").toLowerCase().match(/[a-z]{3,}/g) || []));

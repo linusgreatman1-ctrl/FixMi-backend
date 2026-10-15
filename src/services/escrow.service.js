@@ -5,9 +5,10 @@ const { generateReference } = require("../utils/reference");
 
 // How long the customer has to confirm (or report "Job not completed")
 // after the artisan marks a job done before the money is released anyway.
-function autoReleaseMinutes() {
-  const n = Number(process.env.ESCROW_AUTO_RELEASE_MINUTES);
-  return Number.isFinite(n) && n > 0 ? n : 5;
+// 90 seconds by default; ESCROW_AUTO_RELEASE_SECONDS changes it.
+function autoReleaseSeconds() {
+  const n = Number(process.env.ESCROW_AUTO_RELEASE_SECONDS);
+  return Number.isFinite(n) && n > 0 ? n : 90;
 }
 
 // A booking is paid into escrow up front (real money already collected from
@@ -24,7 +25,7 @@ async function createHold({ bookingId, payerId, payeeId, amountKobo, autoRelease
       payerId,
       payeeId,
       amountKobo,
-      autoReleaseAt: autoRelease ? new Date(Date.now() + autoReleaseMinutes() * 60 * 1000) : null,
+      autoReleaseAt: autoRelease ? new Date(Date.now() + autoReleaseSeconds() * 1000) : null,
     },
   });
 }
@@ -154,7 +155,7 @@ async function resolveDisputedHolds(bookingId, outcome, refundKobo = 0) {
 }
 
 module.exports = {
-  autoReleaseMinutes,
+  autoReleaseSeconds,
   freezeHoldsForBooking,
   resolveDisputedHolds,
   createHold,

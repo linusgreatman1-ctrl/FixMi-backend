@@ -242,7 +242,8 @@ LOAD.disputes = function () {
         '<div class="side"><b>Artisan — ' + esc(art) + '</b><div>' + (t.secondPartyResponse ? esc(t.secondPartyResponse) : '<span class="muted">No response yet</span>') + '</div>' + photos(t.secondPartyEvidenceUrl, 'Artisan') + '</div>' +
         '<div class="muted">Job: ' + esc(b.category) + ' — ' + esc(b.issue) + '</div>';
       if (!t.resolvedAt) h += '<label>Note to both sides (optional)</label><textarea id="dn-' + t.id + '"></textarea><label>Refund to customer for a split (₦)</label><input id="da-' + t.id + '" type="number" min="1" placeholder="e.g. ' + Math.round(held / 200) + '"><div class="err" id="de-' + t.id + '"></div>' +
-        '<div class="row">' + btn('Pay artisan', 'dres', t.id, 'g', ' data-v="RELEASE"') + btn('Refund customer', 'dres', t.id, 'r', ' data-v="REFUND"') + btn('Split', 'dres', t.id, 'n', ' data-v="SPLIT"') + '</div>';
+        '<div class="row">' + btn('Pay artisan', 'dres', t.id, 'g', ' data-v="RELEASE"') + btn('Refund customer', 'dres', t.id, 'r', ' data-v="REFUND"') + btn('Split', 'dres', t.id, 'n', ' data-v="SPLIT"') + '</div>' +
+        '<div class="row" style="margin-top:8px">' + btn('💬 Chat with customer', 'dchat', t.id, 'l', ' data-v="CUSTOMER"') + btn('💬 Chat with artisan', 'dchat', t.id, 'l', ' data-v="ARTISAN"') + '</div>';
       return h + '</div>';
     }).join(''));
   }).catch(fail);
@@ -670,6 +671,7 @@ var ACT = {
     if (!confirm(o === 'RELEASE' ? 'Pay the artisan?' : o === 'REFUND' ? 'Refund the customer in full?' : 'Split as entered?')) return;
     done(api('/admin/disputes/' + id + '/resolve', body), 'de-' + id);
   },
+  dchat: function (id, el) { api('/admin/disputes/' + id + '/chat/' + el.dataset.v, {}).then(function (d) { openChat(d.threadId); }).catch(function (e) { alert(e.message); }); },
   wdfilter: function (id) { wdStatus = id; LOAD.withdrawals(); },
   wdpay: function (id) { if (!confirm('Confirm you have sent this money?')) return; done(api('/admin/withdrawals/' + id + '/pay', { note: val('wn-' + id) }), 'we-' + id); },
   wdreject: function (id) { if (!val('wn-' + id).trim()) { $('we-' + id).textContent = 'Write the reason in the box first.'; return; } if (!confirm('Decline and return the money to the wallet?')) return; done(api('/admin/withdrawals/' + id + '/reject', { reason: val('wn-' + id) }), 'we-' + id); },

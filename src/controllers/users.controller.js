@@ -184,7 +184,7 @@ async function promoteMe(req, res, next) {
       const done = await pay.purchaseBoost(req.user.id, planKey);
       return res.json(done);
     }
-    const payment = await pay.startCheckout({ user: req.user, purpose: "FEATURE_BOOST_PAYMENT", method, amountKobo: plan.priceKobo, targetId: planKey, req });
+    const payment = await pay.startCheckout({ user: req.user, purpose: "FEATURE_BOOST_PAYMENT", method, amountKobo: plan.priceKobo, targetId: planKey, gatewayName: req.body.gateway, req });
     res.json({ payment, plan: plan.label });
   } catch (err) {
     next(err);

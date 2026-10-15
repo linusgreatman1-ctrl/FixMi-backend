@@ -178,7 +178,7 @@ const sendChatMessage = wrap(async (req, res) => {
   }
   const message = await prisma.chatMessage.create({ data: { threadId: thread.id, senderId: req.user.id, body: body.slice(0, 2000) } });
   const io = req.app.get("io");
-  io?.to(`chat:${thread.id}`).emit("chat:message", message);
+  io?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`), `user:${req.user.id}`]).emit("chat:message", message);
   for (const p of thread.participants) {
     if (p.userId !== req.user.id) notify(io, p.userId, "CHAT", "FixMi support", body.slice(0, 80), { threadId: thread.id }).catch(() => {});
   }
@@ -196,6 +196,23 @@ const supportThreadForUser = wrap(async (req, res) => {
   if (existing) return res.json({ threadId: existing.id });
   const thread = await prisma.chatThread.create({ data: { participants: { create: [{ userId: target.id }, { userId: req.user.id }] } }, select: { id: true } });
   res.status(201).json({ threadId: thread.id });
+});
+
+// Opens (or finds) the admin's chat with one side of a dispute.
+const disputeChat = wrap(async (req, res) => {
+  const party = String(req.params.party || "").toUpperCase();
+  if (!["CUSTOMER", "ARTISAN"].includes(party)) return bad(res, "party must be CUSTOMER or ARTISAN.");
+  const ticket = await prisma.supportTicket.findUnique({ where: { id: req.params.ticketId } });
+  if (!ticket || !ticket.isDispute) return bad(res, "Dispute not found.", 404);
+  const partyUserId = party === "CUSTOMER" ? ticket.userId : ticket.secondPartyUserId;
+  if (!partyUserId) return bad(res, "That side of the dispute has no account on file.", 409);
+  let thread = await prisma.chatThread.findFirst({ where: { ticketId: ticket.id, party } });
+  if (!thread) thread = await prisma.chatThread.create({ data: { ticketId: ticket.id, party, participants: { create: [{ userId: partyUserId }] } } });
+  const members = await prisma.chatParticipant.findMany({ where: { threadId: thread.id }, select: { userId: true } });
+  for (const uid of [partyUserId, req.user.id]) {
+    if (!members.some((m) => m.userId === uid)) await prisma.chatParticipant.create({ data: { threadId: thread.id, userId: uid } });
+  }
+  res.json({ threadId: thread.id });
 });
 
 // --------------------------------------------------------------- bulk email
@@ -225,5 +242,5 @@ const sendBulkEmail = wrap(async (req, res) => {
 
 module.exports = {
   reports, subscriptions, listManualPayments, confirmManualPayment, rejectManualPayment,
-  listChatThreads, getChatMessages, sendChatMessage, supportThreadForUser, sendBulkEmail, generateReference,
+  disputeChat, listChatThreads, getChatMessages, sendChatMessage, supportThreadForUser, sendBulkEmail, generateReference,
 };

@@ -24,6 +24,7 @@ router.get("/tickets", ctrl.listTickets);
 router.patch("/tickets/:id", ctrl.updateTicket);
 router.get("/disputes", bookings.listDisputes);
 router.post("/disputes/:ticketId/resolve", bookings.resolveDispute);
+router.post("/disputes/:ticketId/chat/:party", more.disputeChat);
 router.get("/dashboard", ops.dashboard);
 router.get("/users/:id", ops.getUser);
 router.patch("/users/:id/status", ops.setUserStatus);

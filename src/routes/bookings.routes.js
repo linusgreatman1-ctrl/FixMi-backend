@@ -25,5 +25,6 @@ router.post("/:id/confirm", ctrl.confirmBooking);
 router.post("/:id/dispute", ctrl.openDispute);
 router.get("/:id/dispute", ctrl.getDispute);
 router.post("/:id/dispute/respond", ctrl.respondDispute);
+router.post("/:id/dispute/chat", ctrl.openDisputeChat);
 
 module.exports = router;

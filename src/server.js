@@ -45,13 +45,13 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "'unsafe-inline'", "https://js.paystack.co", "https://cdn.socket.io"],
+        "script-src": ["'self'", "'unsafe-inline'", "https://js.paystack.co", "https://cdn.socket.io", "https://cdnjs.cloudflare.com"],
         "script-src-attr": ["'self'", "'unsafe-inline'"],
-        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
         "font-src": ["'self'", "https://fonts.gstatic.com", "data:"],
-        "frame-src": ["'self'", "https://*.paystack.co", "https://*.paystack.com"],
-        "connect-src": ["'self'", "https://*.paystack.co", "https://*.paystack.com", "ws:", "wss:"],
-        "img-src": ["'self'", "data:", "blob:"],
+        "frame-src": ["'self'", "https://*.paystack.co", "https://*.paystack.com", "https://*.flutterwave.com", "https://checkout.flutterwave.com"],
+        "connect-src": ["'self'", "blob:", "data:", "https://*.paystack.co", "https://*.paystack.com", "https://*.flutterwave.com", "ws:", "wss:"],
+        "img-src": ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://cdnjs.cloudflare.com"],
       },
     },
   })
@@ -94,6 +94,7 @@ for (const route of ["/favicon.svg", "/favicon.ico"]) {
   app.get(route, (req, res) => res.type("image/svg+xml").set("Cache-Control", "public, max-age=86400").send(FAVICON_SVG));
 }
 
+app.get("/pay-done.html", (req, res) => res.sendFile(path.join(__dirname, "..", "public", "pay-done.html")));
 app.get("/health", (req, res) => res.json({ status: "ok", service: "fixmi-backend" }));
 app.get("/", (req, res) => res.json({ service: "fixmi-backend", status: "ok", app: "/app", health: "/health", api: "/api" }));
 

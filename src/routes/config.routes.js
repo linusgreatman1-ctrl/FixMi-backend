@@ -1,7 +1,7 @@
 const express = require("express");
 
 const { commissionPercent } = require("../config/money");
-const { autoReleaseMinutes } = require("../services/escrow.service");
+const { autoReleaseSeconds } = require("../services/escrow.service");
 const settings = require("../services/settings.service");
 
 const router = express.Router();
@@ -25,7 +25,7 @@ router.get("/ice-servers", (req, res) => {
 // customer has to confirm before escrow releases on its own.
 router.get("/app", async (req, res, next) => {
   try {
-    res.json({ commissionPercent: commissionPercent(), autoReleaseMinutes: autoReleaseMinutes(), ...(await settings.publicContent()) });
+    res.json({ commissionPercent: commissionPercent(), autoReleaseSeconds: autoReleaseSeconds(), ...(await settings.publicContent()) });
   } catch (err) {
     next(err);
   }

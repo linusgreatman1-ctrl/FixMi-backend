@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const prisma = require("../config/db");
-const paystack = require("../services/paystack.service");
 const wallet = require("../services/wallet.service");
+const gateway = require("../services/paymentGateway.service");
 const pay = require("../services/paymentApply.service");
 const { generateReference } = require("../utils/reference");
 
@@ -20,9 +20,10 @@ async function checkout(req, res, next) {
   try {
     const { purpose, bookingId } = req.body;
     const method = String(req.body.method || "").toUpperCase();
+    const gatewayName = req.body.gateway;
     if (purpose === "WALLET_DEPOSIT") {
       const amountKobo = Math.round(Number(req.body.amountKobo));
-      return res.json(await pay.startCheckout({ user: req.user, purpose, method, amountKobo, req }));
+      return res.json(await pay.startCheckout({ user: req.user, purpose, method, amountKobo, gatewayName, req }));
     }
     if (purpose === "BOOKING_PAYMENT") {
       const booking = await prisma.booking.findUnique({ where: { id: String(bookingId || "") } });
@@ -33,7 +34,7 @@ async function checkout(req, res, next) {
         await fundPendingBooking(req.app.get("io"), booking.id);
         return res.json({ paid: true });
       }
-      return res.json(await pay.startCheckout({ user: req.user, purpose, method, amountKobo: booking.priceKobo, targetId: booking.id, req }));
+      return res.json(await pay.startCheckout({ user: req.user, purpose, method, amountKobo: booking.priceKobo, targetId: booking.id, gatewayName, req }));
     }
     res.status(400).json({ error: "Unknown payment." });
   } catch (err) {
@@ -47,8 +48,7 @@ async function initializeWalletDeposit(req, res, next) {
   return checkout(req, res, next);
 }
 
-// Dev/demo shortcut: credits the wallet directly without a real charge.
-// Only while DEV_BYPASS_PAYMENTS is on.
+// Dev/demo shortcut: credits the wallet directly without a real charge. Only while DEV_BYPASS_PAYMENTS is on.
 async function devTopUp(req, res, next) {
   try {
     if (!wallet.devBypassEnabled()) return res.status(403).json({ error: "Dev bypass is not enabled." });
@@ -61,7 +61,7 @@ async function devTopUp(req, res, next) {
   }
 }
 
-// Payer-side status of a bank-transfer request (polled by the app).
+// Payer-side status of a bank-transfer / practice-checkout request (polled by the app).
 async function getManual(req, res, next) {
   try {
     const request = await prisma.manualPaymentRequest.findUnique({ where: { id: req.params.id } });
@@ -72,8 +72,8 @@ async function getManual(req, res, next) {
   }
 }
 
-// Testing only: lets the payer confirm their own transfer when DEV_BYPASS_PAYMENTS is on.
-// In production a transfer stays PENDING until an admin confirms it.
+// Testing only: lets the payer finish their own transfer or practice checkout while
+// DEV_BYPASS_PAYMENTS is on. In production a transfer stays PENDING until an admin confirms it.
 async function devConfirmManual(req, res, next) {
   try {
     if (!wallet.devBypassEnabled()) return res.status(403).json({ error: "Dev bypass is not enabled." });
@@ -89,7 +89,7 @@ async function devConfirmManual(req, res, next) {
 // the request goes back to pending so it can be retried.
 async function confirmManualRequest(id, adminId, io) {
   const claimed = await prisma.manualPaymentRequest.updateMany({ where: { id, status: "PENDING" }, data: { status: "CONFIRMED", processedById: adminId, processedAt: new Date() } });
-  if (!claimed.count) throw Object.assign(new Error("This transfer is already processed or does not exist."), { status: 409 });
+  if (!claimed.count) throw Object.assign(new Error("This payment is already processed or does not exist."), { status: 409 });
   const row = await prisma.manualPaymentRequest.findUnique({ where: { id } });
   try {
     await pay.applyPayment({ purpose: row.purpose, userId: row.userId, amountKobo: row.amountKobo, reference: row.reference, targetId: row.targetId }, io);
@@ -100,34 +100,32 @@ async function confirmManualRequest(id, adminId, io) {
   return row;
 }
 
-// Applies a verified Paystack payment once, however many times it is reported.
-async function applyOnce(data, io) {
-  const meta = data.metadata || {};
-  const reference = data.reference;
-  const already = await prisma.paymentWebhookEvent.findUnique({ where: { eventRef: reference } });
-  if (already) return { duplicate: true, purpose: meta.purpose, bookingId: meta.bookingId };
-  await prisma.paymentWebhookEvent.create({ data: { eventRef: reference, payload: data } });
+// Checks a card/USSD payment with the gateway it was paid on and, if it really
+// succeeded, applies it exactly once however many times it is checked (the app
+// polling, the return page, either webhook).
+async function confirmAndApply(reference, io) {
+  const d = await gateway.verifyTransaction(reference);
+  if (!d) return { paid: false, status: "unknown" };
+  const meta = d.metadata || {};
+  if (d.status !== "success") return { paid: false, status: d.status, purpose: meta.purpose, bookingId: meta.bookingId };
+  if (!(await gateway.claimApplication(reference))) return { paid: true, duplicate: true, purpose: meta.purpose, bookingId: meta.bookingId };
   try {
-    const r = await pay.applyPayment({ purpose: meta.purpose, userId: meta.userId, amountKobo: data.amount, reference, targetId: meta.bookingId || meta.plan }, io);
-    return r;
+    const r = await pay.applyPayment({ purpose: meta.purpose, userId: meta.userId, amountKobo: d.amount, reference, targetId: meta.bookingId || meta.plan }, io);
+    return { paid: true, ...r };
   } catch (err) {
-    await prisma.paymentWebhookEvent.delete({ where: { eventRef: reference } }).catch(() => {}); // let a retry apply it
+    await gateway.releaseApplication(reference); // let a retry apply it
     throw err;
   }
 }
 
-// Called by the app when the customer returns from the card page, and by the
-// webhook: both are safe to repeat.
 async function verifyPayment(req, res, next) {
   try {
-    const data = await paystack.verifyTransaction(req.params.reference);
-    const meta = data.metadata || {};
-    if (data.status !== "success") {
-      return res.status(402).json({ error: "Payment was not successful.", status: data.status, purpose: meta.purpose, bookingId: meta.bookingId });
-    }
-    if (meta.userId && meta.userId !== req.user.id) return res.status(403).json({ error: "This payment belongs to another account." });
-    const result = await applyOnce(data, req.app.get("io"));
-    res.json({ success: true, ...result });
+    const intent = await prisma.paymentIntent.findUnique({ where: { reference: req.params.reference } });
+    if (!intent) return res.status(404).json({ error: "Payment not found." });
+    if (intent.metadata && intent.metadata.userId && intent.metadata.userId !== req.user.id) return res.status(403).json({ error: "This payment belongs to another account." });
+    const r = await confirmAndApply(req.params.reference, req.app.get("io"));
+    if (!r.paid) return res.status(402).json({ error: "Payment was not successful.", status: r.status, purpose: r.purpose, bookingId: r.bookingId });
+    res.json({ success: true, ...r });
   } catch (err) {
     next(err);
   }
@@ -148,8 +146,9 @@ async function bankCreditWebhook(req, res, next) {
   }
 }
 
-// Paystack signs webhook bodies with HMAC-SHA512 of the raw body using the
-// secret key; checking it stops anyone posting a fake "payment succeeded".
+// Paystack signs webhook bodies with HMAC-SHA512 of the raw body using the secret
+// key; checking it stops anyone posting a fake "payment succeeded". We still check
+// the payment with Paystack before applying it.
 async function webhook(req, res, next) {
   try {
     const signature = req.headers["x-paystack-signature"];
@@ -159,7 +158,7 @@ async function webhook(req, res, next) {
 
     const event = req.body;
     if (event.event === "charge.success") {
-      await applyOnce(event.data, req.app.get("io"));
+      await confirmAndApply(event.data.reference, req.app.get("io"));
     } else if (event.event === "transfer.success" || event.event === "transfer.failed") {
       const status = event.event === "transfer.success" ? "PAID" : "FAILED";
       await prisma.withdrawal.updateMany({ where: { paystackRef: event.data.reference }, data: { status, processedAt: new Date() } });
@@ -170,4 +169,17 @@ async function webhook(req, res, next) {
   }
 }
 
-module.exports = { bankCreditWebhook, methods, checkout, initializeWalletDeposit, devTopUp, getManual, devConfirmManual, confirmManualRequest, verifyPayment, webhook };
+// Flutterwave sends the secret hash you set (FLW_SECRET_HASH) in the verif-hash header.
+async function flutterwaveWebhook(req, res, next) {
+  try {
+    const secretHash = process.env.FLW_SECRET_HASH;
+    if (!secretHash || req.headers["verif-hash"] !== secretHash) return res.status(401).json({ error: "Invalid webhook signature." });
+    const data = req.body && req.body.data;
+    if (data && data.tx_ref) await confirmAndApply(data.tx_ref, req.app.get("io"));
+    res.json({ received: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { bankCreditWebhook, methods, checkout, initializeWalletDeposit, devTopUp, getManual, devConfirmManual, confirmManualRequest, verifyPayment, webhook, flutterwaveWebhook };

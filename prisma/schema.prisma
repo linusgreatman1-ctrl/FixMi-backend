@@ -152,6 +152,8 @@ model Booking {
   lng      Float?
 
   priceKobo Int // the customer's budget / offered price
+  // Photos the customer attached to the request (up to 5), shown to artisans and on both job screens.
+  photos    String[]      @default([])
   status    BookingStatus @default(REQUESTED)
 
   // Escrow-first: the customer's budget is taken from their wallet when the
@@ -461,6 +463,8 @@ model NotificationPreference {
 
 model ChatThread {
   id        String   @id @default(uuid())
+  ticketId  String?
+  party     String?
   bookingId String?  @unique
   booking   Booking? @relation(fields: [bookingId], references: [id])
   createdAt DateTime @default(now())
@@ -721,6 +725,7 @@ model ManualPaymentRequest {
   reference       String              @unique
   // What the transfer is for: WALLET_DEPOSIT, BOOKING_PAYMENT or FEATURE_BOOST_PAYMENT.
   purpose         String              @default("WALLET_DEPOSIT")
+  channel         String              @default("BANK_TRANSFER")
   targetId        String?
   senderName      String?
   note            String?
@@ -749,4 +754,19 @@ model BankCredit {
   createdAt   DateTime @default(now())
 
   @@index([status, createdAt])
+}
+
+// Every card/USSD checkout started with a payment gateway (Paystack or
+// Flutterwave): which gateway, how much is due and what it is for. Checking a
+// payment always goes back to the same gateway, and what it pays for comes
+// from this record, never from the gateway's reply.
+model PaymentIntent {
+  id         String    @id @default(uuid())
+  reference  String    @unique
+  gateway    String    @default("paystack")
+  amountKobo Int
+  metadata   Json
+  email      String?
+  appliedAt  DateTime?
+  createdAt  DateTime  @default(now())
 }
