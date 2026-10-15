@@ -4850,6 +4850,7 @@ var SESSION_KEYS = ['fixme_access', 'fixme_refresh', 'fixme_user'];
         var v = localStorage.getItem(k);
         if (v !== null) sessionStorage.setItem(k, v);
       });
+      window._adoptedSession = true; // a new tab picks up the account last signed in on this device
     }
   } catch (e) {}
 })();
@@ -7139,6 +7140,8 @@ async function confirmPromoPayment() {
 (function boot() {
   addPasswordEyes();
   setTimeout(handlePayReturn, 900);
+  // A tab that picked up the last signed-in account says so, so two accounts are never mixed up.
+  if (window._adoptedSession && window.currentUser) setTimeout(function () { toast('Signed in as ' + window.currentUser.name + ' (' + (window.currentUser.role === 'ARTISAN' ? 'artisan' : 'customer') + '). Sign out to switch account.'); }, 1500);
   loadAppConfig();
   // Resume a stored session only if the server still accepts it, so an
   // expired or revoked login lands on the splash screen instead of a
