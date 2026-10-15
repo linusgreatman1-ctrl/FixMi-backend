@@ -50,12 +50,20 @@ th{color:var(--muted);font-weight:600}
 .scroll{overflow-x:auto}
 #modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:20}
 #modal .box{background:var(--card);border-radius:14px;padding:18px;max-width:720px;width:100%}
+.bell{position:relative;background:transparent;color:#fff;font-size:20px;padding:6px 10px;line-height:1}
+.bell .cnt{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;border-radius:10px;font-size:11px;line-height:17px;min-width:17px;padding:0 4px;font-weight:700}
+#bellpanel{position:fixed;top:54px;right:10px;width:min(380px,calc(100vw - 20px));max-height:70vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:30;display:none}
+#bellpanel .hd{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+.nitem{padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.nitem.unread{background:rgba(0,198,94,.08)}
+.nitem b{display:block;font-size:13px}.nitem span{font-size:12px;color:var(--muted)}
 .bars{display:flex;align-items:flex-end;gap:3px;height:60px;margin-top:6px}
 .bars i{flex:1;background:var(--g);border-radius:3px 3px 0 0;min-height:2px}
 </style>
 </head>
 <body>
-<header><b>Fix<span>Mi</span></b><small id="who">Admin</small><button class="l" id="out" hidden data-act="signout">Sign out</button></header>
+<header><b>Fix<span>Mi</span></b><small id="who">Admin</small><button class="bell" id="bell" hidden data-act="bell" aria-label="Notifications">🔔<span class="cnt" id="bellcnt" hidden>0</span></button><button class="l" id="out" hidden data-act="signout">Sign out</button></header>
+<div id="bellpanel"></div>
 <div id="shell">
   <nav id="nav" hidden></nav>
   <main>
@@ -70,6 +78,7 @@ th{color:var(--muted);font-weight:600}
   </main>
 </div>
 <div id="modal"><div class="box" id="mbox"></div></div>
+<script src="/socket.io/socket.io.js"></script>
 <script>
 var tok = null, me = null, current = 'dashboard';
 try { tok = sessionStorage.getItem('fixmi_admin'); } catch (e) {}
@@ -117,9 +126,9 @@ function refresh() { tab(current); }
 
 function show() {
   var signedIn = !!tok;
-  $('login').hidden = signedIn; $('app').hidden = !signedIn; $('nav').hidden = !signedIn; $('out').hidden = !signedIn;
+  $('login').hidden = signedIn; $('app').hidden = !signedIn; $('nav').hidden = !signedIn; $('out').hidden = !signedIn; $('bell').hidden = !signedIn;
   if (signedIn) {
-    api('/auth/me').then(function (d) { me = d.user; $('who').textContent = 'FixMi Admin' + (me.isSuperAdmin ? ' (Super Admin)' : ''); loadBadges(); tab(current); }).catch(function (e) { fail(e); });
+    api('/auth/me').then(function (d) { me = d.user; $('who').textContent = 'FixMi Admin' + (me.isSuperAdmin ? ' (Super Admin)' : ''); loadBadges(); tab(current); startBell(); }).catch(function (e) { fail(e); });
   }
 }
 function loadBadges() {
@@ -135,7 +144,7 @@ function signIn() {
     .then(function (d) { if (d.user.role !== 'ADMIN') throw new Error('This account is not an admin.'); tok = d.accessToken; try { sessionStorage.setItem('fixmi_admin', tok); } catch (x) {} show(); })
     .catch(function (err) { $('lerr').textContent = err.message; });
 }
-function signOut() { tok = null; me = null; try { sessionStorage.removeItem('fixmi_admin'); } catch (x) {} show(); }
+function signOut() { stopBell(); tok = null; me = null; try { sessionStorage.removeItem('fixmi_admin'); } catch (x) {} show(); }
 
 /* ---------- Dashboard ---------- */
 LOAD.dashboard = function () {
@@ -618,6 +627,63 @@ LOAD.livepreview = function () {
   $('lp-file').onchange = function () { lpFile = $('lp-file').value; $('lp-frame').src = '/' + lpFile.replace('/index.html', '/'); };
 };
 
+
+/* ---------- Notification bell: live alerts about what users are doing ---------- */
+var notifs = [], bellSocket = null, bellTimer = null, baseTitle = document.title;
+// Where each kind of alert should take you.
+function notifTarget(n) {
+  var d = n.data || {};
+  if (d.threadId) return { chat: d.threadId };
+  if (d.manualPaymentId || d.manualPaymentRequestId) return { tab: 'manualpayments' };
+  if (d.withdrawalId) return { tab: 'withdrawals' };
+  if (d.kycDocumentId) return { tab: 'kyc' };
+  if (d.safetyReportId) return { tab: 'safety' };
+  if (d.ticketId && /dispute/i.test(n.title)) return { tab: 'disputes' };
+  if (d.ticketId) return { tab: 'tickets' };
+  if (d.kind === 'ARTISAN_SIGNUP') return { tab: 'artisans' };
+  if (d.kind === 'APP_REVIEW') return { tab: 'appreviews' };
+  if (d.bookingId) return { booking: d.bookingId };
+  if (d.userId) return { user: d.userId };
+  return {};
+}
+function renderBell() {
+  var unread = notifs.filter(function (n) { return !n.readAt; }).length;
+  var c = $('bellcnt'); c.hidden = !unread; c.textContent = unread > 99 ? '99+' : unread;
+  document.title = (unread ? '(' + unread + ') ' : '') + baseTitle;
+  var panel = $('bellpanel');
+  panel.innerHTML = '<div class="hd"><b>Notifications</b><span>' + (unread ? btn('Mark all read', 'bellreadall', '', 'l') + ' ' : '') + btn('✕', 'bell', '', 'l') + '</span></div>' +
+    (notifs.length ? notifs.map(function (n) {
+      return '<div class="nitem' + (n.readAt ? '' : ' unread') + '" data-act="nopen" data-id="' + esc(n.id) + '"><b>' + esc(n.title) + '</b><span>' + esc(n.body) + '</span><br><span>' + timeAgo(n.createdAt) + '</span></div>';
+    }).join('') : '<div class="muted" style="padding:18px">Nothing yet. User activity will show up here.</div>');
+}
+function timeAgo(d) {
+  var s = Math.max(1, Math.round((Date.now() - new Date(d).getTime()) / 1000));
+  if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + ' min ago'; if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+  return new Date(d).toLocaleDateString();
+}
+function loadNotifs() {
+  api('/notifications').then(function (d) { notifs = (d.notifications || []).slice(0, 60); renderBell(); }).catch(function () {});
+}
+function beep() {
+  try { var a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain(); o.connect(g); g.connect(a.destination); o.frequency.value = 880; g.gain.value = 0.05; o.start(); o.stop(a.currentTime + 0.12); } catch (e) {}
+}
+function startBell() {
+  loadNotifs();
+  clearInterval(bellTimer); bellTimer = setInterval(loadNotifs, 60000);
+  if (bellSocket || typeof io === 'undefined') return;
+  bellSocket = io({ path: '/socket.io', auth: function (cb) { cb({ token: tok }); } });
+  bellSocket.on('notification:new', function (n) {
+    if (!n || !n.id) { loadNotifs(); return; }
+    if (!notifs.some(function (x) { return x.id === n.id; })) notifs.unshift(n);
+    renderBell(); beep(); loadBadges();
+    if (current === 'dashboard' || /disputes|withdrawals|kyc|safety|tickets|manualpayments|artisans/.test(current)) { /* lists refresh when opened */ }
+  });
+}
+function stopBell() {
+  clearInterval(bellTimer); if (bellSocket) { try { bellSocket.disconnect(); } catch (e) {} bellSocket = null; }
+  notifs = []; document.title = baseTitle; var p = $('bellpanel'); if (p) p.style.display = 'none';
+}
+
 /* ---------- Click handling ---------- */
 function done(p, msgId) { return p.then(function () { loadBadges(); refresh(); }).catch(function (err) { var e = msgId && $(msgId); if (e) e.textContent = err.message; else alert(err.message); }); }
 function accountModal() {
@@ -627,6 +693,15 @@ function accountModal() {
     '<div class="pw" style="margin-top:8px"><input id="acc-new" type="password" placeholder="New password (8+ characters)"><button type="button" class="l" data-act="eye" data-id="acc-new">Show</button></div><div class="err" id="acc-perr"></div>' + btn('Change password', 'accpass', '', 'g'));
 }
 var ACT = {
+  bell: function () { var p = $('bellpanel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; if (p.style.display === 'block') { renderBell(); loadNotifs(); } },
+  bellreadall: function () { api('/notifications/read-all', {}, 'PATCH').then(function () { notifs.forEach(function (n) { n.readAt = n.readAt || new Date().toISOString(); }); renderBell(); }).catch(function () {}); },
+  nopen: function (id) {
+    var n = notifs.filter(function (x) { return x.id === id; })[0]; if (!n) return;
+    if (!n.readAt) { n.readAt = new Date().toISOString(); api('/notifications/' + id + '/read', {}, 'PATCH').catch(function () {}); }
+    $('bellpanel').style.display = 'none'; renderBell();
+    var t = notifTarget(n);
+    if (t.chat) openChat(t.chat); else if (t.booking) bookingDetail(t.booking); else if (t.user) userDetail(t.user); else if (t.tab) tab(t.tab);
+  },
   eye: function (id, el) { var i = $(id); i.type = i.type === 'password' ? 'text' : 'password'; el.textContent = i.type === 'password' ? 'Show' : 'Hide'; },
   account: accountModal,
   accname: function () { var n = val('acc-name').trim(); if (n.length < 2) { $('acc-nerr').textContent = 'Enter your name.'; return; } api('/users/me', { name: n }, 'PATCH').then(function (d) { me.name = d.user.name; buildNav(); closeModal(); }).catch(function (e) { $('acc-nerr').textContent = e.message; }); },
@@ -693,6 +768,7 @@ var ACT = {
 };
 document.addEventListener('click', function (e) {
   if (e.target === $('modal')) return closeModal();
+  if ($('bellpanel') && $('bellpanel').style.display === 'block' && !e.target.closest('#bellpanel') && !e.target.closest('#bell')) $('bellpanel').style.display = 'none';
   var el = e.target.closest('[data-act]');
   if (!el) return;
   var fn = ACT[el.dataset.act];

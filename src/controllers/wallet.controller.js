@@ -1,6 +1,7 @@
 const prisma = require("../config/db");
 const wallet = require("../services/wallet.service");
 const { generateReference } = require("../utils/reference");
+const { notifyAllAdmins } = require("../services/notifications.service");
 
 async function getWallet(req, res, next) {
   try {
@@ -71,6 +72,7 @@ async function withdraw(req, res, next) {
     // A real payout would call paystack.service's transfer here. Left as
     // PENDING for an admin/cron to action via Paystack's Transfer API —
     // see README "Known simplifications".
+    notifyAllAdmins(req.app.get("io"), "💸 Withdrawal requested", `${req.user.name} asked to withdraw ₦${Math.round(Number(amountKobo) / 100).toLocaleString("en-NG")}.`, { withdrawalId: result.id, userId: req.user.id, kind: "WITHDRAWAL" }).catch(() => {});
     res.status(201).json({ withdrawal: result });
   } catch (err) {
     next(err);

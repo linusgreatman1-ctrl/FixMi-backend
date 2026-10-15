@@ -271,6 +271,7 @@ async function createBooking(req, res, next) {
     }
 
     const notified = await activateBooking(io(req), booking.id);
+    notifyAllAdmins(io(req), "🆕 New job request", `${req.user.name} asked for a ${category} for ${naira(budget)}.`, { bookingId: booking.id, userId: req.user.id, kind: "BOOKING" }).catch(() => {});
     res.status(201).json({ booking: await customerView(booking.id), notified });
   } catch (err) {
     next(err);
@@ -555,6 +556,7 @@ async function cancelBooking(req, res, next) {
       });
     });
 
+    notifyAllAdmins(io(req), "✖️ Booking cancelled", `${isOwner ? "The customer" : "The artisan"} cancelled a ${updated.category} job${givenReason ? ": " + givenReason : ""}.`, { bookingId: updated.id, kind: "BOOKING_CANCELLED" }).catch(() => {});
     pushToCustomer(io(req), await customerView(updated.id));
     pushJobToArtisan(io(req), updated);
     await closeRequestForArtisans(io(req), updated);

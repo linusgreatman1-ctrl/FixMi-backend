@@ -144,7 +144,9 @@ async function register(req, res, next) {
     });
 
     if (role === "ARTISAN" && !autoApproveArtisans()) {
-      notifyAllAdmins(req.app.get("io"), "🪪 New artisan sign-up", `${user.name} (${category}) is awaiting verification.`, { userId: user.id }).catch(() => {});
+      notifyAllAdmins(req.app.get("io"), "🪪 New artisan sign-up", `${user.name} (${category}) is awaiting verification.`, { userId: user.id, kind: "ARTISAN_SIGNUP" }).catch(() => {});
+    } else {
+      notifyAllAdmins(req.app.get("io"), role === "ARTISAN" ? "👷 New artisan joined" : "👤 New customer joined", `${user.name}${role === "ARTISAN" ? " (" + category + ")" : ""} just signed up.`, { userId: user.id, kind: "SIGNUP" }).catch(() => {});
     }
 
     const { accessToken, refreshToken } = await issueSession(res, user);

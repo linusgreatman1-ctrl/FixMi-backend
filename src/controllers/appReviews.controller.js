@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const { notifyAllAdmins } = require("../services/notifications.service");
 
 // Public: what people say about FixMi (hidden reviews excluded).
 async function listPublic(req, res, next) {
@@ -32,6 +33,7 @@ async function submit(req, res, next) {
       update: { stars, comment },
       create: { userId: req.user.id, stars, comment },
     });
+    notifyAllAdmins(req.app.get("io"), "⭐ New app review", `${req.user.name} rated FixMi ${stars}★${comment ? ": " + comment.slice(0, 80) : ""}`, { userId: req.user.id, kind: "APP_REVIEW" }).catch(() => {});
     res.status(201).json({ review });
   } catch (err) {
     next(err);
