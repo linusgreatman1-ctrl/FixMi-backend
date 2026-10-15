@@ -4931,6 +4931,22 @@ function clearSession() {
 }
 window.currentUser = getStoredUser();
 
+var _refreshing = null;
+// All callers share one refresh at a time; returns the new access token, or null when it didn't work.
+function refreshSessionOnce() {
+  if (_refreshing) return _refreshing;
+  _refreshing = (async function () {
+    try {
+      var r = await fetch(API_BASE + '/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: getRefresh() }) });
+      if (!r.ok) return null;
+      var data = await r.json();
+      setSession(data.accessToken, data.refreshToken, data.user);
+      return data.accessToken;
+    } catch (e) { return null; } // offline or the server is restarting: stay signed in and try again later
+  })();
+  _refreshing.then(function () { setTimeout(function () { _refreshing = null; }, 0); }, function () { _refreshing = null; });
+  return _refreshing;
+}
 async function apiFetch(path, opts) {
   opts = opts || {};
   var headers = Object.assign({}, opts.headers || {});
@@ -4943,18 +4959,17 @@ async function apiFetch(path, opts) {
   var res = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
 
   if (res.status === 401 && getRefresh() && path !== '/auth/refresh') {
-    var r = await fetch(API_BASE + '/auth/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: getRefresh() }),
-    });
-    if (r.ok) {
-      var data = await r.json();
-      setSession(data.accessToken, data.refreshToken, data.user);
-      headers['Authorization'] = 'Bearer ' + data.accessToken;
+    var usedRefresh = getRefresh();
+    var fresh = await refreshSessionOnce();
+    if (fresh) {
+      headers['Authorization'] = 'Bearer ' + fresh;
       res = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
-    } else {
+    } else if (getRefresh() === usedRefresh) {
+      // The server said the sign-in is really over (not a network blip, and no other call renewed it meanwhile).
       clearSession();
+    } else if (getAccess()) {
+      headers['Authorization'] = 'Bearer ' + getAccess();
+      res = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
     }
   }
 

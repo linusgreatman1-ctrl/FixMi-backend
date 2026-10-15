@@ -241,8 +241,10 @@ async function refresh(req, res, next) {
       return res.status(401).json({ error: "Account is not active." });
     }
 
-    // Rotate: revoke the used refresh token, issue a fresh pair.
-    await prisma.refreshToken.update({ where: { id: stored.id }, data: { revoked: true } });
+    // Rotate: the used token stops working after a short grace window (not instantly), so several
+    // requests refreshing at once, or two open tabs, don't log each other out. Logout still revokes it at once.
+    const grace = new Date(Date.now() + 2 * 60 * 1000);
+    await prisma.refreshToken.update({ where: { id: stored.id }, data: { expiresAt: stored.expiresAt < grace ? stored.expiresAt : grace } });
     const { accessToken, refreshToken } = await issueSession(res, user);
     res.json({ user: publicUser(user), accessToken, refreshToken });
   } catch (err) {

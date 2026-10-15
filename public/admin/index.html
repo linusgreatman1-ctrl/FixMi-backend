@@ -80,15 +80,38 @@ th{color:var(--muted);font-weight:600}
 <div id="modal"><div class="box" id="mbox"></div></div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var tok = null, me = null, current = 'dashboard';
-try { tok = sessionStorage.getItem('fixmi_admin'); } catch (e) {}
+var tok = null, rtok = null, me = null, current = 'dashboard';
+try { tok = sessionStorage.getItem('fixmi_admin'); rtok = sessionStorage.getItem('fixmi_admin_rt'); } catch (e) {}
 function $(id) { return document.getElementById(id); }
 function naira(k) { return '₦' + Math.round((k || 0) / 100).toLocaleString('en-NG'); }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function when(d) { return d ? new Date(d).toLocaleString() : ''; }
-function api(path, body, method) {
+function rawApi(path, body, method) {
   return fetch('/api' + path, { method: method || (body ? 'POST' : 'GET'), headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: body ? JSON.stringify(body) : undefined })
-    .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Request failed'); return d; }); });
+    .then(function (r) { return r.json().then(function (d) { if (!r.ok) { var e = new Error(d.error || 'Request failed'); e.status = r.status; throw e; } return d; }); });
+}
+var refreshing = null;
+// One shared refresh at a time; resolves true when a new sign-in was obtained, false if refused, null on a network problem.
+function renewSession() {
+  if (!rtok) return Promise.resolve(false);
+  if (!refreshing) {
+    refreshing = fetch('/api/auth/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken: rtok }) })
+      .then(function (r) { return r.ok ? r.json() : false; })
+      .then(function (d) { if (!d) return false; if (d.user.role !== 'ADMIN') return false; tok = d.accessToken; rtok = d.refreshToken; try { sessionStorage.setItem('fixmi_admin', tok); sessionStorage.setItem('fixmi_admin_rt', rtok); } catch (x) {} return true; })
+      .catch(function () { return null; })
+      .then(function (v) { setTimeout(function () { refreshing = null; }, 0); return v; });
+  }
+  return refreshing;
+}
+function api(path, body, method) {
+  return rawApi(path, body, method).catch(function (err) {
+    if (err.status !== 401 || path === '/auth/login' || !rtok) throw err;
+    return renewSession().then(function (ok) {
+      if (ok === null) throw new Error('Could not reach the server. Try again in a moment.');
+      if (!ok) throw err;
+      return rawApi(path, body, method);
+    });
+  });
 }
 function setList(h) { $('list').innerHTML = h; }
 function fail(err) { if (/token|authentication/i.test(err.message)) signOut(); setList('<div class="card"><span class="err">' + esc(err.message) + '</span></div>'); }
@@ -141,10 +164,10 @@ function loadBadges() {
 function signIn() {
   $('lerr').textContent = '';
   api('/auth/login', { email: val('em').trim().toLowerCase(), password: val('pw') })
-    .then(function (d) { if (d.user.role !== 'ADMIN') throw new Error('This account is not an admin.'); tok = d.accessToken; try { sessionStorage.setItem('fixmi_admin', tok); } catch (x) {} show(); })
+    .then(function (d) { if (d.user.role !== 'ADMIN') throw new Error('This account is not an admin.'); tok = d.accessToken; rtok = d.refreshToken; try { sessionStorage.setItem('fixmi_admin', tok); sessionStorage.setItem('fixmi_admin_rt', rtok || ''); } catch (x) {} show(); })
     .catch(function (err) { $('lerr').textContent = err.message; });
 }
-function signOut() { stopBell(); tok = null; me = null; try { sessionStorage.removeItem('fixmi_admin'); } catch (x) {} show(); }
+function signOut() { stopBell(); tok = null; rtok = null; me = null; try { sessionStorage.removeItem('fixmi_admin'); sessionStorage.removeItem('fixmi_admin_rt'); } catch (x) {} show(); }
 
 /* ---------- Dashboard ---------- */
 LOAD.dashboard = function () {
