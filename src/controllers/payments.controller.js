@@ -133,6 +133,21 @@ async function verifyPayment(req, res, next) {
   }
 }
 
+// A bank / payment-provider feed tells FixMi that money arrived in the company account (see services/bankCredit.service.js):
+// POST /api/payments/webhook/bank-credit?provider=flutterwave|paystack|monnify|generic
+async function bankCreditWebhook(req, res, next) {
+  try {
+    const bank = require("../services/bankCredit.service");
+    const provider = String(req.query.provider || "generic");
+    if (!bank.verifySignature(provider, req)) return res.status(401).json({ error: "Invalid signature." });
+    const credit = bank.normalize(provider, req.body);
+    if (!credit) return res.status(200).json({ received: true, ignored: true });
+    res.status(200).json({ received: true, ...(await bank.processCredit(credit, req.app.get("io"))) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // Paystack signs webhook bodies with HMAC-SHA512 of the raw body using the
 // secret key; checking it stops anyone posting a fake "payment succeeded".
 async function webhook(req, res, next) {
@@ -155,4 +170,4 @@ async function webhook(req, res, next) {
   }
 }
 
-module.exports = { methods, checkout, initializeWalletDeposit, devTopUp, getManual, devConfirmManual, confirmManualRequest, verifyPayment, webhook };
+module.exports = { bankCreditWebhook, methods, checkout, initializeWalletDeposit, devTopUp, getManual, devConfirmManual, confirmManualRequest, verifyPayment, webhook };

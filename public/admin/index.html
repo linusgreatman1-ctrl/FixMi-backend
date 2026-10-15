@@ -445,7 +445,9 @@ LOAD.manualpayments = function () {
   api('/admin/manual-payments?status=' + mpStatus).then(function (d) {
     var head = '<div class="card muted">Customers who top up by bank transfer appear here. Match the amount and reference to your bank statement, then press <b>Confirm</b> to credit their wallet. Set the account they pay into under <b>App settings → bank.company</b>.</div>' +
       chips([['PENDING', 'Waiting'], ['CONFIRMED', 'Confirmed'], ['REJECTED', 'Rejected']], mpStatus, 'mpfilter');
-    if (!d.payments.length) return setList(head + '<div class="card muted">Nothing here.</div>');
+    var feed = '';
+    return api('/admin/bank-credits').then(function (b) { feed = bankFeedHtml(b); }, function () {}).then(function () {
+    if (!d.payments.length) return setList(head + '<div class="card muted">Nothing here.</div>' + feed);
     setList(head + d.payments.map(function (p) {
       var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + naira(p.amountKobo) + ' — ' + esc(p.user.name) + '</b>' + tag(p.status, p.status === 'CONFIRMED' ? 'ok' : p.status === 'REJECTED' ? 'bad' : '') + '</div>' +
         '<div class="muted">' + when(p.createdAt) + ' · reference <b>' + esc(p.reference) + '</b> · ' + esc(p.user.phone || p.user.email || '') + '</div>' +
@@ -453,9 +455,30 @@ LOAD.manualpayments = function () {
       if (p.rejectionReason) h += '<div class="muted">Rejected: ' + esc(p.rejectionReason) + '</div>';
       if (p.status === 'PENDING') h += '<input id="mpr-' + p.id + '" placeholder="Reason (needed to reject)"><div class="err" id="mpe-' + p.id + '"></div><div class="row" style="margin-top:6px">' + btn('Confirm and credit wallet', 'mpconfirm', p.id, 'g') + btn('Reject', 'mpreject', p.id, 'r') + '</div>';
       return h + '</div>';
-    }).join(''));
+    }).join('') + feed);
+    });
   }).catch(fail);
 };
+
+/* ---------- Money that arrived and was not matched, and how the bank feed is connected ---------- */
+function bankFeedHtml(d) {
+  var origin = location.origin;
+  var credits = d.credits.length
+    ? d.credits.map(function (c) {
+      var opts = d.waiting.slice().sort(function (a, b) { return (b.amountKobo === c.amountKobo) - (a.amountKobo === c.amountKobo); }).map(function (w) { return '<option value="' + esc(w.id) + '">' + esc(w.holder || '?') + ' — ' + esc(w.label) + ' — ' + naira(w.amountKobo) + '</option>'; }).join('');
+      return '<div class="card"><div class="row" style="justify-content:space-between"><b>' + naira(c.amountKobo) + (c.payerName ? ' — ' + esc(c.payerName) : '') + '</b>' + tag(c.status, 'bad') + '</div>' +
+        '<div class="muted">' + when(c.createdAt) + (c.narration ? ' · ' + esc(c.narration) : '') + '</div>' +
+        (opts ? '<select id="bc-' + esc(c.id) + '">' + opts + '</select><div class="err" id="bce-' + esc(c.id) + '"></div><div class="row" style="margin-top:6px">' + btn('Match and confirm', 'bcmatch', c.id, 'g') + '</div>' : '<div class="muted">No request is waiting.</div>') + '</div>';
+    }).join('')
+    : '<div class="card muted">No unmatched money.</div>';
+  return '<h3 style="margin:18px 0 6px">Money that arrived and was not matched</h3><div class="card muted">When money arrives the system confirms the matching transfer by itself. Money it could not tie to one request (none waiting for that amount, or several) is here: pick the request it belongs to.</div>' + credits +
+    '<h3 style="margin:18px 0 6px">Automatic confirmation: connect the bank feed</h3><div class="card muted">FixMi confirms a bank transfer by itself when a bank / payment-provider feed tells it that money arrived. Point the feed\'s webhook to one of these addresses:<br>' +
+    '<b>Flutterwave</b> (virtual account transfers): <code>' + origin + '/api/payments/webhook/bank-credit?provider=flutterwave</code> — the same secret hash as <code>FLUTTERWAVE_WEBHOOK_HASH</code> on the server.<br>' +
+    '<b>Paystack</b> (dedicated account transfers): <code>' + origin + '/api/payments/webhook/bank-credit?provider=paystack</code> — signed with your Paystack secret key.<br>' +
+    '<b>Monnify</b>: <code>' + origin + '/api/payments/webhook/bank-credit?provider=monnify</code> — set <code>MONNIFY_SECRET_KEY</code>.<br>' +
+    '<b>Any other bank alert service</b>: <code>POST ' + origin + '/api/payments/webhook/bank-credit?provider=generic</code> with header <code>x-bank-secret: &lt;BANK_WEBHOOK_SECRET&gt;</code> and body <code>{"id":"unique id","amount":13500,"narration":"...","name":"payer name"}</code>.<br><br>' +
+    'A credit is matched to the waiting request that has its reference in the narration; otherwise to the only request waiting for that exact amount; if several wait for the same amount, to the one whose sender\'s name matches the payer\'s. Anything else appears above.</div>';
+}
 
 /* ---------- Live chat ---------- */
 LOAD.livechat = function () {
@@ -620,6 +643,7 @@ var ACT = {
   paytype: function (id) { payType = id; LOAD.payments(); },
   paysearch: function () { payQ = val('pq').trim(); LOAD.payments(); },
   mpfilter: function (id) { mpStatus = id; LOAD.manualpayments(); },
+  bcmatch: function (id) { var sel = $('bc-' + id); if (!sel || !confirm('Match this money to that request and confirm it? The wallet is credited immediately.')) return; done(api('/admin/bank-credits/' + id + '/match', { requestId: sel.value }), 'bce-' + id); },
   mpconfirm: function (id) { if (!confirm('Confirm you received this transfer? The wallet is credited immediately.')) return; done(api('/admin/manual-payments/' + id + '/confirm', {}), 'mpe-' + id); },
   mpreject: function (id) { if (!val('mpr-' + id).trim()) { $('mpe-' + id).textContent = 'Write the reason first.'; return; } done(api('/admin/manual-payments/' + id + '/reject', { reason: val('mpr-' + id) }), 'mpe-' + id); },
   bulkemail: function () { var r = val('em-r'); if (!confirm('Send this email to ' + (r ? r.toLowerCase() + 's' : 'everyone with an email') + '?')) return; done(api('/admin/bulk-email', { subject: val('em-s'), body: val('em-b'), roles: r ? [r] : [] }), 'em-e'); },

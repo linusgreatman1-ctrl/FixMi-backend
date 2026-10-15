@@ -8,6 +8,8 @@ const router = express.Router();
 // Webhook must be mounted WITHOUT requireAuth — Paystack calls it directly,
 // and its own HMAC signature check is the authentication.
 router.post("/webhook", ctrl.webhook);
+// Money arriving in the company account: confirms the matching bank-transfer request by itself.
+router.post("/webhook/bank-credit", ctrl.bankCreditWebhook);
 
 router.use(requireAuth);
 router.get("/methods", ctrl.methods);

@@ -55,6 +55,9 @@ router.get("/subscriptions", more.subscriptions);
 router.get("/manual-payments", more.listManualPayments);
 router.post("/manual-payments/:id/confirm", more.confirmManualPayment);
 router.post("/manual-payments/:id/reject", more.rejectManualPayment);
+// Money that arrived in the account and the system could not tie to one request.
+router.get("/bank-credits", require("../controllers/adminBank.controller").listBankCredits);
+router.post("/bank-credits/:id/match", require("../controllers/adminBank.controller").matchBankCredit);
 router.get("/chat-threads", more.listChatThreads);
 router.get("/chat-threads/:id/messages", more.getChatMessages);
 router.post("/chat-threads/:id/messages", more.sendChatMessage);
