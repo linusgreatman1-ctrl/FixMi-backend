@@ -467,6 +467,8 @@ model ChatThread {
   party     String?
   bookingId String?  @unique
   booking   Booking? @relation(fields: [bookingId], references: [id])
+  closedAt  DateTime?
+  closedBy  String?
   createdAt DateTime @default(now())
 
   participants ChatParticipant[]
@@ -489,10 +491,21 @@ model ChatMessage {
   thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
   senderId  String
   body      String
+  attachmentUrl String?
   readAt    DateTime?
   createdAt DateTime   @default(now())
 
   @@index([threadId])
+}
+
+// A copy of every uploaded photo, kept in the database. The files folder on the server is wiped
+// whenever the server is rebuilt (unless a volume is attached); photos are served from this copy
+// when the file is no longer on disk, so request, chat and evidence pictures never disappear.
+model StoredFile {
+  name      String   @id
+  mime      String
+  data      Bytes
+  createdAt DateTime @default(now())
 }
 
 // Admin-editable app content and config (service list, FAQs, safety guides,

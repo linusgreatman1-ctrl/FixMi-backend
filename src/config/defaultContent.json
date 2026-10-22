@@ -411,7 +411,7 @@
     },
     {
       "q": "What if I'm not satisfied?",
-      "a": "When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 5 minutes). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History."
+      "a": "When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 90 seconds). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History."
     },
     {
       "q": "How are artisans verified?",
@@ -425,7 +425,7 @@
   "faqs_artisan": [
     {
       "q": "How do I receive payments?",
-      "a": "After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 5 minutes after you mark the job done. Withdraw from your wallet to your bank account."
+      "a": "After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 90 seconds after you mark the job done. Withdraw from your wallet to your bank account."
     },
     {
       "q": "What is FixMi's commission?",

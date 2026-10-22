@@ -121,7 +121,7 @@ const confirmManualPayment = wrap(async (req, res) => {
   // Credits the wallet, then does what the transfer was for (top-up, booking escrow or featured boost).
   const result = await require("./payments.controller").confirmManualRequest(req.params.id, req.user.id, req.app.get("io"));
   await logAdminAction(req.user, "MANUAL_PAYMENT_CONFIRMED", "ManualPaymentRequest", result.id, `${naira(result.amountKobo)} ref ${result.reference} (${result.purpose})`);
-  const what = result.purpose === "BOOKING_PAYMENT" ? "Your job request is now live." : result.purpose === "FEATURE_BOOST_PAYMENT" ? "Your featured boost is active." : "The money is in your wallet.";
+  const what = result.purpose === "BOOKING_PAYMENT" ? "Your job request is now live." : result.purpose === "FEATURE_BOOST_PAYMENT" ? "Your featured boost is active." : result.purpose === "CORPORATE_PLAN" ? "Your corporate plan is active." : result.purpose === "CORPORATE_TOPUP" ? "Your corporate escrow is topped up." : "The money is in your wallet.";
   notify(req.app.get("io"), result.userId, "PAYMENT", "Bank transfer confirmed ✅", `${naira(result.amountKobo)} received. ${what}`, { reference: result.reference }).catch(() => {});
   res.json({ payment: result });
 });
@@ -170,17 +170,19 @@ const getChatMessages = wrap(async (req, res) => {
 // sees the reply in their normal Messages list.
 const sendChatMessage = wrap(async (req, res) => {
   const body = String(req.body.body || "").trim();
-  if (!body) return bad(res, "Write a message first.");
+  const attachmentUrl = req.body.attachmentUrl && /^\/uploads\/[\w.-]+$/.test(String(req.body.attachmentUrl)) ? String(req.body.attachmentUrl) : null;
+  if (!body && !attachmentUrl) return bad(res, "Write a message first.");
   const thread = await prisma.chatThread.findUnique({ where: { id: req.params.id }, include: { participants: true } });
   if (!thread) return bad(res, "Conversation not found.", 404);
+  if (thread.closedAt) return bad(res, "This chat has ended.", 409);
   if (!thread.participants.some((p) => p.userId === req.user.id)) {
     await prisma.chatParticipant.create({ data: { threadId: thread.id, userId: req.user.id } });
   }
-  const message = await prisma.chatMessage.create({ data: { threadId: thread.id, senderId: req.user.id, body: body.slice(0, 2000) } });
+  const message = await prisma.chatMessage.create({ data: { threadId: thread.id, senderId: req.user.id, body: body.slice(0, 2000), attachmentUrl } });
   const io = req.app.get("io");
   io?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`), `user:${req.user.id}`]).emit("chat:message", message);
   for (const p of thread.participants) {
-    if (p.userId !== req.user.id) notify(io, p.userId, "CHAT", "FixMi support", body.slice(0, 80), { threadId: thread.id }).catch(() => {});
+    if (p.userId !== req.user.id) notify(io, p.userId, "CHAT", "FixMi support", body ? body.slice(0, 80) : "📷 Sent a photo", { threadId: thread.id }).catch(() => {});
   }
   res.status(201).json({ message });
 });
@@ -190,12 +192,30 @@ const supportThreadForUser = wrap(async (req, res) => {
   const target = await prisma.user.findUnique({ where: { id: req.params.userId }, select: { id: true } });
   if (!target) return bad(res, "User not found.", 404);
   const existing = await prisma.chatThread.findFirst({
-    where: { bookingId: null, AND: [{ participants: { some: { userId: target.id } } }, { participants: { some: { userId: req.user.id } } }] },
-    select: { id: true },
+    where: { bookingId: null, ticketId: null, closedAt: null, participants: { some: { userId: target.id }, none: { userId: { not: target.id }, user: { role: { not: "ADMIN" } } } } },
+    select: { id: true, participants: { select: { userId: true } } },
   });
-  if (existing) return res.json({ threadId: existing.id });
+  if (existing) {
+    if (!existing.participants.some((p) => p.userId === req.user.id)) await prisma.chatParticipant.create({ data: { threadId: existing.id, userId: req.user.id } });
+    return res.json({ threadId: existing.id });
+  }
   const thread = await prisma.chatThread.create({ data: { participants: { create: [{ userId: target.id }, { userId: req.user.id }] } }, select: { id: true } });
   res.status(201).json({ threadId: thread.id });
+});
+
+// Admin ends a conversation (ends for everyone in it, live).
+const closeChatThread = wrap(async (req, res) => {
+  const thread = await prisma.chatThread.findUnique({ where: { id: req.params.id }, include: { participants: true } });
+  if (!thread) return bad(res, "Conversation not found.", 404);
+  if (thread.closedAt) return res.json({ thread });
+  const updated = await prisma.chatThread.update({ where: { id: thread.id }, data: { closedAt: new Date(), closedBy: req.user.id } });
+  req.app.get("io")?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`)]).emit("chat:closed", { threadId: thread.id, closedBy: req.user.id });
+  res.json({ thread: updated });
+});
+
+const chatAttachment = wrap(async (req, res) => {
+  if (!req.file) return bad(res, "No photo uploaded.");
+  res.status(201).json({ url: `/uploads/${req.file.filename}` });
 });
 
 // Opens (or finds) the admin's chat with one side of a dispute.
@@ -242,5 +262,5 @@ const sendBulkEmail = wrap(async (req, res) => {
 
 module.exports = {
   reports, subscriptions, listManualPayments, confirmManualPayment, rejectManualPayment,
-  disputeChat, listChatThreads, getChatMessages, sendChatMessage, supportThreadForUser, sendBulkEmail, generateReference,
+  disputeChat, closeChatThread, chatAttachment, listChatThreads, getChatMessages, sendChatMessage, supportThreadForUser, sendBulkEmail, generateReference,
 };

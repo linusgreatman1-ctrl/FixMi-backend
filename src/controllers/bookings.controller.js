@@ -3,6 +3,7 @@ const wallet = require("../services/wallet.service");
 const escrow = require("../services/escrow.service");
 const { notify, notifyAllAdmins } = require("../services/notifications.service");
 const { generateReference } = require("../utils/reference");
+const { closeBookingThread } = require("./chat.controller");
 const corporate = require("../services/corporate.service");
 const { logAdminAction } = require("../services/auditLog.service");
 
@@ -526,11 +527,11 @@ async function cancelBooking(req, res, next) {
     const isArtisan = req.user.artisanProfile && booking.artisanId === req.user.artisanProfile.id && !["REQUESTED", "PENDING_PAYMENT"].includes(booking.status);
     if (!isOwner && !isArtisan) return res.status(403).json({ error: "Not your booking." });
 
-    // Either side can cancel until the artisan taps "Start work". After that it can't be cancelled in the app.
+    // Either side can cancel until the artisan taps "I've arrived". After that it can't be cancelled in the app.
     if (["CANCELLED", "DECLINED", "CONFIRMED"].includes(booking.status)) return res.status(409).json({ error: `This booking is already ${booking.status === "CONFIRMED" ? "completed" : "closed"}.` });
-    const cancellable = ["PENDING_PAYMENT", "REQUESTED", "ACCEPTED", "PAID"].includes(booking.status) && !booking.startedAt;
+    const cancellable = ["PENDING_PAYMENT", "REQUESTED", "ACCEPTED", "PAID"].includes(booking.status) && !booking.startedAt && !booking.arrivedAt;
     if (!cancellable) {
-      return res.status(409).json({ error: "The artisan has already started the job, so it can no longer be cancelled in the app. Contact support if there's a problem." });
+      return res.status(409).json({ error: "The artisan has already arrived, so this can no longer be cancelled in the app. Contact support if there's a problem." });
     }
     const givenReason = String(req.body?.reason || "").trim().slice(0, 300);
     if (["ACCEPTED", "PAID"].includes(booking.status) && !givenReason) return res.status(400).json({ error: "Please tell us why you're cancelling." });
@@ -557,6 +558,7 @@ async function cancelBooking(req, res, next) {
     });
 
     notifyAllAdmins(io(req), "✖️ Booking cancelled", `${isOwner ? "The customer" : "The artisan"} cancelled a ${updated.category} job${givenReason ? ": " + givenReason : ""}.`, { bookingId: updated.id, kind: "BOOKING_CANCELLED" }).catch(() => {});
+    closeBookingThread(io(req), updated.id);
     pushToCustomer(io(req), await customerView(updated.id));
     pushJobToArtisan(io(req), updated);
     await closeRequestForArtisans(io(req), updated);
@@ -676,6 +678,7 @@ async function completeBooking(req, res, next) {
       }
       await tx.booking.update({ where: { id: booking.id }, data: { status: "COMPLETED", completedAt: new Date(), escrowKobo: 0 } });
     });
+    closeBookingThread(io(req), booking.id);
     notify(io(req), booking.customerId, "BOOKING", "Job marked done", "Check the work and confirm to release payment to your artisan.", { bookingId: booking.id }).catch(() => {});
     res.json({ booking: await publishJob(req, booking.id) });
   } catch (err) {

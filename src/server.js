@@ -81,6 +81,16 @@ const globalLimiter = rateLimit({ windowMs: 60 * 1000, max: 300, standardHeaders
 app.use("/api", globalLimiter);
 
 app.use("/uploads", express.static(UPLOAD_DIR));
+// A photo that is no longer on disk (the server was rebuilt) comes from its copy in the database.
+app.get("/uploads/:name", async (req, res, next) => {
+  try {
+    const row = await require("./config/db").storedFile.findUnique({ where: { name: req.params.name } });
+    if (!row) return next();
+    res.set("Content-Type", row.mime).set("Cache-Control", "public, max-age=86400").send(Buffer.from(row.data));
+  } catch (err) {
+    next();
+  }
+});
 app.use("/app", express.static(path.join(__dirname, "..", "public", "app")));
 app.use("/admin", express.static(path.join(__dirname, "..", "public", "admin")));
 // Preview copies used by the admin Code Editor and Live Preview.

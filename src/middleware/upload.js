@@ -1,6 +1,8 @@
 const multer = require("multer");
 const path = require("path");
 const crypto = require("crypto");
+const fs = require("fs");
+const prisma = require("../config/db");
 const { UPLOAD_DIR } = require("../config/paths");
 
 // Local disk storage for dev/small deployments. Swap the storage engine
@@ -17,7 +19,7 @@ const storage = multer.diskStorage({
 
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
-const upload = multer({
+const diskUpload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
@@ -27,6 +29,18 @@ const upload = multer({
     cb(null, true);
   },
 });
+
+// After a photo is saved to disk, keep a copy in the database too (see StoredFile).
+function keepCopy(req, res, next) {
+  const file = req.file;
+  if (!file) return next();
+  fs.promises.readFile(file.path)
+    .then((data) => prisma.storedFile.upsert({ where: { name: file.filename }, create: { name: file.filename, mime: file.mimetype, data }, update: {} }))
+    .then(() => next(), () => next()); // the disk copy is still there; a failed backup must not fail the upload
+}
+
+// Same as multer's upload.single(field), plus the database copy.
+const upload = { single: (field) => [diskUpload.single(field), keepCopy] };
 
 // Same limits, but keeps the file in memory so it can be stored in the database
 // (used for ID documents, which must not sit in the public /uploads folder).

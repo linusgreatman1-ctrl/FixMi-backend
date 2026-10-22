@@ -5,5 +5,6 @@ const ctrl = require("../controllers/ratings.controller");
 const router = express.Router();
 router.use(requireAuth);
 router.post("/", ctrl.createRating);
+router.get("/mine", ctrl.myReviews);
 
 module.exports = router;

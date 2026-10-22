@@ -44,4 +44,21 @@ async function createRating(req, res, next) {
   }
 }
 
-module.exports = { createRating };
+// Reviews other people left about the signed-in user, for their profile.
+async function myReviews(req, res, next) {
+  try {
+    const rows = await prisma.rating.findMany({
+      where: { rateeUserId: req.user.id, hidden: false },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: { rater: { select: { name: true } }, booking: { select: { category: true } } },
+    });
+    const count = rows.length;
+    const average = count ? rows.reduce((n, r) => n + r.stars, 0) / count : 0;
+    res.json({ average, count, reviews: rows.map((r) => ({ id: r.id, stars: r.stars, comment: r.comment, createdAt: r.createdAt, from: r.rater?.name?.split(" ")[0] || "User", category: r.booking?.category || null })) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { createRating, myReviews };

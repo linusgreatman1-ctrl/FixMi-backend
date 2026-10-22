@@ -16,8 +16,8 @@ const { generateReference } = require("../utils/reference");
 // and USSD show a practice checkout and bank transfer a practice account;
 // nothing real is charged.
 
-const PURPOSES = ["WALLET_DEPOSIT", "BOOKING_PAYMENT", "FEATURE_BOOST_PAYMENT"];
-const PREFIX = { WALLET_DEPOSIT: "DEP", BOOKING_PAYMENT: "ESC", FEATURE_BOOST_PAYMENT: "BST" };
+const PURPOSES = ["WALLET_DEPOSIT", "BOOKING_PAYMENT", "FEATURE_BOOST_PAYMENT", "CORPORATE_PLAN", "CORPORATE_TOPUP"];
+const PREFIX = { WALLET_DEPOSIT: "DEP", BOOKING_PAYMENT: "ESC", FEATURE_BOOST_PAYMENT: "BST", CORPORATE_PLAN: "CRP", CORPORATE_TOPUP: "CRT" };
 const TEST_BANK = { bankName: "Test Bank (testing only)", accountNumber: "0000000000", accountName: "FixMi test account" };
 
 const naira = (k) => `₦${Math.round((k || 0) / 100).toLocaleString("en-NG")}`;
@@ -78,7 +78,7 @@ async function startCheckout({ user, purpose, method, amountKobo, targetId, gate
     const email = user.email || `${String(user.phone || user.id).replace(/\W/g, "")}@pay.fixmi.app`;
     const metadata = { purpose, userId: user.id };
     if (purpose === "BOOKING_PAYMENT") metadata.bookingId = targetId;
-    if (purpose === "FEATURE_BOOST_PAYMENT") metadata.plan = targetId;
+    if (purpose === "FEATURE_BOOST_PAYMENT" || purpose === "CORPORATE_PLAN") metadata.plan = targetId;
     const data = await gateway.initializeTransaction({
       gateway: gatewayName, email, amountKobo, reference, metadata, channel: method === "USSD" ? "ussd" : "card",
       callbackUrl: `${baseUrl(req)}/pay-done.html?ref=${encodeURIComponent(reference)}`,
@@ -127,6 +127,18 @@ async function applyPayment({ purpose, userId, amountKobo, reference, targetId }
   if (purpose === "FEATURE_BOOST_PAYMENT") {
     await purchaseBoost(userId, targetId, { reference });
     return { purpose, plan: targetId };
+  }
+  if (purpose === "CORPORATE_PLAN") {
+    const corp = require("../controllers/corporate.controller");
+    let choice = {};
+    try { choice = JSON.parse(targetId || "{}"); } catch (e) { /* handled below */ }
+    await corp.subscribeFromWallet(userId, String(choice.plan || ""), Array.isArray(choice.categories) ? choice.categories : [], io);
+    return { purpose, plan: choice.plan };
+  }
+  if (purpose === "CORPORATE_TOPUP") {
+    const corp = require("../controllers/corporate.controller");
+    await corp.topUpFromWallet(userId, amountKobo, io);
+    return { purpose };
   }
   return { purpose };
 }

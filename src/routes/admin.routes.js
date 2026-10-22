@@ -8,6 +8,7 @@ const ops = require("../controllers/adminOps.controller");
 const more = require("../controllers/adminMore.controller");
 const files = require("../controllers/adminFiles.controller");
 const { requireSuperAdmin } = require("../middleware/auth");
+const { upload } = require("../middleware/upload");
 
 const router = express.Router();
 router.use(requireAuth, requireRole("ADMIN"));
@@ -63,6 +64,8 @@ router.get("/chat-threads", more.listChatThreads);
 router.get("/chat-threads/:id/messages", more.getChatMessages);
 router.post("/chat-threads/:id/messages", more.sendChatMessage);
 router.post("/chat-threads/for-user/:userId", more.supportThreadForUser);
+router.post("/chat-threads/:id/close", more.closeChatThread);
+router.post("/chat-threads/:id/attachment", upload.single("photo"), more.chatAttachment);
 router.post("/bulk-email", requireSuperAdmin, more.sendBulkEmail);
 router.get("/files", files.listFiles);
 router.post("/files/search", files.searchInFile);

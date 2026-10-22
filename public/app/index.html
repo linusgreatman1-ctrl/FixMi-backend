@@ -122,6 +122,7 @@ textarea.input{min-height:88px;resize:none}
 .info.yellow{background:#FFFBEB;color:#92400E}
 .info.blue{background:#EFF6FF;color:#1E40AF}
 .info.green{background:var(--g3);color:var(--g2)}
+.info.center{justify-content:center;align-items:center;text-align:center}
 #splash{background:var(--navy);justify-content:flex-end;padding-bottom:44px;align-items:stretch}
 .blob{position:absolute;border-radius:50%;animation:bFloat 5s ease-in-out infinite}
 @keyframes bFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
@@ -391,6 +392,7 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .js-step.done span{background:var(--g)}
 .photo-strip{display:flex;gap:8px;overflow-x:auto;margin:8px 0 4px}
 .photo-strip img{width:84px;height:84px;object-fit:cover;border-radius:10px;cursor:zoom-in;flex-shrink:0;border:1px solid var(--border)}
+.rq-card .photo-strip img,.job-person .photo-strip img{width:120px;height:120px}
 .job-person{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 .job-person:empty{display:none}
 .job-money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
@@ -603,6 +605,31 @@ body{background:#fff}
   .auth-body .btn,.auth-body .qd-btn{max-width:none}
   #toast{bottom:32px}
 }
+
+/* ===== Chat, tracking window, rating window, centered request screen ===== */
+#chat.on{display:flex !important;flex-direction:column;overflow:hidden}
+#chat > .msg-area{flex:1;min-height:0;overflow-y:auto}
+#chat > .topbar,#chat > .chat-input-row,#chat > .chat-closed{flex-shrink:0}
+.chat-close{border:1.5px solid #FCA5A5;background:#FEF2F2;color:#DC2626;border-radius:10px;padding:8px 11px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;margin-left:6px;white-space:nowrap}
+.chat-closed{background:var(--gray);color:var(--muted);text-align:center;font-size:13px;padding:14px;border-top:1px solid var(--border);flex-shrink:0}
+.chat-attach{width:42px;height:42px;border-radius:50%;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer;flex-shrink:0}
+.msg-img{display:block;max-width:100%;width:210px;border-radius:10px;cursor:zoom-in;margin-bottom:4px}
+.chat-item .chat-prev .ended{color:var(--muted);font-style:italic}
+.chat-support-btn{display:block;width:calc(100% - 32px);margin:0 16px 10px;padding:12px;border-radius:12px;border:1.5px solid rgba(59,130,246,.35);background:rgba(59,130,246,.08);color:var(--navy);font-weight:700;font-size:14px;font-family:inherit;cursor:pointer}
+.trk-ov{position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.trk-card{background:#fff;border-radius:20px;width:100%;max-width:440px;max-height:92vh;overflow:auto;padding:16px}
+.trk-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800;font-size:16px;color:var(--navy)}
+.trk-x{width:34px;height:34px;border-radius:50%;border:none;background:var(--gray);font-size:15px;cursor:pointer;color:var(--muted)}
+#trk-map{height:280px;border-radius:14px;background:var(--gray);margin:12px 0}
+#trk-status{font-weight:800;font-size:15px;color:var(--navy);text-align:center}
+#trk-sub{font-size:12px;color:var(--muted);margin:4px 0 12px;text-align:center}
+.rate-ov{position:fixed;inset:0;z-index:660;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:18px}
+.rate-card{background:#fff;border-radius:22px;width:100%;max-width:400px;max-height:94vh;overflow:auto;padding:24px 20px;text-align:center}
+@media (min-width:640px){
+  #cust-offers > .co-hero{max-width:560px;margin:18px auto 0 !important;border-radius:20px;text-align:center;padding:20px 24px 22px !important}
+  #cust-offers > .co-hero .photo-strip{justify-content:center}
+  #cust-offers > div:not(.topbar):not(.co-hero){max-width:560px !important}
+}
 </style>
 <body>
 <div class="stage">
@@ -726,7 +753,7 @@ body{background:#fff}
     <div style="text-align:center;margin-bottom:14px"><div style="font-size:12px;color:var(--muted)">Amount</div><div id="xf-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:32px;color:var(--navy)">₦0</div></div>
     <div id="xf-account" class="card" style="margin-bottom:12px"></div>
     <div class="card" style="margin-bottom:12px"><div style="font-size:12px;color:var(--muted)">Put this reference in your transfer narration</div><div style="display:flex;justify-content:space-between;align-items:center"><b id="xf-ref" style="font-size:18px;letter-spacing:.5px"></b><button class="btn" style="width:auto;padding:8px 14px;font-size:13px;background:var(--gray);color:var(--navy)" onclick="copyText(document.getElementById('xf-ref').textContent)">Copy</button></div></div>
-    <div class="info blue" style="margin-bottom:14px"><span>🔒</span><span>Your money is held in FixMi escrow once we confirm the transfer. Nothing is released to the artisan until you confirm the job.</span></div>
+    <div class="info blue center" style="margin-bottom:14px"><span>🔒</span><span>Your money is held in FixMi escrow once we confirm the transfer. Nothing is released to the artisan until you confirm the job.</span></div>
     <div id="xf-status" class="job-hint" style="margin-bottom:12px;text-align:center"></div>
     <button class="btn btn-g" onclick="iMadeTheTransfer(this)">I’ve made the transfer</button>
     <button id="xf-cancel" class="btn" style="margin-top:10px;background:#FEE2E2;color:#DC2626" onclick="cancelTransferBooking(this)">Cancel this request</button>
@@ -747,16 +774,15 @@ body{background:#fff}
 </div>
 
 
-<!-- ████ TRACK THE ARTISAN ON THE MAP ████ -->
-<div class="s" id="track-map">
-  <div class="topbar"><button class="back" onclick="closeTrackMap()" aria-label="Back">←</button><div class="tb-title" id="trk-title">Track your artisan</div><div class="tb-space"></div></div>
-  <div id="trk-map" style="height:52vh;min-height:260px;background:var(--gray)"></div>
-  <div style="padding:16px 18px">
-    <div class="card" style="margin-bottom:12px">
-      <div id="trk-status" style="font-weight:800;font-size:15px;color:var(--navy)">Waiting for the artisan’s location…</div>
-      <div id="trk-sub" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
-    </div>
+<!-- ████ TRACK ON THE MAP (a window over the current screen, never a new page) ████ -->
+<div id="track-modal" class="trk-ov" style="display:none" onclick="if(event.target===this)closeTrackMap()">
+  <div class="trk-card">
+    <div class="trk-head"><span id="trk-title">Tracking</span><button type="button" class="trk-x" onclick="closeTrackMap()" aria-label="Close map">✕</button></div>
+    <div id="trk-map"></div>
+    <div id="trk-status">Waiting for the location…</div>
+    <div id="trk-sub"></div>
     <div id="trk-contact"></div>
+    <button type="button" class="btn btn-gray" style="margin-top:10px" onclick="closeTrackMap()">Close</button>
   </div>
 </div>
 
@@ -890,7 +916,7 @@ body{background:#fff}
   <div class="hero-band">
     <div class="greeting" id="home-greeting">Hello,</div>
     <div class="hero-name" id="home-user-name"></div>
-    <div class="loc" style="margin:2px 0 12px"><button type="button" class="loc-btn" onclick="go('edit-profile')" aria-label="Change your location">📍 <b id="home-location">Add your location</b></button> &nbsp;·&nbsp; <span id="home-online-count">–</span> <span id="home-online-lbl">artisans online now</span></div>
+    <div class="loc" style="margin:-4px 0 12px"><button type="button" class="loc-btn" onclick="go('edit-profile')" aria-label="Change your location">📍 <b id="home-location">Add your location</b></button></div>
     <label class="search-bar" for="home-search"><span>🔍</span><input id="home-search" type="search" autocomplete="off" placeholder="Search for a service or artisan..." oninput="homeSearch(this.value)"></label>
   </div>
 
@@ -1221,7 +1247,7 @@ body{background:#fff}
       <div style="font-size:22px" id="req-artisan-ico">⚡</div>
       <div><div style="font-size:13px;font-weight:700;color:var(--g2)" id="req-artisan-name">Artisan Name</div><div style="font-size:12px;color:var(--g2)">Your selected artisan — booking directly</div></div>
     </div>
-    <div class="info green" id="req-escrow-note"><span>🔒</span><span>Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. If no deal is made, it comes straight back.</span></div>
+    <div class="info green center" id="req-escrow-note"><span>🔒</span><span>Your budget is paid into <b>escrow</b> from your FixMi wallet when you send this request. If no deal is made, it comes straight back.</span></div>
     <div class="info yellow"><span>💡</span><span>Artisans can accept your budget, send their own price, or put the price <b>On Hold</b> to see the job first. You accept, counter or decline each offer.</span></div>
     <button class="btn btn-g" id="req-find-btn" onclick="startFindingOrDirect()">🔒 Pay into Escrow &amp; Find Artisans</button>
     <div style="height:16px"></div>
@@ -1565,19 +1591,19 @@ body{background:#fff}
     <div style="font-family:'AppFont',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:11px">Payment Method</div>
     <div class="pay-method sel" onclick="selectPayMethod(this,'bank')"><span style="font-size:22px">🏦</span><div><div style="font-weight:600;font-size:14px">Bank Transfer</div><div style="font-size:12px;color:var(--muted)">Transfer to FixMi, artisan paid after confirmation</div></div><span style="margin-left:auto;color:var(--g);font-size:18px">✓</span></div>
     <div class="pay-method" onclick="selectPayMethod(this,'card')"><span style="font-size:22px">💳</span><div><div style="font-weight:600;font-size:14px">Card Payment</div><div style="font-size:12px;color:var(--muted)">Debit / Credit via Paystack</div></div></div>
-    <div class="info yellow" style="margin-top:14px"><span>🔒</span><span>App payments are held by FixMi and released to the artisan only after you confirm the job is complete.</span></div>
+    <div class="info yellow center" style="margin-top:14px"><span>🔒</span><span>App payments are held by FixMi and released to the artisan only after you confirm the job is complete.</span></div>
     <button class="btn btn-g" id="pay-confirm-btn" onclick="confirmPayment()">Confirm Payment →</button>
   </div>
 </div>
 
-<!-- ████ RATING ████ -->
-<div class="s" id="rating">
-  <div style="padding:44px 26px;text-align:center;display:flex;flex-direction:column;align-items:center;min-height:80vh;justify-content:center">
-    <div style="font-size:68px;margin-bottom:14px;animation:bounce .5s ease-out">🎉</div>
-    <div style="font-family:'AppFont',sans-serif;font-size:26px;font-weight:800;color:var(--navy);margin-bottom:5px">Job Complete!</div>
+<!-- ████ RATING (pops up over the screen when the job is complete) ████ -->
+<div id="rate-modal" class="rate-ov">
+  <div class="rate-card">
+    <div style="font-size:56px;margin-bottom:8px;animation:bounce .5s ease-out">🎉</div>
+    <div style="font-family:'AppFont',sans-serif;font-size:23px;font-weight:800;color:var(--navy);margin-bottom:5px">Job Complete!</div>
     <p style="color:var(--muted);font-size:14px;margin-bottom:8px;line-height:1.6" id="rating-summary">Payment sent and released to your artisan.</p>
-    <div style="background:var(--g3);border-radius:11px;padding:11px 18px;margin-bottom:26px;font-size:13px;color:var(--g2);font-weight:600" id="rating-ref">✅ Payment Confirmed</div>
-    <div style="font-family:'AppFont',sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;width:100%" id="rating-title">Rate your artisan</div>
+    <div style="background:var(--g3);border-radius:11px;padding:10px 16px;margin-bottom:18px;font-size:13px;color:var(--g2);font-weight:600" id="rating-ref">✅ Escrow released</div>
+    <div style="font-family:'AppFont',sans-serif;font-size:17px;font-weight:700;color:var(--navy);margin-bottom:12px" id="rating-title">Rate your artisan</div>
     <div class="star-row" id="star-row">
       <div class="star-btn" onclick="rateStar(1)">☆</div>
       <div class="star-btn" onclick="rateStar(2)">☆</div>
@@ -1585,10 +1611,11 @@ body{background:#fff}
       <div class="star-btn" onclick="rateStar(4)">☆</div>
       <div class="star-btn" onclick="rateStar(5)">☆</div>
     </div>
-    <div id="rate-lbl" style="color:var(--muted);font-size:14px;min-height:22px;margin-bottom:18px;font-weight:500">Tap a star to rate</div>
-    <textarea class="input" id="rating-comment" style="width:100%;margin-bottom:16px" placeholder="Share your experience... (optional)"></textarea>
+    <div id="rate-lbl" style="color:var(--muted);font-size:14px;min-height:22px;margin-bottom:14px;font-weight:500">Tap a star to rate</div>
+    <textarea class="input" id="rating-comment" style="width:100%;margin-bottom:14px" placeholder="Share your experience... (optional)"></textarea>
     <button class="btn btn-g" style="width:100%" onclick="realSubmitRating()">Submit Review</button>
-    <button class="btn btn-gray" style="width:100%;margin-top:10px" onclick="openReportIssue(window._ratingBookingId)">⚠️ Report an Issue</button>
+    <button class="btn btn-gray" style="width:100%;margin-top:10px" onclick="skipRating()">Skip</button>
+    <button class="btn" style="width:100%;margin-top:10px;background:#FEE2E2;color:#DC2626" onclick="reportFromRating()">⚠️ Report an Issue</button>
   </div>
 </div>
 
@@ -1609,6 +1636,7 @@ body{background:#fff}
 <div class="s" id="messages">
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Messages</div><div class="tb-space"></div></div>
   <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">💬</span><span>Chat and call the artisan on your job from here — open a conversation and tap 📞 to call. Keep every payment inside FixMi escrow.</span></div>
+  <button class="chat-support-btn" onclick="openSupportChat()">🎧 Chat with FixMi Support</button>
   <div class="chat-list" id="chat-thread-list">
     <div style="text-align:center;color:var(--muted);font-size:13px;padding:16px">Loading conversations…</div>
   </div>
@@ -1623,13 +1651,15 @@ body{background:#fff}
 
 <!-- ████ CHAT ████ -->
 <div class="s" id="chat">
-  <div class="topbar"><button class="back" onclick="goBack()">←</button><div class="chat-ava" style="width:36px;height:36px;background:#FEF9C3;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:6px" id="chat-header-ico">⚡</div><div style="flex:1"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)" id="chat-header-name">Select a conversation</div><div style="font-size:12px;color:var(--g);font-weight:500" id="chat-header-role">&nbsp;</div></div><button class="ct-btn" id="chat-call-btn" hidden onclick="callFromChat()" aria-label="Call">📞</button></div>
+  <div class="topbar"><button class="back" onclick="goBack()">←</button><div class="chat-ava" style="width:36px;height:36px;background:#FEF9C3;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:6px" id="chat-header-ico">⚡</div><div style="flex:1;min-width:0"><div style="font-family:'AppFont',sans-serif;font-weight:700;font-size:14px;color:var(--navy)" id="chat-header-name">Select a conversation</div><div style="font-size:12px;color:var(--g);font-weight:500" id="chat-header-role">&nbsp;</div></div><button class="ct-btn" id="chat-call-btn" hidden onclick="callFromChat()" aria-label="Call">📞</button><button class="chat-close" id="chat-close-btn" onclick="closeActiveChat()">✖ Close chat</button></div>
   <div class="msg-area" id="msg-area">
     <div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">No messages yet</div>
   </div>
-  <div class="chat-input-row">
-    <input class="chat-inp" type="text" placeholder="Type a message..." id="chat-inp">
-    <button class="send-btn" onclick="sendMsg()">➤</button>
+  <div class="chat-closed" id="chat-closed" hidden>This chat has ended.</div>
+  <div class="chat-input-row" id="chat-input-row">
+    <label class="chat-attach" for="chat-photo" aria-label="Send a photo">📷</label><input type="file" id="chat-photo" accept="image/*" hidden onchange="sendChatPhoto(this)">
+    <input class="chat-inp" type="text" placeholder="Type a message..." id="chat-inp" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMsg();}">
+    <button class="send-btn" id="chat-send" onclick="sendMsg()">➤</button>
   </div>
 </div>
 
@@ -1712,6 +1742,7 @@ body{background:#fff}
       <button onclick="openWithdraw()" style="flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:11px;font-weight:700;font-size:13px;color:#fff;cursor:pointer;font-family:inherit">Withdraw</button>
     </div>
   </div>
+  <div id="my-reviews-cust" style="margin:16px 16px 0"></div>
   <div class="menu">
     <div class="mi" onclick="go('edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-settings')"><div class="mi-ico">⚙️</div><div class="mi-txt">Settings</div><div class="mi-arr">›</div></div>
@@ -1722,6 +1753,7 @@ body{background:#fff}
     <div class="menu-div"></div>
     <div class="mi" onclick="go('help')"><div class="mi-ico">🤝</div><div class="mi-txt">Help & Support</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('user-safety')"><div class="mi-ico">🛡️</div><div class="mi-txt">Safety &amp; Trust</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openRateApp()"><div class="mi-ico">⭐</div><div class="mi-txt">Rate &amp; Review FixMi</div><div class="mi-arr">›</div></div>
     <div class="menu-div"></div>
     <div class="mi" onclick="signOut()"><div class="mi-ico">🚪</div><div class="mi-txt" style="color:var(--red)">Sign Out</div><div class="mi-arr" style="color:var(--red)">›</div></div>
   </div>
@@ -2019,7 +2051,7 @@ body{background:#fff}
     <div id="help-faqs">
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I book an artisan? <span class="faq-arr">›</span></div><div class="faq-a">Select the service you need, describe your issue, set your location, and tap "Find Nearby Artisans". Verified artisans near you will be notified and can accept your request.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How does payment work? <span class="faq-arr">›</span></div><div class="faq-a">When you request a job, your budget goes into FixMi escrow from your wallet. Once you and an artisan agree a price, the escrow is topped up or the difference refunded. The artisan is paid from escrow only after you confirm the job is done — never pay cash.</div></div>
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if I'm not satisfied? <span class="faq-arr">›</span></div><div class="faq-a">When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 5 minutes). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if I'm not satisfied? <span class="faq-arr">›</span></div><div class="faq-a">When the artisan marks the job done, tap <b>Job Not Completed</b> before the payment releases (it releases automatically after 90 seconds). Your money stays in escrow while FixMi reviews both sides and decides: pay the artisan, refund you, or split it. After payment is released, use <b>Report an Issue</b> from History.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How are artisans verified? <span class="faq-arr">›</span></div><div class="faq-a">Every artisan must provide a government ID (NIN or Voter Card), a profile photo, and their phone number. Our admin team reviews each application before approval.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">Can I call an artisan directly? <span class="faq-arr">›</span></div><div class="faq-a">Yes. Once an artisan has your job, tap 📞 on the job screen for a free in-app call, a regular phone call or WhatsApp. Keep payments inside FixMi escrow.</div></div>
     </div>
@@ -2112,7 +2144,7 @@ body{background:#fff}
     <div class="bnav">
     <div class="bn on"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn" onclick="go('artisan-messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
-    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Jobs</div></div>
+    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Job History</div></div>
     <div class="bn" onclick="go('artisan-profile-self')"><div class="bn-ico">👷</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -2175,7 +2207,7 @@ body{background:#fff}
   <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn" onclick="go('artisan-messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
-    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Jobs</div></div>
+    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Job History</div></div>
     <div class="bn" onclick="go('artisan-profile-self')"><div class="bn-ico">👷</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -2377,7 +2409,7 @@ body{background:#fff}
     <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn" onclick="go('artisan-messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
-    <div class="bn on"><div class="bn-ico">💼</div><div class="bn-lbl">Jobs</div></div>
+    <div class="bn on"><div class="bn-ico">💼</div><div class="bn-lbl">Job History</div></div>
     <div class="bn" onclick="go('artisan-profile-self')"><div class="bn-ico">👷</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -2457,6 +2489,7 @@ body{background:#fff}
       <div class="ps"><div class="ps-n" id="art-stat-money">₦127K</div><div class="ps-l" id="art-stat-money-lbl">Earned</div></div>
     </div>
   </div>
+  <div id="my-reviews-art" style="margin:16px 16px 0"></div>
   <div class="menu">
     <div class="mi" onclick="openArtisanEdit()"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile &amp; Skills</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
@@ -2471,13 +2504,15 @@ body{background:#fff}
     <div class="menu-div"></div>
     <div class="mi" onclick="go('artisan-safety')"><div class="mi-ico">🛡️</div><div class="mi-txt">Safety &amp; Trust</div><div class="mi-arr">›</div></div>
     <div class="menu-div"></div>
+    <div class="mi" onclick="openRateApp()"><div class="mi-ico">⭐</div><div class="mi-txt">Rate &amp; Review FixMi</div><div class="mi-arr">›</div></div>
+    <div class="menu-div"></div>
     <div class="mi" onclick="signOut()"><div class="mi-ico">🚪</div><div class="mi-txt" style="color:var(--red)">Sign Out</div><div class="mi-arr" style="color:var(--red)">›</div></div>
   </div>
   <div style="height:78px"></div>
     <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn" onclick="go('artisan-messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
-    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Jobs</div></div>
+    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Job History</div></div>
     <div class="bn on"><div class="bn-ico">👷</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -2544,7 +2579,7 @@ body{background:#fff}
     </div>
     <div style="font-family:'AppFont',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:11px">FAQs for Artisans</div>
     <div id="artisan-help-faqs">
-    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I receive payments? <span class="faq-arr">›</span></div><div class="faq-a">After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 5 minutes after you mark the job done. Withdraw from your wallet to your bank account.</div></div>
+    <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I receive payments? <span class="faq-arr">›</span></div><div class="faq-a">After a customer confirms the job, FixMi releases 90% of the agreed price (the price less FixMi’s 10%) to your FixMi wallet. If the customer doesn’t respond, it releases automatically 90 seconds after you mark the job done. Withdraw from your wallet to your bank account.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What is FixMi's commission? <span class="faq-arr">›</span></div><div class="faq-a">FixMi keeps 10% of every job as its platform fee and you receive 90%. Every job is paid through escrow — there are no cash jobs. Set your price so the 90% you take home covers your materials, transport and profit. Example: quote ₦10,000 and you receive ₦9,000.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">How do I get more job requests? <span class="faq-arr">›</span></div><div class="faq-a">Stay online, maintain a high rating, respond quickly, and consider boosting your profile under Promote My Page. Customers see your rating on every offer, so good reviews help you win more jobs.</div></div>
     <div class="faq" onclick="toggleFaq(this)"><div class="faq-q">What if a customer is difficult? <span class="faq-arr">›</span></div><div class="faq-a">Use the Report Customer button in your Job History. Provide details and FixMi will review it. Never engage in arguments — complete the job or contact support.</div></div>
@@ -2645,6 +2680,7 @@ body{background:#fff}
 <div class="s" id="artisan-messages">
   <div class="topbar"><button class="back" onclick="go('artisan-dash')">←</button><div class="tb-title">Messages</div><div class="tb-space"></div></div>
   <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">💬</span><span>Chat and call the customer on your job from here — open a conversation and tap 📞 to call. Keep every payment inside FixMi escrow.</span></div>
+  <button class="chat-support-btn" onclick="openSupportChat()">🎧 Chat with FixMi Support</button>
   <div class="chat-list" id="artisan-chat-thread-list"></div>
   <div class="chat-list" data-demo>
     <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div><div style="flex:1;min-width:0"><div class="chat-name">Chukwuemeka Obi</div><div class="chat-prev">I'm near your location now</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0"><div style="font-size:11px;color:var(--muted)">5m ago</div><div class="unread">1</div></div></div>
@@ -2654,7 +2690,7 @@ body{background:#fff}
   <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
     <div class="bn on"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
-    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Jobs</div></div>
+    <div class="bn" onclick="go('artisan-history')"><div class="bn-ico">💼</div><div class="bn-lbl">Job History</div></div>
     <div class="bn" onclick="go('artisan-profile-self')"><div class="bn-ico">👷</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
@@ -2809,6 +2845,7 @@ body{background:#fff}
 <div class="s" id="support">
   <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Contact Support</div><div class="tb-space"></div></div>
   <div style="padding:16px">
+    <button class="chat-support-btn" style="width:100%;margin:0 0 14px" onclick="openSupportChat()">🎧 Chat live with FixMi Support (you can send photos)</button>
     <div class="info blue" style="margin-bottom:14px"><span>🤝</span><span>Send FixMi a message. Replies and updates come to your notifications, and your requests are listed below.</span></div>
     <div class="fg"><label class="label" for="sup-subject">Subject</label><input class="input" id="sup-subject" placeholder="e.g. Payment question"></div>
     <div class="fg"><label class="label" for="sup-message">Message</label><textarea class="input" id="sup-message" style="min-height:110px;resize:vertical" placeholder="Tell us what you need help with"></textarea></div>
@@ -3076,7 +3113,7 @@ body{background:#fff}
         <div onclick="openGalleryPicker()" style="width:64px;height:64px;border-radius:12px;background:#F2F5F8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:1.5px dashed #E4EAF0">
           <span style="font-size:22px">🖼️</span><span style="font-size:9px;color:#7A8EA8">Gallery</span>
         </div>
-        <div id="corp-media-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div id="corp-media-previews" class="ev-previews" style="display:flex;gap:6px;flex-wrap:wrap"></div>
       </div>
     </div>
 
@@ -3162,7 +3199,7 @@ body{background:#fff}
       <input id="custom-topup" type="number" placeholder="Enter amount (min ₦1,000)" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:18px;font-weight:700;outline:none">
     </div>
 
-    <div style="font-size:13px;color:#7A8EA8;margin-bottom:16px">Paid from your FixMi wallet (<span id="tu-wallet">…</span>).</div>
+    <div style="font-size:13px;color:#7A8EA8;margin-bottom:16px">You choose how to pay next: wallet (<span id="tu-wallet">…</span>), card, USSD or bank transfer.</div>
     <button onclick="confirmTopUp(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Confirm Top Up →</button>
     <div style="height:24px"></div>
   </div>
@@ -3194,7 +3231,7 @@ body{background:#fff}
     <div class="card job-person" id="cj-person"></div>
     <div class="job-money" id="cj-money"></div>
     <div id="cj-panel"></div>
-    <div class="info blue" style="margin-top:14px"><span>🔒</span><span>All payments go through FixMi escrow — never pay an artisan in cash.</span></div>
+    <div class="info blue center" style="margin-top:14px"><span>🔒</span><span>All payments go through FixMi escrow — never pay an artisan in cash.</span></div>
   </div>
 </div>
 
@@ -3334,7 +3371,7 @@ function goBack() {
     history.pushState({ fixmi: 2 }, '', location.href);
     window.addEventListener('popstate', function () {
       history.pushState({ fixmi: 2 }, '', location.href);
-      var modals = ['escrow-modal', 'cancel-modal'];
+      var modals = ['escrow-modal', 'cancel-modal', 'track-modal', 'rate-modal'];
       for (var i = 0; i < modals.length; i++) { var m = document.getElementById(modals[i]); if (m && m.style.display === 'flex') { m.style.display = 'none'; return; } }
       var on = document.querySelector('.s.on');
       var topLevel = ['home', 'artisan-dash', 'login-screen', 'splash', 'role-screen'];
@@ -3628,7 +3665,7 @@ function rateStar(n) {
   var labels = ['','Poor','Not great','Okay','Good','Excellent!'];
   var lbl = document.getElementById('rate-lbl');
   if (lbl) lbl.textContent = labels[n];
-  document.querySelectorAll('.star-btn').forEach(function(s, i) { s.textContent = i < n ? '\u2b50' : '\u2606'; });
+  document.querySelectorAll('#star-row .star-btn').forEach(function(s, i) { s.textContent = i < n ? '\u2b50' : '\u2606'; });
 }
 function submitRating() {
   if (!curRating) { toast('Please tap a star to rate'); return; }
@@ -3649,30 +3686,6 @@ function toggleAvail() {
   if (jobAlert) jobAlert.style.display = avail ? 'block' : 'none';
   toast(avail ? 'You are now Online — job requests will appear' : 'You are Offline — no new job requests');
 }
-
-function sendMsg() {
-  var inp = document.getElementById('chat-inp');
-  if (!inp) return;
-  var txt = inp.value.trim();
-  if (!txt) return;
-  var area = document.getElementById('msg-area');
-  var m = document.createElement('div');
-  m.className = 'msg sent';
-  m.innerHTML = txt + '<div class="msg-time">Now</div>';
-  area.appendChild(m);
-  inp.value = '';
-  area.scrollTop = 99999;
-  setTimeout(function() {
-    var r = document.createElement('div');
-    r.className = 'msg recv';
-    r.innerHTML = "Got it, on my way! <div class=\"msg-time\">Now</div>";
-    area.appendChild(r);
-    area.scrollTop = 99999;
-  }, 1100);
-}
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') { var c = document.getElementById('chat'); if (c && c.classList.contains('on')) sendMsg(); }
-});
 
 function toggleFaq(el) { el.classList.toggle('open'); }
 
@@ -4892,17 +4905,7 @@ function attrJson(v) {
 // an artisan in one tab never swaps the customer signed in on another tab.
 // localStorage only seeds a brand-new tab with the most recent sign-in.
 var SESSION_KEYS = ['fixme_access', 'fixme_refresh', 'fixme_user'];
-(function adoptLastSession() {
-  try {
-    if (sessionStorage.getItem('fixme_access') === null && localStorage.getItem('fixme_access')) {
-      SESSION_KEYS.forEach(function (k) {
-        var v = localStorage.getItem(k);
-        if (v !== null) sessionStorage.setItem(k, v);
-      });
-      window._adoptedSession = true; // a new tab picks up the account last signed in on this device
-    }
-  } catch (e) {}
-})();
+// Each browser tab keeps its own sign-in (refreshing the tab keeps it); a new tab starts signed out.
 function sessionGet(key) {
   try { return sessionStorage.getItem(key); } catch (e) { return null; }
 }
@@ -5024,6 +5027,17 @@ function initSocket() {
       if (!mine && _socket) _socket.emit('chat:join', { threadId: msg.threadId });
     } else if (!mine) {
       // Not looking at this conversation: keep the Messages list fresh.
+      if (onScreen === 'messages') loadChatThreads('chat-thread-list');
+      if (onScreen === 'artisan-messages') loadChatThreads('artisan-chat-thread-list');
+    }
+  });
+  _socket.on('chat:closed', function (p) {
+    if (!p) return;
+    var onScreen = (document.querySelector('.s.on') || {}).id;
+    if (window._activeChatThreadId && p.threadId === window._activeChatThreadId) {
+      setChatClosed(true);
+      if (onScreen === 'chat') toast(p.auto ? 'The job is over, so this chat has ended.' : 'The other person ended this chat.');
+    } else {
       if (onScreen === 'messages') loadChatThreads('chat-thread-list');
       if (onScreen === 'artisan-messages') loadChatThreads('artisan-chat-thread-list');
     }
@@ -5231,6 +5245,8 @@ function greetingText() {
 }
 function userLocationText(u) {
   if (!u) return '';
+  var full = String(u.address || '').replace(/^\s*\u{1F4CD}\s*/u, '').trim();
+  if (full) return full;
   var parts = [u.lga, u.state].filter(function (x) { return x && String(x).trim(); });
   if (parts.length) return parts.join(', ');
   return String(u.address || '').replace(/^\s*\u{1F4CD}\s*/u, '').trim();
@@ -5238,8 +5254,6 @@ function userLocationText(u) {
 async function loadHomeStats() {
   try {
     var st = await apiFetch('/artisans/stats');
-    setText('home-online-count', String(st.online));
-    setText('home-online-lbl', st.online === 1 ? 'artisan online now' : 'artisans online now');
     setText('home-stat-artisans', st.artisans.toLocaleString('en-NG'));
     setText('home-stat-rating', st.avgRating != null ? st.avgRating.toFixed(1) + '★' : 'New');
     setText('home-stat-arrival', st.avgArrivalMinutes != null ? st.avgArrivalMinutes + ' min' : '–');
@@ -5516,6 +5530,7 @@ function onCustomerBookingUpdate(b) {
   window._activeBookingId = b.id;
   rerenderCustomerBooking();
   updateActiveBanner();
+  if (b.status === 'CONFIRMED' && !ratingShown(b.id)) openRating(b);
 }
 
 function updateActiveBanner() {
@@ -5616,7 +5631,7 @@ async function cancelActiveRequest(btn) {
     onConfirm: async function (reason) {
       try {
         var data = await apiFetch('/bookings/' + b.id + '/cancel', { method: 'POST', body: { reason: reason } });
-        toast('Booking cancelled' + (b.escrowKobo ? ' — ' + fmtNaira(b.escrowKobo) + ' is back in your wallet' : ''));
+        toast('Request cancelled' + (b.escrowKobo ? ' — ' + fmtNaira(b.escrowKobo) + ' is back in your wallet' : ''));
         _booking = data.booking; updateActiveBanner(); go('home'); loadHomeFeed();
       } catch (e) { toast('❌ ' + e.message); }
     }
@@ -5671,13 +5686,17 @@ function stepsHtml(b) {
 function renderCustJob(b) {
   var a = b.artisan, u = a && a.user, fn = firstName(u && u.name), look = categoryLook(b.category);
   var tag, title, panel = '', cancel = false;
+  // Chat, call and the map belong to a job that is still under way; they go once it is done.
+  var workOn = ['ACCEPTED', 'PAID', 'IN_PROGRESS'].indexOf(b.status) !== -1;
+  var onTheWay = ['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt;
+  if (!onTheWay) closeTrackMap();
   if (b.status === 'PENDING_PAYMENT') {
     cancel = true;
     tag = 'Awaiting payment'; title = 'Pay to send your request';
     panel = '<div class="job-panel orange">Your ' + fmtNaira(b.priceKobo) + ' budget goes into escrow once it is paid. Artisans see your request the moment the payment is confirmed. Nothing has been charged yet.</div>' +
       '<button class="btn btn-g" style="margin-top:10px" onclick="payPendingBooking()">💳 Pay now</button>';
   } else if (b.status === 'CANCELLED') {
-    tag = 'Cancelled'; title = 'This booking was cancelled';
+    tag = 'Cancelled'; title = 'This request was cancelled';
     panel = '<div class="job-panel grey">Any escrow for it has been returned to your wallet.</div><button class="btn btn-g" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
   } else if (b.status === 'IN_PROGRESS') {
     tag = 'In Progress'; title = fn + ' is working on your job';
@@ -5695,7 +5714,7 @@ function renderCustJob(b) {
     setTimeout(function () { fillDisputeBox('cj-dispute', b, false); }, 0);
   } else if (b.status === 'CONFIRMED') {
     tag = 'Completed'; title = 'Job complete';
-    panel = '<div class="job-panel green">This job is closed and payment has been settled.</div><button class="btn btn-gray" onclick="openReportIssue(_booking.id)">⚠️ Report an Issue</button><button class="btn btn-g" style="margin-top:10px" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
+    panel = '<div class="job-panel green">This job is closed and payment has been settled.</div><button class="btn btn-g" onclick="openRating(_booking)">⭐ Rate &amp; Review ' + escapeHtml(fn) + '</button><button class="btn btn-gray" style="margin-top:10px" onclick="openReportIssue(_booking.id)">⚠️ Report an Issue</button><button class="btn btn-gray" style="margin-top:10px" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
   } else if (b.agreedPriceKobo == null) {
     cancel = true;
     if (b.onsitePriceKobo != null) {
@@ -5707,7 +5726,8 @@ function renderCustJob(b) {
       panel = '<div class="job-panel blue">Agree a price together. ' + escapeHtml(fn) + ' will submit it here for you to accept — your escrow (' + fmtNaira(b.escrowKobo) + ') covers it, or you top up the difference.</div>';
     } else {
       tag = 'Price on Hold'; title = fn + ' is coming to assess the job';
-      panel = '<div class="job-panel orange">You’ll agree the price at your place. Your ' + fmtNaira(b.escrowKobo) + ' stays safe in escrow meanwhile.</div>';
+      panel = '<div class="job-panel orange">You’ll agree the price at your place. Your ' + fmtNaira(b.escrowKobo) + ' stays safe in escrow meanwhile.</div>' +
+        '<button class="btn btn-g" style="margin-top:10px" onclick="openTrackMap()">🗺️ Track ' + escapeHtml(fn) + ' on the map</button>';
     }
   } else if (b.arrivedAt) {
     tag = 'Arrived'; title = fn + ' has arrived';
@@ -5717,10 +5737,10 @@ function renderCustJob(b) {
     panel = '<div class="job-panel green">You agreed ' + fmtNaira(b.agreedPriceKobo) + ', held safely in escrow. You don’t pay anything else.</div>' +
       '<button class="btn btn-g" style="margin-top:10px" onclick="openTrackMap()">🗺️ Track ' + escapeHtml(fn) + ' on the map</button>';
   }
-  // Either side can cancel until the artisan taps "Start work".
-  cancel = ['PENDING_PAYMENT', 'REQUESTED', 'ACCEPTED', 'PAID'].indexOf(b.status) !== -1;
-  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="cancelActiveRequest(this)">Cancel Booking</button>' + (b.status === 'ACCEPTED' || b.status === 'PAID' ? '<div class="job-hint">You can cancel until the artisan starts the job. Your escrow comes straight back to your wallet.</div>' : '');
-  else if (b.status === 'IN_PROGRESS') panel += '<div class="job-hint">The job has started, so it can no longer be cancelled in the app. Contact support if something goes wrong.</div>';
+  // Either side can cancel until the artisan taps "I've arrived"; then the button goes from both screens.
+  cancel = ['PENDING_PAYMENT', 'REQUESTED', 'ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt;
+  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="cancelActiveRequest(this)">Cancel Request</button>' + (b.status === 'ACCEPTED' || b.status === 'PAID' ? '<div class="job-hint">You can cancel until the artisan arrives. Your escrow comes straight back to your wallet.</div>' : '');
+  else if (workOn) panel += '<div class="job-hint">' + escapeHtml(fn) + ' has arrived, so this can no longer be cancelled in the app. Contact support if something goes wrong.</div>';
 
   setText('cj-tag', tag);
   setText('cj-title', title);
@@ -5728,7 +5748,7 @@ function renderCustJob(b) {
   setHTML('cj-person', u ? (
     '<div class="feat-ava" style="background:' + look[1] + ';margin:0;width:52px;height:52px;font-size:26px">' + look[0] + '</div>' +
     '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(u.name) + '</div><div class="oc-meta">' + escapeHtml(b.category) + ' · ' + (a.ratingCount ? '⭐ ' + a.ratingAvg.toFixed(1) : '⭐ New') + '</div></div>' +
-    contactButtons(u.name, u.phone, u.id, b.id, look[0])) : '');
+    (workOn ? contactButtons(u.name, u.phone, u.id, b.id, look[0]) : '')) : '');
   setHTML('cj-money',
     '<div><small>In escrow</small><b>' + fmtNaira(b.escrowKobo || (b.status === 'COMPLETED' || b.status === 'CONFIRMED' ? b.agreedPriceKobo : 0)) + '</b></div>' +
     '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'On hold' : '—')) + '</b></div>' +
@@ -5765,27 +5785,43 @@ function openRating(b) {
   setText('rating-summary', 'Payment of ' + fmtNaira(b.agreedPriceKobo || b.priceKobo) + ' released to ' + (u ? u.name : 'your artisan') + '.');
   setText('rating-title', 'Rate ' + (u ? firstName(u.name) : 'your artisan'));
   window._ratingBookingId = b.id;
+  try { sessionStorage.setItem('fixmi_rate_' + b.id, '1'); } catch (e) {}
   curRating = 0;
-  document.querySelectorAll('.star-btn').forEach(function (s) { s.textContent = '☆'; });
+  document.querySelectorAll('#star-row .star-btn').forEach(function (s) { s.textContent = '☆'; });
   setText('rate-lbl', 'Tap a star to rate');
-  go('rating');
+  setValue('rating-comment', '');
+  closeTrackMap();
+  document.getElementById('rate-modal').style.display = 'flex';
+}
+function ratingShown(id) { try { return !!sessionStorage.getItem('fixmi_rate_' + id); } catch (e) { return false; } }
+function closeRateModal() { document.getElementById('rate-modal').style.display = 'none'; }
+function finishRating() {
+  closeRateModal();
+  window._ratingBookingId = null;
+  _booking = null;
+  updateActiveBanner();
+  go('home');
+  loadHomeFeed();
+}
+function skipRating() { finishRating(); }
+function reportFromRating() {
+  var id = window._ratingBookingId;
+  closeRateModal();
+  _booking = null; updateActiveBanner();
+  openReportIssue(id);
 }
 
 async function realSubmitRating() {
   if (!curRating) { toast('Please tap a star to rate'); return; }
   var bookingId = window._ratingBookingId;
-  if (!bookingId) { go('home'); return; }
+  if (!bookingId) { finishRating(); return; }
   try {
     await apiFetch('/ratings', { method: 'POST', body: { bookingId: bookingId, stars: curRating, comment: (document.getElementById('rating-comment') || {}).value || undefined } });
     toast('🎉 Thanks for your review!');
   } catch (e) {
     toast('❌ ' + e.message);
   } finally {
-    window._ratingBookingId = null;
-    _booking = null;
-    updateActiveBanner();
-    go('home');
-    loadHomeFeed();
+    finishRating();
   }
 }
 
@@ -6208,7 +6244,7 @@ async function loadChatThreads(listId) {
       var other = (t.participants || []).map(function (p) { return p.user; }).filter(function (u) { return u && window.currentUser && u.id !== window.currentUser.id; })[0];
       var isSupport = !other || other.role === 'ADMIN';
       var name = isSupport ? 'FixMi Support' : escapeHtml(other.name);
-      var last = t.messages && t.messages[0] ? escapeHtml(t.messages[0].body) : 'No messages yet';
+      var last = t.closedAt ? '<span class="ended">Chat ended</span>' : t.messages && t.messages[0] ? (t.messages[0].body ? escapeHtml(t.messages[0].body) : '📷 Photo') : 'No messages yet';
       return (
         '<div class="chat-item" onclick="openChatThread(' + attrJson(t.id) + ',' + attrJson(other ? other.name : 'Conversation') + ',' + attrJson(other || null) + ',' + attrJson(t.booking || null) + ')">' +
         '<div class="chat-ava" style="background:' + (t.booking ? categoryLook(t.booking.category)[1] : '#EFF6FF') + '">' + (t.booking ? categoryLook(t.booking.category)[0] : '💬') + '</div>' +
@@ -6240,15 +6276,26 @@ async function openChatForActiveBooking() {
 }
 
 async function openChatThread(threadId, name, other, booking) {
+  closeTrackMap();
   window._activeChatThreadId = threadId;
   window._chatCtx = { other: other || null, booking: booking || null };
   document.getElementById('chat-header-name').textContent = name || 'Conversation';
-  document.getElementById('chat-header-role').textContent = booking ? booking.category + ' job' : '\u00a0';
-  setText('chat-header-ico', booking ? categoryLook(booking.category)[0] : '💬');
+  document.getElementById('chat-header-role').textContent = booking ? booking.category + ' job' : ' ';
+  setText('chat-header-ico', booking ? categoryLook(booking.category)[0] : '🎧');
+  setChatClosed(false);
   document.getElementById('chat-call-btn').hidden = !(other && booking);
   if (_socket) _socket.emit('chat:join', { threadId: threadId });
   go('chat');
   await loadChatMessages(threadId);
+}
+
+// A chat with FixMi Support, for customers and artisans alike.
+async function openSupportChat() {
+  if (!requireLogin()) return;
+  try {
+    var d = await apiFetch('/chat/support-thread', { method: 'POST', body: {} });
+    openChatThread(d.thread.id, 'FixMi Support', null, null);
+  } catch (e) { toast('❌ ' + e.message); }
 }
 
 // Chat and call go together: the call button in a conversation opens the
@@ -6258,6 +6305,26 @@ function callFromChat() {
   if (!c.other || !c.booking) return;
   openCallSheet(c.other.name, c.other.phone || '', c.other.id, c.booking.id, c.booking ? categoryLook(c.booking.category)[0] : '👤');
 }
+
+// Open conversation ended: no more typing, no call, no close button (like Handa's "chat ended").
+function setChatClosed(closed) {
+  window._chatClosed = !!closed;
+  var row = document.getElementById('chat-input-row'), note = document.getElementById('chat-closed'), btn = document.getElementById('chat-close-btn'), call = document.getElementById('chat-call-btn');
+  if (row) row.style.display = closed ? 'none' : '';
+  if (note) note.hidden = !closed;
+  if (btn) btn.style.display = closed ? 'none' : '';
+  if (closed && call) call.hidden = true;
+}
+async function closeActiveChat() {
+  var id = window._activeChatThreadId;
+  if (!id || window._chatClosed) return;
+  try {
+    await apiFetch('/chat/threads/' + id + '/close', { method: 'POST', body: {} });
+    setChatClosed(true);
+    toast('Chat ended.');
+  } catch (e) { toast('❌ ' + e.message); }
+}
+
 async function loadChatMessages(threadId) {
   var area = document.getElementById('msg-area');
   area.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">Loading…</div>';
@@ -6265,10 +6332,11 @@ async function loadChatMessages(threadId) {
     var data = await apiFetch('/chat/threads/' + threadId + '/messages');
     area.innerHTML = '';
     if (!data.messages.length) {
-      area.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">Say hello 👋</div>';
+      area.innerHTML = '<div id="chat-empty" style="text-align:center;color:var(--muted);font-size:12px;padding:6px">Say hello 👋</div>';
     }
     data.messages.forEach(function (m) { appendChatMessage(m, window.currentUser && m.senderId === window.currentUser.id, true); });
     area.scrollTop = area.scrollHeight;
+    if (data.thread && data.thread.closedAt) setChatClosed(true);
   } catch (e) {
     area.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">' + escapeHtml(e.message) + '</div>';
   }
@@ -6278,30 +6346,63 @@ function appendChatMessage(m, isMine, skipScroll) {
   var area = document.getElementById('msg-area');
   if (!area) return;
   if (m.id && area.querySelector('[data-mid="' + m.id + '"]')) return; // already shown (the server echoes your own message back)
+  var empty = document.getElementById('chat-empty'); if (empty) empty.remove();
   var div = document.createElement('div');
   if (m.id) div.setAttribute('data-mid', m.id);
   div.className = 'msg ' + (isMine ? 'sent' : 'recv');
+  if (m.attachmentUrl) {
+    var img = document.createElement('img');
+    img.className = 'msg-img'; img.src = m.attachmentUrl; img.alt = 'Photo'; img.loading = 'lazy';
+    img.onclick = function () { openPhoto(m.attachmentUrl); };
+    div.appendChild(img);
+  }
+  if (m.body) div.appendChild(document.createTextNode(m.body));
   var time = document.createElement('div');
   time.className = 'msg-time';
   time.textContent = new Date(m.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  div.appendChild(document.createTextNode(m.body));
   div.appendChild(time);
   area.appendChild(div);
   if (!skipScroll) area.scrollTop = area.scrollHeight;
 }
 
+// One send at a time; the message shows once, from the server's saved copy.
+var _chatSending = false;
 async function sendMsg() {
   var inp = document.getElementById('chat-inp');
-  if (!inp) return;
+  if (!inp || _chatSending) return;
   var txt = inp.value.trim();
-  if (!txt || !window._activeChatThreadId) return;
+  if (!txt) return;
+  if (window._chatClosed) { toast('This chat has ended'); return; }
+  if (!window._activeChatThreadId) { toast('Chat not ready yet, try again in a moment'); return; }
+  _chatSending = true;
   inp.value = '';
   try {
     var data = await apiFetch('/chat/threads/' + window._activeChatThreadId + '/messages', { method: 'POST', body: { body: txt } });
     appendChatMessage(data.message, true);
   } catch (e) {
+    inp.value = txt;
+    if (e.status === 409) setChatClosed(true);
     toast('❌ ' + e.message);
+  } finally {
+    _chatSending = false;
   }
+}
+
+// A photo in the conversation (customer, artisan or FixMi Support).
+async function sendChatPhoto(input) {
+  var file = input.files && input.files[0];
+  input.value = '';
+  if (!file || _chatSending) return;
+  if (window._chatClosed) { toast('This chat has ended'); return; }
+  if (!window._activeChatThreadId) return;
+  _chatSending = true;
+  try {
+    var fd = new FormData();
+    fd.append('photo', file, file.name || 'photo.jpg');
+    var up = await apiFetch('/chat/threads/' + window._activeChatThreadId + '/attachment', { method: 'POST', body: fd });
+    var data = await apiFetch('/chat/threads/' + window._activeChatThreadId + '/messages', { method: 'POST', body: { body: '', attachmentUrl: up.url } });
+    appendChatMessage(data.message, true);
+  } catch (e) { toast('❌ ' + e.message); } finally { _chatSending = false; }
 }
 
 /* ---------------- Artisan dashboard ---------------- */
@@ -6556,12 +6657,14 @@ function renderArtJob() {
   var b = _job;
   if (!b) { setText('aj-title', 'No current job'); setHTML('aj-panel', '<button class="btn btn-g" onclick="go(\'artisan-dash\')">Back to Dashboard</button>'); setHTML('aj-person', ''); setHTML('aj-money', ''); setHTML('aj-steps', ''); setText('aj-tag', ''); return; }
   var c = b.customer || {}, tag, title, panel = '', cancel = false, id = attrJson(b.id);
+  var workOn = ['ACCEPTED', 'PAID', 'IN_PROGRESS'].indexOf(b.status) !== -1;
+  if (['ACCEPTED', 'PAID'].indexOf(b.status) === -1 || b.arrivedAt) { if (_trk && _trk.mode === 'artisan') closeTrackMap(); }
   if (b.status === 'CANCELLED') {
     tag = 'Cancelled'; title = 'This job was cancelled';
     panel = '<div class="job-panel grey">The customer’s escrow was refunded.</div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');renderRequests()">Back to Dashboard</button>';
   } else if (b.status === 'CONFIRMED') {
     tag = 'Paid'; title = '🎉 Payment released to your wallet';
-    panel = '<div class="job-panel green">' + fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' is in your wallet (' + fmtNaira(b.agreedPriceKobo) + ' less FixMi’s ' + APP_CFG.commissionPercent + '%).</div><div id="aj-dispute"></div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
+    panel = '<div class="job-panel green">' + fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' is in your wallet (' + fmtNaira(b.agreedPriceKobo) + ' less FixMi’s ' + APP_CFG.commissionPercent + '%).</div><div id="aj-dispute"></div>' + artRateBox(b) + '<button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
     setTimeout(function () { fillDisputeBox('aj-dispute', b, true); }, 0);
   } else if (b.status === 'DISPUTED') {
     tag = 'Payment on Hold'; title = 'The customer reported a problem';
@@ -6596,19 +6699,19 @@ function renderArtJob() {
   }
   if (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt) { startLocationSharing(); panel += '<div class="job-hint">📡 The customer can follow you on the map while you’re on the way.</div>'; }
   else stopLocationSharing();
-  if (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1) cancel = true; // until you tap Start Work
-  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="artisanCancelJob(this,' + id + ')">Cancel Job</button><div class="job-hint">You can cancel until you start the job.</div>';
+  cancel = ['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt; // until you tap "I Have Arrived"
+  if (cancel) panel += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-top:10px" onclick="artisanCancelJob(this,' + id + ')">Cancel Job</button><div class="job-hint">You can cancel until you tap “I Have Arrived”.</div>';
   setText('aj-tag', tag);
   setText('aj-title', title);
   setHTML('aj-steps', b.status === 'CANCELLED' ? '' : stepsHtml(b));
   setHTML('aj-person',
     '<div class="feat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0);margin:0;width:52px;height:52px;font-size:26px">👤</div>' +
     '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div>' + photoStrip(b.photos) + '</div>' +
-    contactButtons(c.name, c.phone, c.id, b.id, '👤'));
+    (workOn ? contactButtons(c.name, c.phone, c.id, b.id, '👤') : ''));
   setHTML('aj-money',
     '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : 'On hold') + '</b></div>' +
     '<div><small>Customer escrow</small><b>' + fmtNaira(b.escrowKobo) + '</b></div>' +
-    '<div><small>Navigate</small><b><a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(b.address) + '" target="_blank" rel="noopener" style="color:var(--g)">Open map ›</a></b></div>');
+    '<div><small>Map</small><b>' + (['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt ? '<a href="#" onclick="openJobMap();return false" style="color:var(--g)">Open map ›</a>' : '—') + '</b></div>');
   setHTML('aj-panel', panel);
 }
 
@@ -6764,7 +6867,7 @@ function filterHistory(btn, screenId, key) {
 }
 var CUSTOMER_STATUS = {
   PENDING_PAYMENT: '💳 Awaiting payment', REQUESTED: '⏳ Waiting for artisans', ACCEPTED: '✓ Artisan booked', PAID: '✓ Artisan booked', IN_PROGRESS: '🔧 In progress',
-  COMPLETED: '💳 Payment pending', CONFIRMED: '✓ Completed', CANCELLED: '✕ Booking cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Disputed'
+  COMPLETED: '💳 Payment pending', CONFIRMED: '✓ Completed', CANCELLED: '✕ Request cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Disputed'
 };
 var ARTISAN_STATUS = {
   ACCEPTED: '✓ Accepted', PAID: '✓ Accepted', IN_PROGRESS: '🔧 In progress', COMPLETED: '💳 Payment pending',
@@ -6828,11 +6931,11 @@ async function openBookingDetail(id) {
   ];
   if (b.cancelReason) rows.push(['Reason', escapeHtml(b.cancelReason)]);
   var actions = '';
-  if (!asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="showCustomerBooking(_historyCache[' + attrJson(b.id) + '] || _booking)">Open Live Booking →</button>';
+  if (!asArtisan && bookingIsLive(b) && b.status !== 'DISPUTED') actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="showCustomerBooking(_historyCache[' + attrJson(b.id) + '] || _booking)">Open Live Booking →</button>';
   if (asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="go(\'art-job\')">Open Job →</button>';
   if (!asArtisan && b.artisan) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="bookDirectArtisan(' + attrJson(b.artisan.id) + ',' + attrJson(b.artisan.user.name) + ',' + attrJson(b.category) + ')">🔄 Hire ' + escapeHtml(firstName(b.artisan.user.name)) + ' Again</button>';
   if (!asArtisan && b.status === 'COMPLETED') actions += '<button class="btn" style="background:#DC2626;color:#fff;margin-bottom:10px" onclick="openDisputeForm(\'open\', _historyCache[' + attrJson(b.id) + '])">⚠️ Job Not Completed — Hold Payment</button>';
-  actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="openReportIssue(' + attrJson(b.id) + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'an Issue') + '</button>';
+  if (b.status === 'CONFIRMED' || b.status === 'COMPLETED') actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="openReportIssue(' + attrJson(b.id) + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'an Issue') + '</button>';
   _historyCache[b.id] = b;
   setHTML('bkd-body',
     '<div class="card" style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">' +
@@ -6910,7 +7013,7 @@ async function openArtisanProfile(id) {
 var MENU_ITEMS = {
   customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['❤️', 'Saved Artisans', 'openSavedArtisans()'], ['🔔', 'Notifications', 'openNotifications()'],
     ['🏢', 'Corporate Plan', "openCorporate()"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"], ['⭐', 'Rate FixMi', 'openRateApp()']],
-  artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'My Jobs', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
+  artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'Job History', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
     ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"], ['⭐', 'Rate FixMi', 'openRateApp()']]
 };
 function openMenu() {
@@ -6965,18 +7068,24 @@ function choosePlan(key) {
   apiFetch('/wallet').then(function (d) { setText('fe-wallet', 'Balance: ' + fmtNaira(d.wallet.balanceKobo)); }).catch(function () {});
   go('corp-escrow');
 }
-async function fundEscrow(btn) {
+function fundEscrow(btn) {
   if (!_corpPlanKey) { go('corp-plan'); return; }
-  if (btn) btn.disabled = true;
-  try {
-    await apiFetch('/corporate/plan', { method: 'POST', body: { plan: _corpPlanKey, categories: _corpSel } });
-    toast('✅ Plan activated — your corporate escrow is funded');
-    _corpSel = [];
-    await openCorporate();
-  } catch (e) {
-    toast('❌ ' + e.message);
-    if (/insufficient/i.test(e.message)) setTimeout(openWallet, 900);
-  } finally { if (btn) btn.disabled = false; }
+  var p = _corp && _corp.plans && _corp.plans[_corpPlanKey];
+  if (!p) { openCorporate(); return; }
+  var key = _corpPlanKey, cats = _corpSel.slice();
+  openEscrowModal({
+    total: p.priceKobo, title: '🔒 Fund corporate escrow', sub: 'The ' + p.label + ' plan escrow is held safely and used for your jobs.',
+    rows: [[p.label + ' plan escrow', p.priceKobo]],
+    onConfirm: async function (method) {
+      try {
+        var d = await apiFetch('/corporate/plan', { method: 'POST', body: { plan: key, categories: cats, paymentMethod: method, gateway: window._payGateway } });
+        if (d.payment) { continuePayment(d.payment, { purpose: 'CORPORATE_PLAN' }); return; }
+        toast('✅ Plan activated — your corporate escrow is funded');
+        _corpSel = [];
+        await openCorporate();
+      } catch (e) { toast('❌ ' + e.message); }
+    }
+  });
 }
 var CORP_STATUS = { REQUESTED: 'Waiting for artisans', ACCEPTED: 'Artisan booked', PAID: 'Artisan booked', IN_PROGRESS: 'In progress', COMPLETED: 'Confirm payment', CONFIRMED: 'Done', CANCELLED: 'Cancelled', DECLINED: 'Declined', DISPUTED: 'Under review' };
 function renderCorpDash() {
@@ -7005,6 +7114,7 @@ function openCorpRaise() {
   sel.innerHTML = '<option value="">Select service...</option>' + names.map(function (n) { return '<option value="' + escapeHtml(n) + '">' + categoryLook(n)[0] + ' ' + escapeHtml(n) + '</option>'; }).join('');
   sel.dataset.filled = '1';
   setText('job-escrow-note', 'Taken from your corporate escrow (' + fmtNaira(p.escrowKobo) + ' available). Artisans can accept it or send their own price.');
+  mediaFiles = []; renderPreviews();
   go('corp-raise');
 }
 async function corpSubmitJob(btn) {
@@ -7017,7 +7127,10 @@ async function corpSubmitJob(btn) {
   if (!budget || budget < 500) { toast('Enter a budget of at least ₦500'); return; }
   btn.disabled = true;
   try {
-    var d = await apiFetch('/bookings', { method: 'POST', body: { category: svc, issue: (pr === 'Normal' ? '' : '[' + pr + '] ') + desc, address: loc, priceKobo: Math.round(budget * 100), corporate: true } });
+    var body = { category: svc, issue: (pr === 'Normal' ? '' : '[' + pr + '] ') + desc, address: loc, priceKobo: Math.round(budget * 100), corporate: true };
+    if (mediaFiles.length) { try { body.photos = await uploadRequestPhotos(); } catch (e) { toast('Photos could not be uploaded. Sending without them.'); } }
+    var d = await apiFetch('/bookings', { method: 'POST', body: body });
+    mediaFiles = []; renderPreviews();
     ['job-loc', 'job-desc', 'job-budget'].forEach(function (id) { setValue(id, ''); });
     toast(d.notified ? '📣 Sent to ' + d.notified + ' artisan' + (d.notified > 1 ? 's' : '') + ' nearby' : 'Request is open — artisans will see it as they come online');
     showCustomerBooking(d.booking);
@@ -7031,19 +7144,23 @@ function pickTopUp(el, amt) {
   el.style.background = '#0B1A2E'; el.style.color = '#fff';
   setValue('custom-topup', '');
 }
-async function confirmTopUp(btn) {
+function confirmTopUp(btn) {
   var amt = Number(document.getElementById('custom-topup').value) || _corpTopAmt;
   if (!amt || amt < 1000) { toast('Please select or enter an amount (min ₦1,000)'); return; }
-  btn.disabled = true;
-  try {
-    await apiFetch('/corporate/topup', { method: 'POST', body: { amountKobo: Math.round(amt * 100) } });
-    toast('✅ Corporate escrow topped up with ' + fmtNaira(amt * 100));
-    _corpTopAmt = 0; setValue('custom-topup', '');
-    await openCorporate();
-  } catch (e) {
-    toast('❌ ' + e.message);
-    if (/insufficient/i.test(e.message)) setTimeout(openWallet, 900);
-  } finally { btn.disabled = false; }
+  var kobo = Math.round(amt * 100);
+  openEscrowModal({
+    total: kobo, title: '➕ Top up corporate escrow', sub: 'Added to your corporate escrow, used for your jobs.',
+    rows: [['Corporate escrow top-up', kobo]],
+    onConfirm: async function (method) {
+      try {
+        var d = await apiFetch('/corporate/topup', { method: 'POST', body: { amountKobo: kobo, paymentMethod: method, gateway: window._payGateway } });
+        if (d.payment) { continuePayment(d.payment, { purpose: 'CORPORATE_TOPUP' }); return; }
+        toast('✅ Corporate escrow topped up with ' + fmtNaira(kobo));
+        _corpTopAmt = 0; setValue('custom-topup', '');
+        await openCorporate();
+      } catch (e) { toast('❌ ' + e.message); }
+    }
+  });
 }
 async function cancelCorpPlan(btn) {
   if (btn.dataset.sure !== '1') { btn.dataset.sure = '1'; btn.textContent = 'Tap again to end the plan'; return; }
@@ -7252,8 +7369,6 @@ async function confirmPromoPayment() {
 (function boot() {
   addPasswordEyes();
   setTimeout(handlePayReturn, 900);
-  // A tab that picked up the last signed-in account says so, so two accounts are never mixed up.
-  if (window._adoptedSession && window.currentUser) setTimeout(function () { toast('Signed in as ' + window.currentUser.name + ' (' + (window.currentUser.role === 'ARTISAN' ? 'artisan' : 'customer') + '). Sign out to switch account.'); }, 1500);
   loadAppConfig();
   // Resume a stored session only if the server still accepts it, so an
   // expired or revoked login lands on the splash screen instead of a
@@ -7279,7 +7394,8 @@ async function confirmPromoPayment() {
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
     if (id === 'corp-plan') renderCorpChips();
     if (id === 'artisan-settings') loadSettings();
-    if (id === 'profile') loadProfileWallet();
+    if (id === 'profile') { loadProfileWallet(); loadMyReviews('my-reviews-cust'); }
+    if (id === 'artisan-profile-self') loadMyReviews('my-reviews-art');
     if (id === 'artisan-promote') loadPromoStatus();
     if (id === 'edit-profile') fillProfileForms();
     if (id === 'artisan-dash') setWdPeriod(_wdPeriod);
@@ -7903,6 +8019,10 @@ async function finishPayment(ctx) {
       toast('✅ Payment received. Your request is live.');
       showCustomerBooking(b);
     } catch (e) { go('home'); }
+  } else if (ctx.purpose === 'CORPORATE_PLAN' || ctx.purpose === 'CORPORATE_TOPUP') {
+    toast(ctx.purpose === 'CORPORATE_PLAN' ? '✅ Payment received. Your corporate plan is active.' : '✅ Payment received. Your corporate escrow is topped up.');
+    _corpSel = []; _corpTopAmt = 0;
+    openCorporate();
   } else if (ctx.purpose === 'FEATURE_BOOST_PAYMENT') {
     toast('✅ Payment received. Your page is now featured.');
     go('artisan-dash'); try { loadArtisanDash(); } catch (e) {}
@@ -8017,6 +8137,7 @@ function startLocationSharing() {
   var last = 0;
   _locWatch = navigator.geolocation.watchPosition(function (pos) {
     window._myCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    if (_trk && _trk.mode === 'artisan') setArtisanPoint(pos.coords.latitude, pos.coords.longitude);
     var now = Date.now();
     if (now - last < 5000) return;
     last = now;
@@ -8035,33 +8156,53 @@ function loadLeaflet(cb) {
   document.head.appendChild(sc);
 }
 function trkIcon(emoji) { return L.divIcon({ html: '<div style="font-size:28px;line-height:28px;text-shadow:0 1px 3px rgba(0,0,0,.4)">' + emoji + '</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] }); }
+function showTrackModal(o) {
+  setText('trk-title', o.title);
+  setHTML('trk-contact', o.contactHtml || '');
+  document.querySelectorAll('#trk-contact button').forEach(function (btn) { btn.addEventListener('click', function () { closeTrackMap(); }); }); // chat or call opens on top of a clear screen
+  setText('trk-status', o.waiting); setText('trk-sub', o.address ? '📍 ' + o.address : '');
+  document.getElementById('track-modal').style.display = 'flex';
+  loadLeaflet(function (err) {
+    if (err) { setText('trk-status', err.message); return; }
+    initTrackMap(o);
+  });
+}
+// The customer follows the artisan on the way, inside the app.
 function openTrackMap() {
   var b = _booking;
   if (!b || !b.artisan) { toast('No artisan to track yet'); return; }
   var u = b.artisan.user || {};
-  setText('trk-title', 'Tracking ' + firstName(u.name));
-  setHTML('trk-contact', contactButtons(u.name, u.phone, u.id, b.id, '👷'));
-  setText('trk-status', 'Waiting for ' + firstName(u.name) + '’s location…'); setText('trk-sub', '');
-  go('track-map');
   if (_socket) _socket.emit('booking:join', { bookingId: b.id });
-  loadLeaflet(function (err) {
-    if (err) { setText('trk-status', err.message); return; }
-    initTrackMap(b);
+  showTrackModal({
+    mode: 'customer', bookingId: b.id, name: firstName(u.name), title: '📍 ' + firstName(u.name) + '’s journey',
+    waiting: 'Waiting for ' + firstName(u.name) + '’s location…', contactHtml: contactButtons(u.name, u.phone, u.id, b.id, '👷'),
+    dest: b.lat != null ? [b.lat, b.lng] : (window._reqPos ? [window._reqPos.lat, window._reqPos.lng] : null),
+    art: b.artisan.lat != null ? [b.artisan.lat, b.artisan.lng] : null
   });
 }
-function initTrackMap(b) {
+// The artisan sees the customer's place on the same kind of map, without leaving the app.
+function openJobMap() {
+  var b = _job;
+  if (!b) return;
+  var c = b.customer || {};
+  showTrackModal({
+    mode: 'artisan', bookingId: b.id, name: firstName(c.name), title: '📍 ' + firstName(c.name) + '’s place',
+    waiting: 'Finding your position…', address: b.address, contactHtml: contactButtons(c.name, c.phone, c.id, b.id, '👤'),
+    dest: b.lat != null ? [b.lat, b.lng] : null, art: window._myCoords ? [window._myCoords.lat, window._myCoords.lng] : null
+  });
+}
+window.addEventListener('resize', function () { if (_trk && _trk.map) _trk.map.invalidateSize(); });
+function initTrackMap(o) {
   var el = document.getElementById('trk-map');
   if (_trk && _trk.map) { try { _trk.map.remove(); } catch (e) {} }
-  var art = b.artisan && b.artisan.lat != null ? [b.artisan.lat, b.artisan.lng] : null;
-  var dest = b.lat != null ? [b.lat, b.lng] : (window._reqPos ? [window._reqPos.lat, window._reqPos.lng] : null);
-  var map = L.map(el).setView(art || dest || [6.5244, 3.3792], 14);
+  var map = L.map(el).setView(o.art || o.dest || [6.5244, 3.3792], 14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-  _trk = { map: map, bookingId: b.id, art: null, dest: null, last: null };
-  if (dest) _trk.dest = L.marker(dest, { icon: trkIcon('📍') }).addTo(map);
-  else getPosition().then(function (p) { if (p && p.lat != null && _trk && _trk.map === map) { _trk.dest = L.marker([p.lat, p.lng], { icon: trkIcon('📍') }).addTo(map); updateTrackInfo(); } });
-  if (art) setArtisanPoint(art[0], art[1]);
+  _trk = { map: map, bookingId: o.bookingId, mode: o.mode, name: o.name, art: null, dest: null, last: null };
+  if (o.dest) _trk.dest = L.marker(o.dest, { icon: trkIcon('📍') }).addTo(map);
+  else if (o.mode === 'customer') getPosition().then(function (p) { if (p && p.lat != null && _trk && _trk.map === map) { _trk.dest = L.marker([p.lat, p.lng], { icon: trkIcon('📍') }).addTo(map); updateTrackInfo(); } });
+  if (o.art) setArtisanPoint(o.art[0], o.art[1]);
+  else if (o.mode === 'artisan') getPosition().then(function (p) { if (p && p.lat != null && _trk && _trk.map === map) setArtisanPoint(p.lat, p.lng); });
   [300, 900, 1800].forEach(function (ms) { setTimeout(function () { if (_trk && _trk.map === map) { map.invalidateSize(); if (_trk.last && _trk.dest) map.fitBounds(L.latLngBounds([[_trk.last.lat, _trk.last.lng], _trk.dest.getLatLng()]), { padding: [40, 40], maxZoom: 16 }); } }, ms); });
-  window.addEventListener('resize', function () { if (_trk && _trk.map === map) map.invalidateSize(); });
 }
 function setArtisanPoint(lat, lng) {
   if (!_trk || !window.L) return;
@@ -8072,16 +8213,17 @@ function setArtisanPoint(lat, lng) {
 }
 function updateTrackInfo() {
   if (!_trk || !_trk.last) return;
-  var fn = _booking && _booking.artisan ? firstName(_booking.artisan.user.name) : 'The artisan';
-  if (!_trk.dest) { setText('trk-status', fn + ' is on the way'); return; }
+  var fn = _trk.name || 'The artisan', mine = _trk.mode === 'artisan';
+  if (!_trk.dest) { setText('trk-status', mine ? 'This is where you are' : fn + ' is on the way'); return; }
   var d = _trk.dest.getLatLng(), km = kmBetween(_trk.last.lat, _trk.last.lng, d.lat, d.lng);
   var mins = Math.max(1, Math.round(km / 25 * 60));
-  setText('trk-status', km < 0.15 ? fn + ' is almost there' : fn + ' is about ' + mins + ' min away');
-  setText('trk-sub', (km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km') + ' from you · updates live');
+  setText('trk-status', km < 0.15 ? (mine ? 'You are almost there' : fn + ' is almost there') : (mine ? 'About ' + mins + ' min to ' + fn + '’s place' : fn + ' is about ' + mins + ' min away'));
+  setText('trk-sub', (km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km') + (mine ? ' to go' : ' from you') + ' · updates live');
 }
 function closeTrackMap() {
   if (_trk && _trk.map) { try { _trk.map.remove(); } catch (e) {} }
-  _trk = null; goBack();
+  _trk = null;
+  var m = document.getElementById('track-modal'); if (m) m.style.display = 'none';
 }
 
 async function openDisputeChatFor(bookingId) {
@@ -8089,6 +8231,48 @@ async function openDisputeChatFor(bookingId) {
     var d = await apiFetch('/bookings/' + bookingId + '/dispute/chat', { method: 'POST', body: {} });
     openChatThread(d.thread.id, 'FixMi Support', null, null);
   } catch (e) { toast('❌ ' + e.message); }
+}
+
+var _artRate = 0;
+function artRateBox(b) {
+  if (ratingShown('c' + b.id)) return '';
+  return '<div class="card" id="art-rate-box" style="margin:12px 0"><div style="font-weight:700;margin-bottom:8px">Rate ' + escapeHtml(firstName((b.customer || {}).name)) + '</div>' +
+    '<div style="display:flex;gap:8px;justify-content:center;font-size:28px;margin-bottom:8px">' + [1, 2, 3, 4, 5].map(function (n) { return '<span class="art-star" onclick="artRateStar(' + n + ')" style="cursor:pointer">☆</span>'; }).join('') + '</div>' +
+    '<textarea class="input" id="art-rate-comment" placeholder="How was the customer? (optional)" style="width:100%;min-height:60px"></textarea>' +
+    '<button class="btn btn-g" style="margin-top:8px" onclick="submitArtRating(' + attrJson(b.id) + ')">Submit Review</button></div>';
+}
+function artRateStar(n) {
+  _artRate = n;
+  document.querySelectorAll('.art-star').forEach(function (el, i) { el.textContent = i < n ? '⭐' : '☆'; });
+}
+async function submitArtRating(bookingId) {
+  if (!_artRate) { toast('Tap a star to rate'); return; }
+  try {
+    await apiFetch('/ratings', { method: 'POST', body: { bookingId: bookingId, stars: _artRate, comment: (document.getElementById('art-rate-comment') || {}).value || undefined } });
+    try { sessionStorage.setItem('fixmi_rate_c' + bookingId, '1'); } catch (e) {}
+    var box = document.getElementById('art-rate-box'); if (box) box.remove();
+    toast('🎉 Thanks for your review!');
+  } catch (e) { toast('❌ ' + e.message); }
+}
+async function loadMyReviews(boxId) {
+  var box = document.getElementById(boxId);
+  if (!box || !getAccess()) return;
+  try {
+    var d = await apiFetch('/ratings/mine');
+    var head = '<div class="sec-title" style="margin-bottom:8px">Reviews about you</div>';
+    if (d.count) {
+      var avg = d.average.toFixed(1);
+      setText(boxId === 'my-reviews-art' ? 'art-stat-rating' : 'cust-stat-rating', avg + '★');
+      box.innerHTML = head + '<div class="card" style="margin-bottom:10px"><b style="font-size:18px">⭐ ' + avg + '</b> <span class="muted" style="font-size:13px">from ' + d.count + ' review' + (d.count > 1 ? 's' : '') + '</span></div>' +
+        d.reviews.slice(0, 10).map(function (r) {
+          return '<div class="card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between"><b style="font-size:14px">' + escapeHtml(r.from) + '</b><span style="color:var(--yellow);font-size:13px">' + '⭐'.repeat(r.stars) + '</span></div>' +
+            (r.comment ? '<p style="font-size:13px;color:var(--muted);margin-top:4px">' + escapeHtml(r.comment) + '</p>' : '') +
+            '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + escapeHtml(r.category || '') + ' · ' + new Date(r.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) + '</div></div>';
+        }).join('');
+    } else {
+      box.innerHTML = head + '<div class="empty-note">No reviews yet. They show up here after your jobs.</div>';
+    }
+  } catch (e) {}
 }
 </script>
 </body>

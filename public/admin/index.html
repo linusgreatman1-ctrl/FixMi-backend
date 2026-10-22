@@ -524,15 +524,34 @@ LOAD.livechat = function () {
     })) + '</div>');
   }).catch(fail);
 };
+var chatOpenId = null;
 function openChat(id) {
   api('/admin/chat-threads/' + id + '/messages').then(function (d) {
+    chatOpenId = id;
     var names = {};
     d.thread.participants.forEach(function (p) { names[p.user.id] = p.user.name; });
-    openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + d.thread.participants.map(function (p) { return esc(p.user.name); }).join(' & ') + '</h3><button class="l" data-act="close">Close</button></div>' +
-      '<div style="max-height:50vh;overflow:auto;margin:12px 0">' + (d.messages.length ? d.messages.map(function (m) { return '<div class="side"><b>' + esc(names[m.senderId] || 'Support') + '</b> <span class="muted">' + when(m.createdAt) + '</span><br>' + esc(m.body) + '</div>'; }).join('') : '<div class="muted">No messages yet.</div>') + '</div>' +
-      '<textarea id="chat-reply" placeholder="Write a message as FixMi support"></textarea><div class="err" id="chat-err"></div>' + btn('Send', 'chatsend', id, 'g'));
+    var closed = !!d.thread.closedAt;
+    openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + d.thread.participants.map(function (p) { return esc(p.user.name); }).join(' & ') + '</h3><button class="l" data-act="close">Close window</button></div>' +
+      '<div id="chat-log" style="max-height:50vh;overflow:auto;margin:12px 0">' + (d.messages.length ? d.messages.map(function (m) {
+        return '<div class="side"><b>' + esc(names[m.senderId] || 'Support') + '</b> <span class="muted">' + when(m.createdAt) + '</span><br>' + esc(m.body) +
+          (m.attachmentUrl ? '<br><img src="' + esc(m.attachmentUrl) + '" alt="Photo" style="max-width:220px;border-radius:8px;margin-top:4px;cursor:zoom-in" onclick="window.open(this.src)">' : '') + '</div>';
+      }).join('') : '<div class="muted">No messages yet.</div>') + '</div>' +
+      (closed ? '<div class="card muted">This chat has ended.</div>'
+        : '<textarea id="chat-reply" placeholder="Write a message as FixMi support"></textarea><div class="err" id="chat-err"></div><div class="row">' + btn('Send', 'chatsend', id, 'g') +
+          '<label class="l" style="cursor:pointer;display:inline-block;padding:10px 14px">📷 Send photo<input type="file" id="chat-photo" accept="image/*" hidden></label>' + btn('✖ Close chat', 'chatclose', id, 'n') + '</div>'));
+    var log = $('chat-log'); if (log) log.scrollTop = log.scrollHeight;
   }).catch(function (e) { alert(e.message); });
 }
+document.addEventListener('change', function (e) {
+  if (!e.target || e.target.id !== 'chat-photo' || !chatOpenId || !e.target.files[0]) return;
+  var id = chatOpenId, fd = new FormData();
+  fd.append('photo', e.target.files[0]);
+  fetch('/api/admin/chat-threads/' + id + '/attachment', { method: 'POST', headers: { Authorization: 'Bearer ' + tok }, body: fd })
+    .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Upload failed'); return d; }); })
+    .then(function (up) { return api('/admin/chat-threads/' + id + '/messages', { body: '', attachmentUrl: up.url }); })
+    .then(function () { openChat(id); })
+    .catch(function (err) { var el = $('chat-err'); if (el) el.textContent = err.message; });
+});
 
 /* ---------- Bulk email ---------- */
 LOAD.bulkemail = function () {
@@ -695,6 +714,8 @@ function startBell() {
   clearInterval(bellTimer); bellTimer = setInterval(loadNotifs, 60000);
   if (bellSocket || typeof io === 'undefined') return;
   bellSocket = io({ path: '/socket.io', auth: function (cb) { cb({ token: tok }); } });
+  bellSocket.on('chat:message', function (m) { if (m && chatOpenId && m.threadId === chatOpenId && $('chat-log')) openChat(chatOpenId); });
+  bellSocket.on('chat:closed', function (m) { if (m && chatOpenId && m.threadId === chatOpenId && $('chat-log')) openChat(chatOpenId); });
   bellSocket.on('notification:new', function (n) {
     if (!n || !n.id) { loadNotifs(); return; }
     if (!notifs.some(function (x) { return x.id === n.id; })) notifs.unshift(n);
@@ -731,7 +752,8 @@ var ACT = {
   accpass: function () { if (val('acc-new').length < 8) { $('acc-perr').textContent = 'Use at least 8 characters.'; return; } api('/auth/change-password', { currentPassword: val('acc-cur'), newPassword: val('acc-new') }).then(function () { closeModal(); alert('Password changed.'); }).catch(function (e) { $('acc-perr').textContent = e.message; }); },
   umsg: function (id) { api('/admin/chat-threads/for-user/' + id, {}).then(function (d) { openChat(d.threadId); }).catch(function (e) { alert(e.message); }); },
   chatopen: openChat,
-  chatsend: function (id) { api('/admin/chat-threads/' + id + '/messages', { body: val('chat-reply') }).then(function () { openChat(id); }).catch(function (e) { $('chat-err').textContent = e.message; }); },
+  chatclose: function (id) { api('/admin/chat-threads/' + id + '/close', {}).then(function () { openChat(id); }).catch(function (e) { var el = $('chat-err'); if (el) el.textContent = e.message; else alert(e.message); }); },
+  chatsend: function (id) { if (!val('chat-reply').trim()) { $('chat-err').textContent = 'Write a message first.'; return; } api('/admin/chat-threads/' + id + '/messages', { body: val('chat-reply') }).then(function () { openChat(id); }).catch(function (e) { $('chat-err').textContent = e.message; }); },
   reportrun: function () { reportRange = { from: val('rp-from'), to: val('rp-to') }; LOAD.reports(); },
   reportcsv: function () {
     var rows = [['Date', 'Bookings', 'Completed', 'Value (NGN)', 'Commission (NGN)', 'Signups']].concat((window._reportDays || []).map(function (r) { return [r.date, r.bookings, r.completed, r.valueKobo / 100, r.commissionKobo / 100, r.signups]; }));
