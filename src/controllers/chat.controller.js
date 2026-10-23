@@ -62,7 +62,8 @@ async function sendMessage(req, res, next) {
     io?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`)]).emit("chat:message", { ...message, senderName: req.user.name, senderRole: req.user.role });
     const preview = body ? body.slice(0, 80) : "📷 Sent a photo";
     const others = thread.participants.filter((p) => p.userId !== req.user.id);
-    for (const p of others) notify(io, p.userId, "CHAT", "New message", preview, { threadId: thread.id }).catch(() => {});
+    const fromName = req.user.role === "ADMIN" ? "FixMi Support" : req.user.name;
+    for (const p of others) notify(io, p.userId, "CHAT", fromName, preview, { threadId: thread.id, senderName: fromName }).catch(() => {});
     // A support chat nobody from FixMi has joined yet: tell the admins.
     if (!thread.bookingId && req.user.role !== "ADMIN" && !others.length) {
       notifyAllAdmins(io, "💬 Support chat", `${req.user.name}: ${preview}`, { threadId: thread.id, userId: req.user.id }).catch(() => {});

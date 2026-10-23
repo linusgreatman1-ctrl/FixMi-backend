@@ -27,7 +27,17 @@ nav button{display:flex;justify-content:space-between;width:100%;text-align:left
 nav button.on{background:var(--g);color:#fff}
 nav .cnt{background:var(--red);color:#fff;border-radius:10px;padding:0 7px;font-size:11px;line-height:18px}
 main{flex:1;min-width:0;padding:16px;max-width:1100px}
-@media (max-width:760px){#shell{flex-direction:column}nav{width:auto;height:auto;position:static;flex-direction:row;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--line)}nav button{white-space:nowrap;width:auto;margin-right:4px}nav .sp,nav .me{display:none}}
+@media (max-width:600px){header small{display:none}header{gap:6px}}
+#menubtn{display:none;background:transparent;color:#fff;font-size:22px;padding:4px 10px;line-height:1}
+#navshade{display:none}
+@media (max-width:1024px){
+  #menubtn{display:block}
+  #shell{display:block}
+  nav{position:fixed;top:54px;left:0;bottom:0;width:min(290px,84vw);height:auto;z-index:25;transform:translateX(-102%);transition:transform .2s;box-shadow:6px 0 24px rgba(0,0,0,.25)}
+  body.menu-open nav{transform:none}
+  body.menu-open #navshade{display:block;position:fixed;inset:54px 0 0 0;background:rgba(0,0,0,.45);z-index:24}
+  nav .me{display:block}
+}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text)}
@@ -62,10 +72,11 @@ th{color:var(--muted);font-weight:600}
 </style>
 </head>
 <body>
-<header><b>Fix<span>Mi</span></b><small id="who">Admin</small><button class="bell" id="bell" hidden data-act="bell" aria-label="Notifications">🔔<span class="cnt" id="bellcnt" hidden>0</span></button><button class="l" id="out" hidden data-act="signout">Sign out</button></header>
+<header><button id="menubtn" aria-label="Menu" onclick="document.body.classList.toggle('menu-open')">☰</button><b>Fix<span>Mi</span></b><small id="who">Admin</small><button class="bell" id="bell" hidden data-act="bell" aria-label="Notifications">🔔<span class="cnt" id="bellcnt" hidden>0</span></button><button class="l" id="out" hidden data-act="signout">Sign out</button></header>
 <div id="bellpanel"></div>
 <div id="shell">
   <nav id="nav" hidden></nav>
+  <div id="navshade" onclick="document.body.classList.remove('menu-open')"></div>
   <main>
     <div id="login" class="card" hidden style="max-width:420px;margin:30px auto">
       <h3 style="margin-top:0">Admin sign in</h3>
@@ -142,6 +153,7 @@ function buildNav() {
   }).join('') + '<div class="sp"></div>' + (me ? '<div class="me"><b>' + esc(me.name) + '</b>' + esc(me.email || '') + '<br>' + (me.isSuperAdmin ? 'Super admin' : 'Admin') + '<div style="margin-top:6px"><button class="l" data-act="account" style="padding:6px 10px;font-size:12px">My account</button></div></div>' : '');
 }
 function tab(name) {
+  document.body.classList.remove('menu-open');
   current = name; buildNav(); setList('<div class="muted">Loading…</div>');
   (LOAD[name] || function () { setList(''); })();
 }
@@ -149,7 +161,7 @@ function refresh() { tab(current); }
 
 function show() {
   var signedIn = !!tok;
-  $('login').hidden = signedIn; $('app').hidden = !signedIn; $('nav').hidden = !signedIn; $('out').hidden = !signedIn; $('bell').hidden = !signedIn;
+  $('login').hidden = signedIn; $('app').hidden = !signedIn; $('nav').hidden = !signedIn; $('out').hidden = !signedIn; $('bell').hidden = !signedIn; $('menubtn').style.display = signedIn ? '' : 'none'; if (!signedIn) document.body.classList.remove('menu-open');
   if (signedIn) {
     api('/auth/me').then(function (d) { me = d.user; $('who').textContent = 'FixMi Admin' + (me.isSuperAdmin ? ' (Super Admin)' : ''); loadBadges(); tab(current); startBell(); }).catch(function (e) { fail(e); });
   }
@@ -709,20 +721,45 @@ function loadNotifs() {
 function beep() {
   try { var a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain(); o.connect(g); g.connect(a.destination); o.frequency.value = 880; g.gain.value = 0.05; o.start(); o.stop(a.currentTime + 0.12); } catch (e) {}
 }
+function chatBanner(name, text, threadId) {
+  var old = $('chatbanner'); if (old) old.remove();
+  var el = document.createElement('div');
+  el.id = 'chatbanner';
+  el.style.cssText = 'position:fixed;top:62px;left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 24px));z-index:40;background:#0B1A2E;color:#fff;border:1.5px solid #3B82F6;border-radius:14px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px';
+  el.innerHTML = '<span style="font-size:22px">💬</span><div style="flex:1;min-width:0"><b style="display:block;font-size:13px">' + esc(name) + '</b><span style="font-size:12px;opacity:.8;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(text) + '</span></div><button class="g" data-o>Open chat</button><button class="l" data-x>✕</button>';
+  el.querySelector('[data-o]').onclick = function () { el.remove(); openChat(threadId); };
+  el.querySelector('[data-x]').onclick = function () { el.remove(); };
+  document.body.appendChild(el);
+  setTimeout(function () { if (el.parentNode) el.remove(); }, 15000);
+}
 function startBell() {
   loadNotifs();
-  clearInterval(bellTimer); bellTimer = setInterval(loadNotifs, 60000);
+  clearInterval(bellTimer); bellTimer = setInterval(loadNotifs, 20000);
   if (bellSocket || typeof io === 'undefined') return;
-  bellSocket = io({ path: '/socket.io', auth: function (cb) { cb({ token: tok }); } });
-  bellSocket.on('chat:message', function (m) { if (m && chatOpenId && m.threadId === chatOpenId && $('chat-log')) openChat(chatOpenId); });
-  bellSocket.on('chat:closed', function (m) { if (m && chatOpenId && m.threadId === chatOpenId && $('chat-log')) openChat(chatOpenId); });
-  bellSocket.on('notification:new', function (n) {
+  var sock = io({ path: '/socket.io', auth: function (cb) { cb({ token: tok }); } });
+  bellSocket = sock;
+  // A refused handshake (expired sign-in) is not retried by Socket.IO itself: renew, then connect again.
+  sock.on('connect_error', function () {
+    setTimeout(function () { if (sock !== bellSocket || !tok) return; renewSession().then(function () { if (sock === bellSocket && !sock.connected) sock.connect(); }); }, 2500);
+  });
+  sock.on('connect', function () { loadNotifs(); loadBadges(); });
+  sock.on('chat:message', function (m) { if (m && chatOpenId && m.threadId === chatOpenId && $('chat-log')) openChat(chatOpenId); });
+  sock.on('chat:closed', function (m) { if (m && chatOpenId && m.threadId === chatOpenId && $('chat-log')) openChat(chatOpenId); });
+  sock.on('notification:new', function (n) {
     if (!n || !n.id) { loadNotifs(); return; }
     if (!notifs.some(function (x) { return x.id === n.id; })) notifs.unshift(n);
     renderBell(); beep(); loadBadges();
-    if (current === 'dashboard' || /disputes|withdrawals|kyc|safety|tickets|manualpayments|artisans/.test(current)) { /* lists refresh when opened */ }
+    var d = n.data || {};
+    if (d.threadId) {
+      // A message for a conversation that is not open pops up over whatever you are doing.
+      if (!(chatOpenId === d.threadId && $('chat-log'))) chatBanner(n.title, n.body, d.threadId);
+    }
+    // The section you are looking at updates by itself (not while a window is open).
+    if (!d.threadId && !$('modal').style.display.match(/flex|block/) && /dashboard|disputes|withdrawals|kyc|safety|tickets|manualpayments|artisans|bookings|users|livechat/.test(current)) refresh();
+    if (d.threadId && current === 'livechat' && !$('modal').style.display.match(/flex|block/)) refresh();
   });
 }
+setInterval(function () { if (bellSocket && !bellSocket.connected && tok) bellSocket.connect(); }, 15000);
 function stopBell() {
   clearInterval(bellTimer); if (bellSocket) { try { bellSocket.disconnect(); } catch (e) {} bellSocket = null; }
   notifs = []; document.title = baseTitle; var p = $('bellpanel'); if (p) p.style.display = 'none';

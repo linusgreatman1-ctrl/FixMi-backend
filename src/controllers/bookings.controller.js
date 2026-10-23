@@ -219,7 +219,6 @@ async function createBooking(req, res, next) {
     if (req.body.corporate) {
       plan = await corporate.activePlanFor(req.user.id);
       if (!plan) return res.status(409).json({ error: "You don't have an active corporate plan." });
-      if (!corporate.coversCategory(plan, category)) return res.status(400).json({ error: `${category} isn't one of your plan's services.` });
       if (corporate.callsLeft(plan) === 0) return res.status(409).json({ error: "You've used all the service calls on your plan for this period." });
     }
 

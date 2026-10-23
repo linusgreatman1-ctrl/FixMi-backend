@@ -630,6 +630,14 @@ body{background:#fff}
   #cust-offers > .co-hero .photo-strip{justify-content:center}
   #cust-offers > div:not(.topbar):not(.co-hero){max-width:560px !important}
 }
+
+/* ===== round 3 ===== */
+.rq-card .photo-strip,.job-person .photo-strip,.co-hero .photo-strip,.pay-val .photo-strip{flex-wrap:wrap;overflow:visible}
+.rq-card .photo-strip img,.job-person .photo-strip img,.co-hero .photo-strip img,.pay-val .photo-strip img{width:100%;max-width:380px;height:auto;max-height:340px;object-fit:contain;background:#F3F4F6}
+.chat-banner{position:fixed;left:50%;transform:translateX(-50%);top:12px;width:min(440px,calc(100vw - 24px));z-index:900;background:var(--navy);color:#fff;border:1.5px solid #3B82F6;border-radius:14px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px}
+.chat-banner b{display:block;font-size:13px}.chat-banner span.t{font-size:12px;opacity:.8;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-banner button{border:none;border-radius:9px;padding:8px 12px;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit}
+.dispute-box .ev img{width:100%;max-width:300px;border-radius:10px;margin-top:6px;cursor:zoom-in}
 </style>
 <body>
 <div class="stage">
@@ -783,6 +791,7 @@ body{background:#fff}
     <div id="trk-sub"></div>
     <div id="trk-contact"></div>
     <button type="button" class="btn btn-gray" style="margin-top:10px" onclick="closeTrackMap()">Close</button>
+    <div id="trk-actions"></div>
   </div>
 </div>
 
@@ -1695,7 +1704,7 @@ body{background:#fff}
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Notifications</div><span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="markAllNotifsRead()">Mark all read</span></div>
   <div id="notif-real"></div>
   <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('match')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔧</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Artisan is on the way!</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Emeka Okafor accepted your job and is 12 minutes away.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 minutes ago</div></div></div>
-  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('chat')"><div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New message from Emeka</div><div style="font-size:13px;color:var(--muted);line-height:1.4">"I'm 5 minutes away, please open the gate"</div><div style="font-size:11px;color:var(--muted);margin-top:3px">5 minutes ago</div></div></div>
+  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openSupportChat()"><div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New message from Emeka</div><div style="font-size:13px;color:var(--muted);line-height:1.4">"I'm 5 minutes away, please open the gate"</div><div style="font-size:11px;color:var(--muted);margin-top:3px">5 minutes ago</div></div></div>
   <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('✅ Job receipt opened')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✅</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Job Completed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Pipe repair with Taiwo Adeleke is complete. Tap to pay.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Yesterday</div></div></div>
   <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('💰 Payment confirmed')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Confirmed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">₦7,000 payment for pipe repair was successful.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 days ago</div></div></div>
   
@@ -1747,6 +1756,7 @@ body{background:#fff}
     <div class="mi" onclick="go('edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-settings')"><div class="mi-ico">⚙️</div><div class="mi-txt">Settings</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="openWallet()"><div class="mi-ico">💰</div><div class="mi-txt">Wallet</div><div class="mi-arr">›</div></div>
+    <div class="mi" onclick="openBankAccount()"><div class="mi-ico">🏦</div><div class="mi-txt">Bank Account</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="openCorporate()"><div class="mi-ico">🏢</div><div class="mi-txt">Corporate Plan</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('history')"><div class="mi-ico">📋</div><div class="mi-txt">Job History</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('notifications')"><div class="mi-ico">🔔</div><div class="mi-txt">Notifications</div><div class="mi-badge" data-demo>3</div></div>
@@ -1865,7 +1875,7 @@ body{background:#fff}
           </div>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="go('chat')" style="flex:1;background:var(--gray);border:none;border-radius:10px;padding:11px;font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:var(--navy)">💬 Message</button>
+          <button onclick="openSupportChat()" style="flex:1;background:var(--gray);border:none;border-radius:10px;padding:11px;font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:var(--navy)">💬 Message</button>
           <button onclick="openMapNavigate()" style="flex:1;background:#EFF6FF;color:#1E40AF;border:none;border-radius:10px;padding:11px;font-family:'AppFont',sans-serif;font-weight:700;font-size:13px;cursor:pointer">🗺️ Navigate</button>
         </div>
       </div>
@@ -2682,10 +2692,6 @@ body{background:#fff}
   <div style="background:#FFF8E7;border-radius:11px;padding:11px 14px;margin:11px 16px;display:flex;gap:9px;font-size:13px;color:#92400E;line-height:1.5"><span style="font-size:17px">💬</span><span>Chat and call the customer on your job from here — open a conversation and tap 📞 to call. Keep every payment inside FixMi escrow.</span></div>
   <button class="chat-support-btn" onclick="openSupportChat()">🎧 Chat with FixMi Support</button>
   <div class="chat-list" id="artisan-chat-thread-list"></div>
-  <div class="chat-list" data-demo>
-    <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0)">👤</div><div style="flex:1;min-width:0"><div class="chat-name">Chukwuemeka Obi</div><div class="chat-prev">I'm near your location now</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0"><div style="font-size:11px;color:var(--muted)">5m ago</div><div class="unread">1</div></div></div>
-    <div class="chat-item" onclick="go('chat')"><div class="chat-ava" style="background:linear-gradient(135deg,var(--g2),#00E875)">🛡️</div><div style="flex:1;min-width:0"><div class="chat-name">FixMi Support</div><div class="chat-prev">Your account has been verified.</div></div><div style="font-size:11px;color:var(--muted);flex-shrink:0">Mon</div></div>
-  </div>
   <div style="height:78px"></div>
   <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
@@ -2716,6 +2722,7 @@ body{background:#fff}
     <div class="fg"><label class="label" for="ep-state">State</label><select class="input" id="ep-state"><option value="">Select state…</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select></div>
     <div class="job-hint" style="text-align:left;margin:-4px 0 14px">Your address fills in automatically when you book, and your area shows on the home screen.</div>
     <button class="btn btn-g" onclick="saveProfile(this)">Save Changes</button>
+    <button class="btn btn-gray" style="margin-top:10px" onclick="openBankAccount()">🏦 Bank Account</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2735,6 +2742,7 @@ body{background:#fff}
     <div class="fg"><label class="label" for="aep-state">State</label><select class="input" id="aep-state"><option value="">Select state…</option><option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option></select></div>
     <div class="job-hint" style="text-align:left;margin:-4px 0 14px">Changing your skill changes which job requests you receive.</div>
     <button class="btn btn-g" onclick="saveArtisanProfile(this)">Save Changes</button>
+    <button class="btn btn-gray" style="margin-top:10px" onclick="openBankAccount()">🏦 Bank Account</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2798,6 +2806,8 @@ body{background:#fff}
 <div class="s" id="artisan-settings">
   <div class="topbar"><button class="back" onclick="goBack()" aria-label="Back">←</button><div class="tb-title">Settings</div><div class="tb-space"></div></div>
   <div style="padding:16px">
+    <div class="sec-title" style="margin-bottom:10px">Bank Account</div>
+    <button class="btn btn-gray" style="margin-bottom:20px" onclick="openBankAccount()">🏦 View or change my bank account</button>
     <div class="sec-title" style="margin-bottom:10px">Notifications</div>
     <div id="set-notifs" class="card" style="margin-bottom:20px"></div>
     <div class="sec-title" style="margin-bottom:10px">Saved Addresses</div>
@@ -2942,6 +2952,14 @@ body{background:#fff}
     <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
     <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
+  </div>
 </div>
 
 
@@ -2995,6 +3013,14 @@ body{background:#fff}
 
     <button id="fe-btn" onclick="fundEscrow(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Fund Escrow &amp; Activate Plan →</button>
     <div style="height:24px"></div>
+  </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
 
@@ -3060,6 +3086,14 @@ body{background:#fff}
     <button class="btn btn-gray" style="margin-top:16px" onclick="cancelCorpPlan(this)">End Plan &amp; Refund Unused Escrow</button>
     <div style="height:20px"></div>
   </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
+  </div>
 </div>
 
 
@@ -3117,6 +3151,12 @@ body{background:#fff}
       </div>
     </div>
 
+    <div style="margin-bottom:14px" id="job-art-wrap">
+      <label for="job-artisan" style="font-size:13px;font-weight:600;color:#0B1A2E;margin-bottom:7px">Choose an artisan (optional)</label>
+      <select id="job-artisan" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:15px;outline:none;background:#fff;cursor:pointer"><option value="">Any available artisan</option></select>
+      <div style="font-size:12px;color:#7A8EA8;margin-top:5px">Pick a service first. Every artisan on FixMi for that service is listed.</div>
+    </div>
+
     <div style="margin-bottom:14px">
       <label for="job-budget" style="font-size:13px;font-weight:600;color:#0B1A2E;margin-bottom:7px">Budget (₦)</label>
       <input id="job-budget" type="number" min="500" step="100" inputmode="numeric" placeholder="What you'd pay, e.g. 8000" style="width:100%;padding:13px 15px;border:1.5px solid #E4EAF0;border-radius:12px;font-size:15px;outline:none">
@@ -3134,6 +3174,14 @@ body{background:#fff}
 
     <button onclick="corpSubmitJob(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Find Artisan →</button>
     <div style="height:20px"></div>
+  </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
 
@@ -3202,6 +3250,14 @@ body{background:#fff}
     <div style="font-size:13px;color:#7A8EA8;margin-bottom:16px">You choose how to pay next: wallet (<span id="tu-wallet">…</span>), card, USSD or bank transfer.</div>
     <button onclick="confirmTopUp(this)" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer">Confirm Top Up →</button>
     <div style="height:24px"></div>
+  </div>
+  <div style="height:78px"></div>
+  <div class="bnav">
+    <div class="bn" onclick="go('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
+    <div class="bn" onclick="go('messages')"><div class="bn-ico">💬</div><div class="bn-lbl">Messages</div></div>
+    <div class="bn" onclick="go('history')"><div class="bn-ico">📋</div><div class="bn-lbl">History</div></div>
+    <div class="bn on" onclick="openCorporate()"><div class="bn-ico">🏢</div><div class="bn-lbl">Corporate</div></div>
+    <div class="bn" onclick="go('profile')"><div class="bn-ico">👤</div><div class="bn-lbl">Profile</div></div>
   </div>
 </div>
 
@@ -5003,10 +5059,19 @@ function initSocket() {
   _socket = io({ path: '/socket.io', auth: function (cb) { cb({ token: getAccess() }); } });
   window.fixmeSocket = _socket;
 
+  // A handshake the server refuses (an expired access token) is never retried by Socket.IO on its own:
+  // renew the sign-in, then connect again, otherwise live updates stop until the page is refreshed.
+  var sock = _socket;
   _socket.on('connect_error', function (err) {
-    // An expired access token: refreshing it through any API call lets the
-    // socket's automatic retry reconnect with the new one.
-    if (/expired|invalid/i.test(err && err.message)) apiFetch('/auth/me').catch(function () {});
+    clearTimeout(window._sockRetry);
+    window._sockRetry = setTimeout(async function () {
+      if (sock !== _socket || !getRefresh()) return;
+      if (/expired|invalid|token|auth/i.test((err && err.message) || '')) await refreshSessionOnce();
+      if (sock === _socket && !sock.connected) sock.connect();
+    }, 2500);
+  });
+  _socket.on('disconnect', function (reason) {
+    if (reason === 'io server disconnect') { clearTimeout(window._sockRetry); window._sockRetry = setTimeout(function () { if (sock === _socket && !sock.connected) sock.connect(); }, 2000); }
   });
   // After a reconnect, re-sync whatever may have changed while offline.
   _socket.on('connect', function () { refreshLiveState(); });
@@ -5043,10 +5108,66 @@ function initSocket() {
     }
   });
   _socket.on('notification:new', function (n) {
-    toast(n.title + (n.body ? ' — ' + n.body : ''));
     _unreadNotifs++;
     renderNotifBadges();
+    window._notifs = [n].concat((window._notifs || []).filter(function (x) { return x.id !== n.id; }));
+    var onScreen = (document.querySelector('.s.on') || {}).id;
+    if (onScreen === 'notifications' || onScreen === 'artisan-notifications') drawNotifs(false);
+    if (n.type === 'CHAT' && n.data && n.data.threadId) {
+      // A message for a conversation that is not on screen pops up wherever you are.
+      var watching = onScreen === 'chat' && window._activeChatThreadId === n.data.threadId;
+      if (!watching) showChatBanner(n.data.senderName || n.title, n.body, n.data.threadId);
+      return;
+    }
+    toast(n.title + (n.body ? ' — ' + n.body : ''));
   });
+}
+
+// Safety net next to the live connection: every few seconds ask the server for the current job, so the steps on
+// both screens keep moving even when a phone puts the connection to sleep or a proxy drops it.
+function liveSig(b) { return b ? [b.id, b.status, b.updatedAt, b.arrivedAt, b.onsitePriceKobo, b.agreedPriceKobo, b.escrowKobo, (b.offers || []).length].join('|') : ''; }
+var _pollTick = 0;
+async function pollLive() {
+  if (!getAccess() || !window.currentUser || document.hidden) return;
+  _pollTick++;
+  try {
+    if (_socket && !_socket.connected && _pollTick % 3 === 0) _socket.connect();
+    var d = await apiFetch('/bookings/active');
+    if (isArtisanUser()) {
+      if (d.booking && liveSig(d.booking) !== liveSig(_job)) onJobUpdated(d.booking);
+      else if (!d.booking && _job && bookingIsLive(_job)) { var f = await apiFetch('/bookings/' + _job.id); if (f.booking) onJobUpdated(f.booking); }
+      if (avail && _pollTick % 2 === 0) refreshArtisanRequests();
+    } else {
+      if (d.booking && liveSig(d.booking) !== liveSig(_booking)) onCustomerBookingUpdate(d.booking);
+      else if (!d.booking && _booking && bookingIsLive(_booking)) { var g = await apiFetch('/bookings/' + _booking.id); if (g.booking) onCustomerBookingUpdate(g.booking); }
+    }
+  } catch (e) {}
+}
+setInterval(pollLive, 5000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) { pollLive(); loadNotificationCount(); } });
+
+// "X is chatting with you": shows over any screen with a button straight into that conversation.
+function showChatBanner(name, text, threadId) {
+  var old = document.getElementById('chat-banner'); if (old) old.remove();
+  var el = document.createElement('div');
+  el.id = 'chat-banner'; el.className = 'chat-banner';
+  el.innerHTML = '<span style="font-size:22px">💬</span><div style="flex:1;min-width:0"><b>' + escapeHtml(name || 'New message') + '</b><span class="t">' + escapeHtml(text || '') + '</span></div>' +
+    '<button type="button" style="background:#3B82F6;color:#fff" data-open>Open chat</button><button type="button" style="background:transparent;color:#9CA3AF;font-size:16px" data-x aria-label="Dismiss">✕</button>';
+  el.querySelector('[data-open]').onclick = function () { el.remove(); openChatById(threadId); };
+  el.querySelector('[data-x]').onclick = function () { el.remove(); };
+  document.body.appendChild(el);
+  clearTimeout(window._chatBannerT);
+  window._chatBannerT = setTimeout(function () { if (el.parentNode) el.remove(); }, 15000);
+}
+async function openChatById(threadId) {
+  try {
+    var data = await apiFetch('/chat/threads');
+    var t = (data.threads || []).find(function (x) { return x.id === threadId; });
+    if (!t) { go(isArtisanUser() ? 'artisan-messages' : 'messages'); return; }
+    var other = (t.participants || []).map(function (p) { return p.user; }).filter(function (u) { return u && window.currentUser && u.id !== window.currentUser.id; })[0];
+    var support = !t.booking && (!other || other.role === 'ADMIN');
+    openChatThread(t.id, support ? 'FixMi Support' : (other ? other.name : 'Conversation'), support ? null : other || null, t.booking || null);
+  } catch (e) { toast('❌ ' + e.message); }
 }
 
 function refreshLiveState() {
@@ -5524,6 +5645,7 @@ function rerenderCustomerBooking() {
 
 function onCustomerBookingUpdate(b) {
   if (!window.currentUser || b.customerId !== window.currentUser.id) return;
+  if (b.arrivedAt || ['ACCEPTED', 'PAID'].indexOf(b.status) === -1) closeTrackMap();
   if (_booking && _booking.id !== b.id && bookingIsLive(_booking) && !bookingIsLive(b)) return;
   _booking = b;
   window._activeBooking = b;
@@ -5929,12 +6051,17 @@ async function fillDisputeBox(elId, booking, asArtisan) {
     var d = await apiFetch('/bookings/' + booking.id + '/dispute');
     var t = d.dispute, el = document.getElementById(elId);
     if (!t || !el) return;
-    var h = '<div class="dispute-box"><b>⚖️ ' + escapeHtml(t.category || 'Dispute') + '</b>' +
-      '<div class="db-line">Customer: “' + escapeHtml(t.message) + '”</div>' +
+    var ev = function (u) { return u ? '<div class="ev">' + String(u).split('\n').filter(Boolean).map(function (x) { return '<img src="' + escapeHtml(x) + '" alt="Evidence" onclick="openPhoto(' + attrJson(x) + ')">'; }).join('') + '</div>' : ''; };
+    var h = '<div class="dispute-box"><b>' + (t.resolvedAt ? '✅ Dispute resolved' : '⚠️ Payment disputed — pending FixMi resolution') + ' · ' + escapeHtml(t.category || 'Dispute') + '</b>' +
+      '<div class="db-line">Customer: “' + escapeHtml(t.message) + '”</div>' + ev(t.evidenceUrl) +
       (t.requestedRefundKobo ? '<div class="db-line">Refund asked: ' + fmtNaira(t.requestedRefundKobo) + '</div>' : '') +
-      (t.secondPartyResponse ? '<div class="db-line">Artisan: “' + escapeHtml(t.secondPartyResponse) + '”</div>' : '<div class="db-line muted">Waiting for the artisan’s side</div>');
-    if (t.resolvedAt) h += '<div class="db-res">Decision: ' + escapeHtml(disputeOutcomeText(t)) + '</div>';
-    else h += '<div class="db-line muted">' + fmtNaira(d.heldKobo) + ' held in escrow · FixMi is reviewing</div>' +
+      (t.secondPartyResponse ? '<div class="db-line">Artisan: “' + escapeHtml(t.secondPartyResponse) + '”</div>' + ev(t.secondPartyEvidenceUrl) : '<div class="db-line muted">Waiting for the artisan’s side</div>');
+    if (t.resolvedAt) {
+      var rr = String(t.resolution || '');
+      var head = /^RELEASE/.test(rr) ? (asArtisan ? 'Dispute resolved — you have been paid' : 'Dispute resolved — the artisan was paid') : /^REFUND/.test(rr) ? (asArtisan ? 'Dispute resolved — refunded to the customer' : 'Dispute resolved — refunded to you') : 'Dispute resolved — the money was split';
+      h += '<div class="db-res"><b>' + head + '</b><br>Decision: ' + escapeHtml(disputeOutcomeText(t)) + '</div>';
+    }
+    if (!t.resolvedAt) h += '<div class="db-line muted">' + fmtNaira(d.heldKobo) + ' held in escrow · FixMi is reviewing</div>' +
       '<button class="btn" style="background:#EFF6FF;color:#1E40AF;border:1.5px solid #93C5FD;margin-top:10px" onclick="openDisputeChatFor(' + attrJson(booking.id) + ')">💬 Chat with FixMi about this</button>';
     if (asArtisan && !t.resolvedAt && !t.secondPartyResponse) {
       h += '<button class="btn" style="background:var(--orange);color:#fff;margin-top:10px" onclick="openDisputeForm(\'respond\',' + attrJson({ id: booking.id, agreedPriceKobo: booking.agreedPriceKobo }) + ')">Add Your Side</button>';
@@ -6260,7 +6387,7 @@ async function loadChatThreads(listId) {
 async function openChatForActiveBooking() {
   if (isArtisanUser() && _job) window._activeBookingId = _job.id;
   if (!isArtisanUser() && _booking) window._activeBookingId = _booking.id;
-  if (!window._activeBookingId) { go('chat'); return; }
+  if (!window._activeBookingId) { openSupportChat(); return; }
   try {
     var data = await apiFetch('/chat/threads');
     var thread = (data.threads || []).find(function (t) { return t.bookingId === window._activeBookingId; });
@@ -6762,6 +6889,17 @@ function renderNotifBadges() {
   });
 }
 var NOTIF_ICON = { BOOKING: ['🔧', 'var(--g3)'], PAYMENT: ['💰', 'var(--g3)'], CHAT: ['💬', '#EFF6FF'], SYSTEM: ['🔔', '#FFFBEB'], ADMIN: ['🛡️', '#FFFBEB'] };
+function drawNotifs(markRead) {
+  var artisan = isArtisanUser();
+  var box = document.getElementById(artisan ? 'art-notif-real' : 'notif-real');
+  if (!box) return;
+  var list = window._notifs || [];
+  box.innerHTML = list.length ? list.map(function (n) {
+    var ic = NOTIF_ICON[n.type] || NOTIF_ICON.SYSTEM;
+    return '<div class="notif-row' + (n.readAt ? '' : ' unread') + '" onclick="openNotifTarget(' + attrJson(n.id) + ')" style="cursor:pointer"><div class="notif-ico" style="background:' + ic[1] + '">' + ic[0] + '</div>' +
+      '<div style="min-width:0"><div class="notif-title">' + escapeHtml(n.title) + '</div><div class="notif-body">' + escapeHtml(n.body || '') + '</div><div class="notif-time">' + timeAgo(n.createdAt) + '</div></div></div>';
+  }).join('') : '<div class="empty-state"><b>No notifications yet</b>Updates about your bookings, chats and payments will show up here.</div>';
+}
 async function openNotifications() {
   var artisan = isArtisanUser();
   go(artisan ? 'artisan-notifications' : 'notifications');
@@ -6769,18 +6907,22 @@ async function openNotifications() {
   if (!box) return;
   box.innerHTML = '<div class="empty-note">Loading…</div>';
   await loadNotificationCount();
-  var list = window._notifs || [];
-  box.innerHTML = list.length ? list.map(function (n) {
-    var ic = NOTIF_ICON[n.type] || NOTIF_ICON.SYSTEM;
-    var click = n.data && n.data.bookingId ? ' onclick="openBookingFromNotif(' + attrJson(n.data.bookingId) + ')" style="cursor:pointer"' : '';
-    return '<div class="notif-row' + (n.readAt ? '' : ' unread') + '"' + click + '><div class="notif-ico" style="background:' + ic[1] + '">' + ic[0] + '</div>' +
-      '<div style="min-width:0"><div class="notif-title">' + escapeHtml(n.title) + '</div><div class="notif-body">' + escapeHtml(n.body || '') + '</div><div class="notif-time">' + timeAgo(n.createdAt) + '</div></div></div>';
-  }).join('') : '<div class="empty-state"><b>No notifications yet</b>Updates about your bookings and payments will show up here.</div>';
-  if (_unreadNotifs) {
-    apiFetch('/notifications/read-all', { method: 'PATCH' }).catch(function () {});
-    _unreadNotifs = 0;
-    renderNotifBadges();
+  drawNotifs(true);
+}
+// A notification takes you to what it is about: the chat, the job, or the wallet.
+function openNotifTarget(id) {
+  var n = (window._notifs || []).filter(function (x) { return x.id === id; })[0];
+  if (!n) return;
+  if (!n.readAt) {
+    n.readAt = new Date().toISOString();
+    _unreadNotifs = Math.max(0, _unreadNotifs - 1); renderNotifBadges();
+    apiFetch('/notifications/' + id + '/read', { method: 'PATCH' }).catch(function () {});
+    drawNotifs(false);
   }
+  var d = n.data || {};
+  if (d.threadId) openChatById(d.threadId);
+  else if (d.bookingId) openBookingFromNotif(d.bookingId);
+  else if (n.type === 'PAYMENT') openWallet();
 }
 async function markAllNotifsRead() {
   try { await apiFetch('/notifications/read-all', { method: 'PATCH' }); } catch (e) {}
@@ -6867,7 +7009,7 @@ function filterHistory(btn, screenId, key) {
 }
 var CUSTOMER_STATUS = {
   PENDING_PAYMENT: '💳 Awaiting payment', REQUESTED: '⏳ Waiting for artisans', ACCEPTED: '✓ Artisan booked', PAID: '✓ Artisan booked', IN_PROGRESS: '🔧 In progress',
-  COMPLETED: '💳 Payment pending', CONFIRMED: '✓ Completed', CANCELLED: '✕ Request cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Disputed'
+  COMPLETED: '💳 Payment pending', CONFIRMED: '✓ Completed', CANCELLED: '✕ Request cancelled', DECLINED: '✕ Declined', DISPUTED: '⚠️ Payment Disputed - Pending FixMi Resolution'
 };
 var ARTISAN_STATUS = {
   ACCEPTED: '✓ Accepted', PAID: '✓ Accepted', IN_PROGRESS: '🔧 In progress', COMPLETED: '💳 Payment pending',
@@ -6935,7 +7077,7 @@ async function openBookingDetail(id) {
   if (asArtisan && bookingIsLive(b)) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="go(\'art-job\')">Open Job →</button>';
   if (!asArtisan && b.artisan) actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="bookDirectArtisan(' + attrJson(b.artisan.id) + ',' + attrJson(b.artisan.user.name) + ',' + attrJson(b.category) + ')">🔄 Hire ' + escapeHtml(firstName(b.artisan.user.name)) + ' Again</button>';
   if (!asArtisan && b.status === 'COMPLETED') actions += '<button class="btn" style="background:#DC2626;color:#fff;margin-bottom:10px" onclick="openDisputeForm(\'open\', _historyCache[' + attrJson(b.id) + '])">⚠️ Job Not Completed — Hold Payment</button>';
-  if (b.status === 'CONFIRMED' || b.status === 'COMPLETED') actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="openReportIssue(' + attrJson(b.id) + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'an Issue') + '</button>';
+  if (['CONFIRMED', 'COMPLETED', 'CANCELLED'].indexOf(b.status) !== -1 && (asArtisan ? b.customer : b.artisan) && !(b.status === 'CANCELLED' && !b.artisanId)) actions += '<button class="btn" style="background:#FEE2E2;color:#DC2626;margin-bottom:10px" onclick="openReportIssue(' + attrJson(b.id) + ')">⚠️ Report ' + (asArtisan ? 'Customer' : 'Artisan') + '</button>';
   _historyCache[b.id] = b;
   setHTML('bkd-body',
     '<div class="card" style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">' +
@@ -7011,9 +7153,9 @@ async function openArtisanProfile(id) {
 
 /* ---------------- Menu (phone & tablet) ---------------- */
 var MENU_ITEMS = {
-  customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['📋', 'Job History', "go('history')"], ['❤️', 'Saved Artisans', 'openSavedArtisans()'], ['🔔', 'Notifications', 'openNotifications()'],
+  customer: [['👤', 'Profile', "go('profile')"], ['💰', 'Wallet', 'openWallet()'], ['🏦', 'Bank Account', 'openBankAccount()'], ['📋', 'Job History', "go('history')"], ['❤️', 'Saved Artisans', 'openSavedArtisans()'], ['🔔', 'Notifications', 'openNotifications()'],
     ['🏢', 'Corporate Plan', "openCorporate()"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('help')"], ['🛡️', 'Safety & Trust', "go('user-safety')"], ['⭐', 'Rate FixMi', 'openRateApp()']],
-  artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['💼', 'Job History', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
+  artisan: [['👷', 'My Profile', "go('artisan-profile-self')"], ['💰', 'Wallet', 'openWallet()'], ['🏦', 'Bank Account', 'openBankAccount()'], ['💼', 'Job History', "go('artisan-history')"], ['🔔', 'Notifications', 'openNotifications()'],
     ['🚀', 'Promote My Page', "go('artisan-promote')"], ['⚙️', 'Settings', "go('artisan-settings')"], ['🤝', 'Help & Support', "go('artisan-help')"], ['🛡️', 'Safety & Trust', "go('artisan-safety')"], ['⭐', 'Rate FixMi', 'openRateApp()']]
 };
 function openMenu() {
@@ -7110,12 +7252,27 @@ function renderCorpDash() {
 function openCorpRaise() {
   var p = _corp && _corp.plan; if (!p) { openCorporate(); return; }
   var sel = document.getElementById('job-svc');
-  var names = p.categories.length ? p.categories : serviceNames().map(function (s) { return s.name; });
+  var names = serviceNames().map(function (s) { return s.name; });
+  if (names.indexOf('Others') === -1) names.push('Others');
+  p.categories.forEach(function (n) { if (names.indexOf(n) === -1) names.push(n); });
   sel.innerHTML = '<option value="">Select service...</option>' + names.map(function (n) { return '<option value="' + escapeHtml(n) + '">' + categoryLook(n)[0] + ' ' + escapeHtml(n) + '</option>'; }).join('');
   sel.dataset.filled = '1';
+  sel.onchange = loadCorpArtisans;
+  setHTML('job-artisan', '<option value="">Any available artisan</option>');
   setText('job-escrow-note', 'Taken from your corporate escrow (' + fmtNaira(p.escrowKobo) + ' available). Artisans can accept it or send their own price.');
   mediaFiles = []; renderPreviews();
   go('corp-raise');
+}
+async function loadCorpArtisans() {
+  var svc = document.getElementById('job-svc').value, box = document.getElementById('job-artisan');
+  box.innerHTML = '<option value="">Any available artisan</option>';
+  if (!svc || svc === 'Others') return;
+  try {
+    var d = await apiFetch('/artisans?category=' + encodeURIComponent(svc));
+    box.innerHTML = '<option value="">Any available artisan</option>' + (d.artisans || []).map(function (a) {
+      return '<option value="' + escapeHtml(a.id) + '">' + escapeHtml(a.user.name) + ' · ' + (a.ratingCount ? '⭐' + a.ratingAvg.toFixed(1) : 'New') + ' · ' + (a.isAvailable ? '🟢 online' : 'offline') + (a.user.state ? ' · ' + escapeHtml(a.user.state) : '') + '</option>';
+    }).join('');
+  } catch (e) {}
 }
 async function corpSubmitJob(btn) {
   var svc = document.getElementById('job-svc').value, loc = document.getElementById('job-loc').value.trim();
@@ -7128,6 +7285,7 @@ async function corpSubmitJob(btn) {
   btn.disabled = true;
   try {
     var body = { category: svc, issue: (pr === 'Normal' ? '' : '[' + pr + '] ') + desc, address: loc, priceKobo: Math.round(budget * 100), corporate: true };
+    var pick = document.getElementById('job-artisan').value; if (pick) body.artisanId = pick;
     if (mediaFiles.length) { try { body.photos = await uploadRequestPhotos(); } catch (e) { toast('Photos could not be uploaded. Sending without them.'); } }
     var d = await apiFetch('/bookings', { method: 'POST', body: body });
     mediaFiles = []; renderPreviews();
@@ -7224,6 +7382,8 @@ var _bankNeedsName = true;
 async function openBankAccount() {
   go('artisan-bank-account');
   var u = window.currentUser || {};
+  var bi = document.querySelector('#artisan-bank-account .info span:nth-child(2)');
+  if (bi) bi.textContent = isArtisanUser() ? 'Your earnings (the agreed price less FixMi’s ' + (APP_CFG.commissionPercent || 10) + '%) land in your FixMi wallet after each job. Withdraw them to this bank account.' : 'Refunds and withdrawals from your FixMi wallet go to this bank account.';
   setHTML('bank-current', u.bankAccountNumber ? '<div class="card" style="margin-bottom:14px"><b>🏦 ' + escapeHtml(u.bankName || '') + '</b><div style="font-size:13px;color:var(--muted);margin-top:3px">' + escapeHtml(u.bankAccountNumber) + ' · ' + escapeHtml(u.bankAccountName || '') + '</div><div style="font-size:12px;color:var(--g2);margin-top:4px">Withdrawals go to this account. Save new details below to change it.</div></div>' : '<div class="job-hint" style="text-align:left;margin-bottom:12px">No bank account yet. Add one to withdraw your earnings.</div>');
   try {
     var d = await apiFetch('/users/banks');
@@ -7388,6 +7548,7 @@ async function confirmPromoPayment() {
   var origGo = window.go;
   window.go = function (id) {
     origGo(id);
+    if (id !== 'chat') window._activeChatThreadId = null; // a chat never shows another conversation's messages
     if (id === 'messages') loadChatThreads('chat-thread-list');
     if (id === 'artisan-messages') loadChatThreads('artisan-chat-thread-list');
     if (id === 'history' || id === 'profile') loadBookingHistory('history-real', false);
@@ -8159,6 +8320,7 @@ function trkIcon(emoji) { return L.divIcon({ html: '<div style="font-size:28px;l
 function showTrackModal(o) {
   setText('trk-title', o.title);
   setHTML('trk-contact', o.contactHtml || '');
+  setHTML('trk-actions', o.actionsHtml || '');
   document.querySelectorAll('#trk-contact button').forEach(function (btn) { btn.addEventListener('click', function () { closeTrackMap(); }); }); // chat or call opens on top of a clear screen
   setText('trk-status', o.waiting); setText('trk-sub', o.address ? '📍 ' + o.address : '');
   document.getElementById('track-modal').style.display = 'flex';
@@ -8188,8 +8350,15 @@ function openJobMap() {
   showTrackModal({
     mode: 'artisan', bookingId: b.id, name: firstName(c.name), title: '📍 ' + firstName(c.name) + '’s place',
     waiting: 'Finding your position…', address: b.address, contactHtml: contactButtons(c.name, c.phone, c.id, b.id, '👤'),
-    dest: b.lat != null ? [b.lat, b.lng] : null, art: window._myCoords ? [window._myCoords.lat, window._myCoords.lng] : null
+    dest: b.lat != null ? [b.lat, b.lng] : null, art: window._myCoords ? [window._myCoords.lat, window._myCoords.lng] : null,
+    actionsHtml: ['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt ? '<button type="button" class="btn" style="background:var(--orange);color:#fff;margin-top:10px" onclick="arriveFromMap()">📍 I Have Arrived</button>' : ''
   });
+}
+// "I have arrived" from the map: closes the map and moves on to the next stage.
+function arriveFromMap() {
+  var b = _job; if (!b) return;
+  closeTrackMap();
+  artisanJobStep(b.id, 'arrive');
 }
 window.addEventListener('resize', function () { if (_trk && _trk.map) _trk.map.invalidateSize(); });
 function initTrackMap(o) {

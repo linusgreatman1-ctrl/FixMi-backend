@@ -182,7 +182,7 @@ const sendChatMessage = wrap(async (req, res) => {
   const io = req.app.get("io");
   io?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`), `user:${req.user.id}`]).emit("chat:message", message);
   for (const p of thread.participants) {
-    if (p.userId !== req.user.id) notify(io, p.userId, "CHAT", "FixMi support", body ? body.slice(0, 80) : "📷 Sent a photo", { threadId: thread.id }).catch(() => {});
+    if (p.userId !== req.user.id) notify(io, p.userId, "CHAT", "FixMi Support", body ? body.slice(0, 80) : "📷 Sent a photo", { threadId: thread.id, senderName: "FixMi Support" }).catch(() => {});
   }
   res.status(201).json({ message });
 });
