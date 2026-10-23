@@ -88,6 +88,7 @@ th{color:var(--muted);font-weight:600}
     <div id="app" hidden><div id="list"></div></div>
   </main>
 </div>
+<div id="callov" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.7);align-items:center;justify-content:center"><div id="callbody" style="background:#13263F;color:#fff;border-radius:18px;padding:28px 24px;width:min(300px,86vw);text-align:center"></div><audio id="callaudio" autoplay></audio></div>
 <div id="modal"><div class="box" id="mbox"></div></div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -536,6 +537,92 @@ LOAD.livechat = function () {
     })) + '</div>');
   }).catch(fail);
 };
+
+/* ---------- Calls: FixMi Support <-> customers and artisans (voice, in the browser) ---------- */
+var ac = null, acIce = null, acRing = null, acResend = null;
+function acFmt(ms) { var s = Math.floor(ms / 1000), m = Math.floor(s / 60); s = s % 60; return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s; }
+function acRender() {
+  var ov = $('callov'), b = $('callbody');
+  if (!ov) return;
+  if (!ac) { ov.style.display = 'none'; b.innerHTML = ''; return; }
+  ov.style.display = 'flex';
+  var avatar = '<div style="width:72px;height:72px;border-radius:50%;background:#0B1A2E;border:2px solid #00C65E;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px">' + esc(ac.avatar || '👤') + '</div><div style="font-weight:800;font-size:17px">' + esc(ac.name || 'User') + '</div>';
+  var btnS = 'width:54px;height:54px;border-radius:50%;border:none;font-size:20px;cursor:pointer;color:#fff';
+  if (ac.status === 'incoming') {
+    b.innerHTML = avatar + '<div style="opacity:.7;font-size:12px;margin-top:4px">Incoming support call' + (ac.who ? ' · ' + esc(ac.who) : '') + '</div><div style="display:flex;gap:18px;justify-content:center;margin-top:22px"><button style="' + btnS + ';background:#475569" data-act="acdismiss">✕</button><button style="' + btnS + ';background:#00C65E" data-act="acanswer">📞</button></div>';
+    return;
+  }
+  var st = ac.status === 'ringing' ? 'Calling…' : ac.status === 'connecting' ? 'Connecting…' : acFmt(Date.now() - (ac.startedAt || Date.now()));
+  b.innerHTML = avatar + '<div id="actxt" style="opacity:.7;font-size:12px;margin-top:4px">' + st + '</div><div style="display:flex;gap:14px;justify-content:center;margin-top:22px">' +
+    (ac.status === 'ringing' ? '' : '<button style="' + btnS + ';background:' + (ac.muted ? '#DC2626' : '#334155') + '" data-act="acmute">🎤</button>') +
+    '<button style="' + btnS + ';background:#DC2626" data-act="acend">📞</button></div>';
+}
+async function acPeer() {
+  var c = ac; if (!c) return;
+  if (typeof RTCPeerConnection === 'undefined' || !navigator.mediaDevices) { alert('Calls are not supported in this browser.'); acTeardown(); return; }
+  try { c.stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { c.stream = null; }
+  if (!acIce) { try { acIce = (await api('/config/ice-servers')).iceServers; } catch (e) {} if (!acIce || !acIce.length) acIce = [{ urls: 'stun:stun.l.google.com:19302' }]; }
+  if (ac !== c) { if (c.stream) c.stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+  var pc = new RTCPeerConnection({ iceServers: acIce });
+  c.pc = pc;
+  if (c.stream) c.stream.getTracks().forEach(function (t) { pc.addTrack(t, c.stream); }); else pc.addTransceiver('audio', { direction: 'recvonly' });
+  pc.onicecandidate = function (ev) { if (ev.candidate && c.remote && bellSocket) bellSocket.emit('call:ice-candidate', { toSocketId: c.remote, candidate: ev.candidate }); };
+  pc.ontrack = function (ev) { var el = $('callaudio'); if (el) { el.srcObject = ev.streams[0]; var p = el.play(); if (p && p.catch) p.catch(function () {}); } };
+  pc.onconnectionstatechange = function () {
+    if (ac !== c) return;
+    if (pc.connectionState === 'connected' && c.status !== 'connected') {
+      c.status = 'connected'; c.startedAt = Date.now(); acRender();
+      clearInterval(window._acTick); window._acTick = setInterval(function () { if (ac && ac.status === 'connected' && $('actxt')) $('actxt').textContent = acFmt(Date.now() - ac.startedAt); }, 1000);
+    } else if (pc.connectionState === 'failed') { acTeardown(); }
+  };
+}
+function acTeardown() {
+  clearInterval(window._acTick); clearInterval(acResend); clearTimeout(acRing);
+  if (ac) { if (ac.pc) { try { ac.pc.close(); } catch (e) {} } if (ac.stream) ac.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); }
+  ac = null;
+  var el = $('callaudio'); if (el) el.srcObject = null;
+  acRender();
+}
+// Support calls a customer or artisan.
+function acCall(userId, name) {
+  if (ac) { alert('You are already on a call.'); return; }
+  if (!bellSocket || !bellSocket.connected) { alert('Not connected. Try again in a moment.'); return; }
+  ac = { role: 'caller', status: 'ringing', userId: userId, name: name, avatar: '👤', remote: null, muted: false };
+  acRender();
+  var send = function () { if (ac && ac.role === 'caller' && ac.status === 'ringing') bellSocket.emit('call:invite', { toUserId: userId }); else clearInterval(acResend); };
+  send(); clearInterval(acResend); acResend = setInterval(send, 3000);
+  clearTimeout(acRing); acRing = setTimeout(function () { if (ac && ac.status === 'ringing') { alert('No answer.'); acEnd(); } }, 45000);
+}
+function acEnd() {
+  var c = ac;
+  if (c && bellSocket) { if (c.remote) bellSocket.emit('call:end', { toSocketId: c.remote }); else if (c.role === 'caller') bellSocket.emit('call:cancel', { toUserId: c.userId }); }
+  acTeardown();
+}
+function acBind(sock) {
+  sock.on('supportcall:incoming', function (p) {
+    if (!p || ac) return;
+    ac = { role: 'callee', status: 'incoming', remote: p.fromSocketId, userId: p.fromUserId, name: p.callerName, avatar: p.callerAvatar, who: p.callerRole, muted: false };
+    acRender();
+  });
+  ['supportcall:claimed', 'supportcall:cancelled'].forEach(function (ev) { sock.on(ev, function (p) { if (ac && ac.status === 'incoming' && ac.remote === (p && p.fromSocketId)) { ac = null; acRender(); } }); });
+  sock.on('call:accepted', function (p) {
+    var c = ac; if (!c || c.role !== 'caller' || c.remote) return;
+    clearInterval(acResend); clearTimeout(acRing);
+    c.remote = p.fromSocketId; c.status = 'connecting'; acRender();
+    acPeer().then(function () {
+      if (ac !== c || !c.pc) return;
+      c.pc.createOffer().then(function (offer) { return c.pc.setLocalDescription(offer).then(function () { sock.emit('call:offer', { toSocketId: c.remote, sdp: offer }); }); }).catch(function () {});
+    });
+  });
+  sock.on('call:declined', function (p) { if (ac && ac.role === 'caller' && p.reason !== 'busy') { alert((ac.name || 'The user') + ' declined the call.'); acTeardown(); } else if (ac && ac.role === 'caller') { alert((ac.name || 'The user') + ' is on another call.'); } });
+  sock.on('call:offer', function (p) {
+    var c = ac; if (!c || c.role !== 'callee' || !c.pc || p.fromSocketId !== c.remote) return;
+    c.pc.setRemoteDescription(new RTCSessionDescription(p.sdp)).then(function () { return c.pc.createAnswer(); }).then(function (a) { return c.pc.setLocalDescription(a).then(function () { sock.emit('call:answer', { toSocketId: p.fromSocketId, sdp: a }); }); }).catch(function () {});
+  });
+  sock.on('call:answer', function (p) { var c = ac; if (c && c.role === 'caller' && c.pc && p.fromSocketId === c.remote) c.pc.setRemoteDescription(new RTCSessionDescription(p.sdp)).catch(function () {}); });
+  sock.on('call:ice-candidate', function (p) { var c = ac; if (c && c.pc && p.fromSocketId === c.remote && p.candidate) c.pc.addIceCandidate(new RTCIceCandidate(p.candidate)).catch(function () {}); });
+  sock.on('call:ended', function () { if (ac) acTeardown(); });
+}
 var chatOpenId = null;
 function openChat(id) {
   api('/admin/chat-threads/' + id + '/messages').then(function (d) {
@@ -543,7 +630,8 @@ function openChat(id) {
     var names = {};
     d.thread.participants.forEach(function (p) { names[p.user.id] = p.user.name; });
     var closed = !!d.thread.closedAt;
-    openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + d.thread.participants.map(function (p) { return esc(p.user.name); }).join(' & ') + '</h3><button class="l" data-act="close">Close window</button></div>' +
+    var callee = d.thread.participants.filter(function (p) { return p.user.role !== 'ADMIN'; })[0];
+    openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + d.thread.participants.map(function (p) { return esc(p.user.name); }).join(' & ') + '</h3><span class="row">' + (callee ? btn('📞 Call', 'chatcall', callee.user.id, 'g', ' data-name="' + esc(callee.user.name) + '"') : '') + '<button class="l" data-act="close">Close window</button></span></div>' +
       '<div id="chat-log" style="max-height:50vh;overflow:auto;margin:12px 0">' + (d.messages.length ? d.messages.map(function (m) {
         return '<div class="side"><b>' + esc(names[m.senderId] || 'Support') + '</b> <span class="muted">' + when(m.createdAt) + '</span><br>' + esc(m.body) +
           (m.attachmentUrl ? '<br><img src="' + esc(m.attachmentUrl) + '" alt="Photo" style="max-width:220px;border-radius:8px;margin-top:4px;cursor:zoom-in" onclick="window.open(this.src)">' : '') + '</div>';
@@ -738,6 +826,7 @@ function startBell() {
   if (bellSocket || typeof io === 'undefined') return;
   var sock = io({ path: '/socket.io', auth: function (cb) { cb({ token: tok }); } });
   bellSocket = sock;
+  acBind(sock);
   // A refused handshake (expired sign-in) is not retried by Socket.IO itself: renew, then connect again.
   sock.on('connect_error', function () {
     setTimeout(function () { if (sock !== bellSocket || !tok) return; renewSession().then(function () { if (sock === bellSocket && !sock.connected) sock.connect(); }); }, 2500);
@@ -789,6 +878,15 @@ var ACT = {
   accpass: function () { if (val('acc-new').length < 8) { $('acc-perr').textContent = 'Use at least 8 characters.'; return; } api('/auth/change-password', { currentPassword: val('acc-cur'), newPassword: val('acc-new') }).then(function () { closeModal(); alert('Password changed.'); }).catch(function (e) { $('acc-perr').textContent = e.message; }); },
   umsg: function (id) { api('/admin/chat-threads/for-user/' + id, {}).then(function (d) { openChat(d.threadId); }).catch(function (e) { alert(e.message); }); },
   chatopen: openChat,
+  chatcall: function (id, el) { acCall(id, el.dataset.name); },
+  acanswer: function () {
+    var c = ac; if (!c || c.status !== 'incoming') return;
+    c.status = 'connecting'; acRender();
+    acPeer().then(function () { if (ac === c && bellSocket) bellSocket.emit('supportcall:accept', { toSocketId: c.remote }); });
+  },
+  acdismiss: function () { ac = null; acRender(); },
+  acmute: function () { var c = ac; if (!c || !c.stream) return; var t = c.stream.getAudioTracks()[0]; if (!t) return; t.enabled = !t.enabled; c.muted = !t.enabled; acRender(); },
+  acend: acEnd,
   chatclose: function (id) { api('/admin/chat-threads/' + id + '/close', {}).then(function () { openChat(id); }).catch(function (e) { var el = $('chat-err'); if (el) el.textContent = e.message; else alert(e.message); }); },
   chatsend: function (id) { if (!val('chat-reply').trim()) { $('chat-err').textContent = 'Write a message first.'; return; } api('/admin/chat-threads/' + id + '/messages', { body: val('chat-reply') }).then(function () { openChat(id); }).catch(function (e) { $('chat-err').textContent = e.message; }); },
   reportrun: function () { reportRange = { from: val('rp-from'), to: val('rp-to') }; LOAD.reports(); },

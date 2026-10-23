@@ -91,8 +91,17 @@ function attachLiveSocket(httpServer) {
     // server only relays the small handshake messages — audio/video itself
     // is peer-to-peer.
     socket.on("call:invite", async ({ toUserId, bookingId, callerName, callerAvatar, callerRole }) => {
-      // Calls only happen between the two people on a booking.
-      if (!toUserId || !bookingId) return;
+      if (!toUserId) return;
+      // FixMi Support (an admin) can call any customer or artisan, outside any booking.
+      if (!bookingId) {
+        if (user.role !== "ADMIN" || toUserId === user.id) return;
+        const target = await prisma.user.findUnique({ where: { id: toUserId }, select: { role: true, status: true } });
+        if (!target || target.role === "ADMIN" || target.status !== "ACTIVE") return;
+        socket.join(`supportcall:${socket.id}`);
+        io.to(`user:${toUserId}`).emit("call:incoming", { fromUserId: user.id, fromSocketId: socket.id, bookingId: null, callerName: "FixMi Support", callerAvatar: "🛡️", callerRole: "Support" });
+        return;
+      }
+      // Otherwise calls only happen between the two people on a booking.
       const booking = await prisma.booking.findUnique({ where: { id: bookingId }, include: { artisan: { select: { userId: true } } } });
       if (!booking || !booking.artisan) return;
       const parties = [booking.customerId, booking.artisan.userId];
@@ -108,6 +117,7 @@ function attachLiveSocket(httpServer) {
     });
     socket.on("call:accept", ({ toSocketId, bookingId }) => {
       if (!toSocketId) return;
+      if (!bookingId) socket.join(`supportcall:${toSocketId}`);
       io.to(toSocketId).emit("call:accepted", { fromUserId: user.id, fromSocketId: socket.id, bookingId: bookingId || null });
     });
     socket.on("call:decline", ({ toSocketId, bookingId, reason }) => {
@@ -135,8 +145,26 @@ function attachLiveSocket(httpServer) {
       });
     });
 
+    // A customer or artisan calling FixMi Support rings every online admin; the first to answer takes it
+    // (the others' ringing stops). After that it is the same one-to-one call relay as above.
+    socket.on("supportcall:invite", ({ callerName, callerAvatar } = {}) => {
+      if (user.role === "ADMIN") return;
+      socket.join(`supportcall:${socket.id}`);
+      io.to("admins").emit("supportcall:incoming", { fromUserId: user.id, fromSocketId: socket.id, callerName: callerName || user.name, callerAvatar: callerAvatar || "👤", callerRole: user.role === "ARTISAN" ? "Artisan" : "Customer" });
+    });
+    socket.on("supportcall:accept", ({ toSocketId } = {}) => {
+      if (!toSocketId || user.role !== "ADMIN") return;
+      socket.join(`supportcall:${toSocketId}`);
+      io.to(toSocketId).emit("supportcall:accepted", { fromUserId: user.id, fromSocketId: socket.id, adminName: user.name });
+      io.to("admins").emit("supportcall:claimed", { fromSocketId: toSocketId, byAdminSocketId: socket.id });
+    });
+    socket.on("supportcall:cancel", () => {
+      io.to("admins").emit("supportcall:cancelled", { fromSocketId: socket.id });
+    });
+
     socket.on("disconnecting", () => {
       for (const room of socket.rooms) {
+        if (room.startsWith("supportcall:")) socket.to(room).emit("call:ended", { bookingId: null, fromUserId: user.id });
         if (room.startsWith("booking:")) {
           socket.to(room).emit("call:ended", { bookingId: room.slice("booking:".length), fromUserId: user.id });
         }

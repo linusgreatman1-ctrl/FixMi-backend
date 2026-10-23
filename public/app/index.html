@@ -6160,6 +6160,26 @@ function bcallStart() {
     if (window._bcall && window._bcall.status === 'ringing') { toast('No answer'); bcallEnd(); }
   }, 30000);
 }
+// A call to FixMi Support: rings every online admin; the first to answer takes it.
+function bcallStartSupport() {
+  if (!_socket || !_socket.connected) { toast('You’re offline — check your connection and try again.'); return; }
+  if (window._bcall || window._bcallIncoming) { toast('You are already on a call.'); return; }
+  window._bcall = { role: 'caller', support: true, bookingId: null, otherUserId: null, otherName: 'FixMi Support', otherAvatar: '🛡️', pc: null, localStream: null, remoteSocketId: null, status: 'ringing', startedAt: null, micMuted: false, _ts: Date.now() };
+  renderBcallOverlay();
+  var u = window.currentUser || {};
+  var payload = { callerName: u.name || 'Someone', callerAvatar: myCallAvatar() };
+  _socket.emit('supportcall:invite', payload);
+  clearInterval(_bcallInviteResendIv);
+  _bcallInviteResendIv = setInterval(function () {
+    var c = window._bcall;
+    if (c && c.support && c.status === 'ringing' && _socket) _socket.emit('supportcall:invite', payload);
+    else clearInterval(_bcallInviteResendIv);
+  }, 4000);
+  clearTimeout(_bcallRingTimer);
+  _bcallRingTimer = setTimeout(function () {
+    if (window._bcall && window._bcall.status === 'ringing') { toast('FixMi Support did not answer. Leave a message in the chat and we will reply.'); bcallEnd(); }
+  }, 45000);
+}
 function bcallAccept() {
   var inc = window._bcallIncoming; if (!inc) return;
   window._bcallIncoming = null;
@@ -6233,9 +6253,10 @@ function bcallBindListeners(sock) {
     renderBcallOverlay();
     if (navigator.vibrate) { try { navigator.vibrate([400, 200, 400]); } catch (e) {} }
   });
-  sock.on('call:accepted', function (p) {
+  ['call:accepted', 'supportcall:accepted'].forEach(function (ev) { sock.on(ev, function (p) {
     var c = window._bcall;
-    if (!c || c.role !== 'caller' || c.otherUserId !== p.fromUserId || c.remoteSocketId) return;
+    if (!c || c.role !== 'caller' || c.remoteSocketId) return;
+    if (c.support) c.otherUserId = p.fromUserId; else if (c.otherUserId !== p.fromUserId) return;
     clearTimeout(_bcallRingTimer); clearInterval(_bcallInviteResendIv);
     c.remoteSocketId = p.fromSocketId; c.status = 'connecting';
     renderBcallOverlay();
@@ -6245,7 +6266,7 @@ function bcallBindListeners(sock) {
         return c.pc.setLocalDescription(offer).then(function () { sock.emit('call:offer', { toSocketId: c.remoteSocketId, sdp: offer, bookingId: c.bookingId }); });
       }).catch(function () {});
     });
-  });
+  }); });
   sock.on('call:declined', function (p) {
     var c = window._bcall;
     if (!c || c.role !== 'caller' || c.otherUserId !== p.fromUserId) return;
@@ -6307,7 +6328,7 @@ function bcallEnd() {
   var c = window._bcall;
   if (c && _socket) {
     if (c.remoteSocketId) _socket.emit('call:end', { toSocketId: c.remoteSocketId, bookingId: c.bookingId });
-    else if (c.role === 'caller') _socket.emit('call:cancel', { toUserId: c.otherUserId, bookingId: c.bookingId });
+    else if (c.role === 'caller') { if (c.support) _socket.emit('supportcall:cancel', {}); else _socket.emit('call:cancel', { toUserId: c.otherUserId, bookingId: c.bookingId }); }
   }
   bcallTeardown();
 }
@@ -6405,12 +6426,12 @@ async function openChatForActiveBooking() {
 async function openChatThread(threadId, name, other, booking) {
   closeTrackMap();
   window._activeChatThreadId = threadId;
-  window._chatCtx = { other: other || null, booking: booking || null };
+  window._chatCtx = { other: other || null, booking: booking || null, support: !other && !booking };
   document.getElementById('chat-header-name').textContent = name || 'Conversation';
   document.getElementById('chat-header-role').textContent = booking ? booking.category + ' job' : ' ';
   setText('chat-header-ico', booking ? categoryLook(booking.category)[0] : '🎧');
   setChatClosed(false);
-  document.getElementById('chat-call-btn').hidden = !(other && booking);
+  document.getElementById('chat-call-btn').hidden = !((other && booking) || (!other && !booking));
   if (_socket) _socket.emit('chat:join', { threadId: threadId });
   go('chat');
   await loadChatMessages(threadId);
@@ -6429,6 +6450,7 @@ async function openSupportChat() {
 // same call options as the job screen.
 function callFromChat() {
   var c = window._chatCtx || {};
+  if (c.support) { bcallStartSupport(); return; }
   if (!c.other || !c.booking) return;
   openCallSheet(c.other.name, c.other.phone || '', c.other.id, c.booking.id, c.booking ? categoryLook(c.booking.category)[0] : '👤');
 }
