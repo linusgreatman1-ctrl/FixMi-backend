@@ -392,7 +392,7 @@ body:not(.fresh-acct) [data-fresh]{display:none !important}
 .js-step.done span{background:var(--g)}
 .photo-strip{display:flex;gap:8px;overflow-x:auto;margin:8px 0 4px}
 .photo-strip img{width:84px;height:84px;object-fit:cover;border-radius:10px;cursor:zoom-in;flex-shrink:0;border:1px solid var(--border)}
-.rq-card .photo-strip img,.job-person .photo-strip img{width:120px;height:120px}
+
 .job-person{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 .job-person:empty{display:none}
 .job-money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
@@ -632,12 +632,15 @@ body{background:#fff}
 }
 
 /* ===== round 3 ===== */
-.rq-card .photo-strip,.job-person .photo-strip,.co-hero .photo-strip,.pay-val .photo-strip{flex-wrap:wrap;overflow:visible}
-.rq-card .photo-strip img,.job-person .photo-strip img,.co-hero .photo-strip img,.pay-val .photo-strip img{width:100%;max-width:380px;height:auto;max-height:340px;object-fit:contain;background:#F3F4F6}
+.rq-card .photo-strip,#aj-person .photo-strip,.pay-val .photo-strip{flex-wrap:wrap;overflow:visible}
+.rq-card .photo-strip img,#aj-person .photo-strip img,.pay-val .photo-strip img{width:100%;max-width:380px;height:auto;max-height:340px;object-fit:contain;background:#F3F4F6}
 .chat-banner{position:fixed;left:50%;transform:translateX(-50%);top:12px;width:min(440px,calc(100vw - 24px));z-index:900;background:var(--navy);color:#fff;border:1.5px solid #3B82F6;border-radius:14px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px}
 .chat-banner b{display:block;font-size:13px}.chat-banner span.t{font-size:12px;opacity:.8;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chat-banner button{border:none;border-radius:9px;padding:8px 12px;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit}
 .dispute-box .ev img{width:100%;max-width:300px;border-radius:10px;margin-top:6px;cursor:zoom-in}
+
+.co-hero .photo-strip{justify-content:center}
+.co-hero .photo-strip img{width:84px;height:84px;object-fit:cover}
 </style>
 <body>
 <div class="stage">
