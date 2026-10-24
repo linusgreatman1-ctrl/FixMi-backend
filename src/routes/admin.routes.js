@@ -15,6 +15,7 @@ router.use(requireAuth, requireRole("ADMIN"));
 
 router.get("/stats", ctrl.stats);
 router.get("/artisans/pending", ctrl.listPendingArtisans);
+router.get("/artisans/all", ctrl.listAllArtisans);
 router.post("/artisans/:id/approve", ctrl.approveArtisan);
 router.post("/artisans/:id/reject", ctrl.rejectArtisan);
 router.get("/users", ops.listUsers);
@@ -65,6 +66,7 @@ router.get("/chat-threads/:id/messages", more.getChatMessages);
 router.post("/chat-threads/:id/messages", more.sendChatMessage);
 router.post("/chat-threads/for-user/:userId", more.supportThreadForUser);
 router.post("/chat-threads/:id/close", more.closeChatThread);
+router.post("/chat-threads/:id/reopen", require("../controllers/chat.controller").reopenThread);
 router.post("/chat-threads/:id/attachment", upload.single("photo"), more.chatAttachment);
 router.post("/bulk-email", requireSuperAdmin, more.sendBulkEmail);
 router.get("/files", files.listFiles);

@@ -31,6 +31,22 @@ async function listPendingArtisans(req, res, next) {
   }
 }
 
+// Every artisan on FixMi, newest first; ?status=PENDING|APPROVED|REJECTED narrows it.
+async function listAllArtisans(req, res, next) {
+  try {
+    const status = String(req.query.status || "").toUpperCase();
+    const artisans = await prisma.artisanProfile.findMany({
+      where: ["PENDING", "APPROVED", "REJECTED"].includes(status) ? { kycStatus: status } : {},
+      include: { user: { select: { id: true, name: true, email: true, phone: true, state: true, status: true, createdAt: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 500,
+    });
+    res.json({ artisans });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function approveArtisan(req, res, next) {
   try {
     const artisan = await prisma.artisanProfile.update({
@@ -147,6 +163,7 @@ async function updateTicket(req, res, next) {
 module.exports = {
   stats,
   listPendingArtisans,
+  listAllArtisans,
   approveArtisan,
   rejectArtisan,
   listUsers,

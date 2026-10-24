@@ -114,8 +114,24 @@ async function requestRecipients(booking) {
 // Live updates. The customer's own channel always gets the full booking;
 // artisans get request-shaped events so their pop-up can add, update or
 // remove the request.
+// Adds disputeInfo { resolution, refundKobo, resolvedAt } to bookings that went through a dispute.
+async function attachDisputes(list) {
+  const items = (list || []).filter(Boolean);
+  const ids = items.filter((b) => ["DISPUTED", "CONFIRMED", "CANCELLED", "COMPLETED"].includes(b.status)).map((b) => b.id);
+  if (!ids.length) return list;
+  const tickets = await prisma.supportTicket.findMany({
+    where: { isDispute: true, bookingId: { in: ids } },
+    orderBy: { createdAt: "desc" },
+    select: { bookingId: true, resolution: true, refundAmountKobo: true, resolvedAt: true },
+  });
+  const by = {};
+  for (const t of tickets) if (!by[t.bookingId]) by[t.bookingId] = t;
+  for (const b of items) if (by[b.id]) b.disputeInfo = { resolution: by[b.id].resolution, refundKobo: by[b.id].refundAmountKobo || 0, resolvedAt: by[b.id].resolvedAt };
+  return list;
+}
+
 function pushToCustomer(sock, booking) {
-  sock?.to(`user:${booking.customerId}`).emit("booking:updated", booking);
+  attachDisputes([booking]).catch(() => {}).then(() => sock?.to(`user:${booking.customerId}`).emit("booking:updated", booking));
 }
 
 async function pushRequestToArtisan(sock, bookingId, artisan) {
@@ -131,7 +147,7 @@ async function closeRequestForArtisans(sock, booking, exceptArtisanId) {
 }
 
 function pushJobToArtisan(sock, booking) {
-  if (booking.artisan) sock?.to(`user:${booking.artisan.userId}`).emit("job:updated", booking);
+  if (booking.artisan) attachDisputes([booking]).catch(() => {}).then(() => sock?.to(`user:${booking.artisan.userId}`).emit("job:updated", booking));
 }
 
 // Make the escrow equal the agreed price: take the shortfall from the
@@ -287,6 +303,7 @@ async function listMyBookings(req, res, next) {
       ? { artisanId: req.user.artisanProfile.id, NOT: { status: { in: ["REQUESTED", "PENDING_PAYMENT"] } } }
       : { customerId: req.user.id };
     const bookings = await prisma.booking.findMany({ where, include: asArtisan ? JOB_VIEW : CUSTOMER_VIEW, orderBy: { createdAt: "desc" } });
+    await attachDisputes(bookings);
     res.json({ bookings });
   } catch (err) {
     next(err);
@@ -349,11 +366,12 @@ async function getBooking(req, res, next) {
   try {
     const booking = await prisma.booking.findUnique({ where: { id: req.params.id }, include: CUSTOMER_VIEW });
     if (!booking) return res.status(404).json({ error: "Booking not found." });
-    if (booking.customerId === req.user.id) return res.json({ booking });
+    if (booking.customerId === req.user.id) return res.json({ booking: (await attachDisputes([booking]))[0] });
 
     const me = req.user.artisanProfile;
     if (me && booking.artisanId === me.id && !["REQUESTED", "PENDING_PAYMENT"].includes(booking.status)) {
-      return res.json({ booking: await prisma.booking.findUnique({ where: { id: booking.id }, include: JOB_VIEW }) });
+      const job = await prisma.booking.findUnique({ where: { id: booking.id }, include: JOB_VIEW });
+      return res.json({ booking: (await attachDisputes([job]))[0] });
     }
     if (me && booking.status === "REQUESTED" && categoryMatches(booking.category, me.category) && (!booking.artisanId || booking.artisanId === me.id)) {
       return res.json({ booking: await requestViewFor(booking.id, me.id) });
@@ -891,10 +909,10 @@ async function resolveDispute(req, res, next) {
 async function listDisputes(req, res, next) {
   try {
     const tickets = await prisma.supportTicket.findMany({
-      where: { isDispute: true, ...(req.query.open === "false" ? {} : { resolvedAt: null }) },
+      where: { isDispute: true, ...(req.query.open === "true" ? { resolvedAt: null } : {}) },
       include: { user: { select: { id: true, name: true, phone: true, email: true } } },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: 300,
     });
     const ids = tickets.map((t) => t.bookingId).filter(Boolean);
     const bookings = await prisma.booking.findMany({ where: { id: { in: ids } }, include: { ...JOB_VIEW, escrowHolds: true } });

@@ -25,7 +25,10 @@ router.get("/ice-servers", (req, res) => {
 // customer has to confirm before escrow releases on its own.
 router.get("/app", async (req, res, next) => {
   try {
-    res.json({ commissionPercent: commissionPercent(), autoReleaseSeconds: autoReleaseSeconds(), ...(await settings.publicContent()) });
+    // A browser key (restrict it to this site's address in Google Cloud). Without one the app uses OpenStreetMap.
+    const googleKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_BROWSER_KEY || "";
+    const maps = { provider: googleKey ? "google" : "osm", googleKey };
+    res.json({ commissionPercent: commissionPercent(), autoReleaseSeconds: autoReleaseSeconds(), maps, ...(await settings.publicContent()) });
   } catch (err) {
     next(err);
   }

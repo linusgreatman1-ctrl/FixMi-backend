@@ -383,6 +383,8 @@ model Rating {
   rateeUserId String
   stars       Int
   comment     String?
+  response    String?
+  respondedAt DateTime?
   hidden      Boolean   @default(false)
   createdAt   DateTime  @default(now())
 

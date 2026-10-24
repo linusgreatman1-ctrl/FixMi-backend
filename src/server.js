@@ -45,13 +45,13 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "'unsafe-inline'", "https://js.paystack.co", "https://cdn.socket.io", "https://cdnjs.cloudflare.com"],
+        "script-src": ["'self'", "'unsafe-inline'", "https://js.paystack.co", "https://cdn.socket.io", "https://cdnjs.cloudflare.com", "https://maps.googleapis.com", "https://maps.gstatic.com"],
         "script-src-attr": ["'self'", "'unsafe-inline'"],
         "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
         "font-src": ["'self'", "https://fonts.gstatic.com", "data:"],
         "frame-src": ["'self'", "https://*.paystack.co", "https://*.paystack.com", "https://*.flutterwave.com", "https://checkout.flutterwave.com"],
-        "connect-src": ["'self'", "blob:", "data:", "https://*.paystack.co", "https://*.paystack.com", "https://*.flutterwave.com", "ws:", "wss:"],
-        "img-src": ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://cdnjs.cloudflare.com"],
+        "connect-src": ["'self'", "blob:", "data:", "https://*.paystack.co", "https://*.paystack.com", "https://*.flutterwave.com", "https://maps.googleapis.com", "https://*.googleapis.com", "ws:", "wss:"],
+        "img-src": ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org", "https://cdnjs.cloudflare.com", "https://maps.googleapis.com", "https://maps.gstatic.com", "https://*.googleapis.com", "https://*.gstatic.com", "https://*.google.com"],
       },
     },
   })

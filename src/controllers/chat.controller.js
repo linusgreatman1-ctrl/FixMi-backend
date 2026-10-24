@@ -90,6 +90,23 @@ async function closeThread(req, res, next) {
   }
 }
 
+// Starts an ended conversation again (Handa: a new chat round). A job's chat only while the job is still on.
+async function reopenThread(req, res, next) {
+  try {
+    const thread = await prisma.chatThread.findUnique({ where: { id: req.params.id }, include: { participants: true, booking: { select: { status: true } } } });
+    if (!thread) return res.status(404).json({ error: "Thread not found." });
+    const isAdmin = req.user.role === "ADMIN";
+    if (!isAdmin && !thread.participants.some((p) => p.userId === req.user.id)) return res.status(403).json({ error: "Not your conversation." });
+    if (thread.booking && !["ACCEPTED", "PAID", "IN_PROGRESS"].includes(thread.booking.status)) return res.status(409).json({ error: "This job is over, so its chat can't be reopened. Chat with FixMi Support instead." });
+    if (isAdmin && !thread.participants.some((p) => p.userId === req.user.id)) await prisma.chatParticipant.create({ data: { threadId: thread.id, userId: req.user.id } });
+    const updated = await prisma.chatThread.update({ where: { id: thread.id }, data: { closedAt: null, closedBy: null } });
+    req.app.get("io")?.to([`chat:${thread.id}`, ...thread.participants.map((p) => `user:${p.userId}`)]).emit("chat:reopened", { threadId: thread.id });
+    res.json({ thread: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // Closes a job's conversation once the job is over (completed, cancelled, declined): chat and call end together.
 async function closeBookingThread(io, bookingId) {
   try {
@@ -128,4 +145,4 @@ async function uploadAttachment(req, res, next) {
   }
 }
 
-module.exports = { listThreads, getMessages, sendMessage, closeThread, closeBookingThread, openSupportThread, uploadAttachment };
+module.exports = { listThreads, getMessages, sendMessage, closeThread, reopenThread, closeBookingThread, openSupportThread, uploadAttachment };

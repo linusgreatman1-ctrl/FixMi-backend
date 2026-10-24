@@ -250,13 +250,20 @@ function bookingDetail(id) {
 }
 
 /* ---------- Artisan approvals ---------- */
+var artFilter = '';
 LOAD.artisans = function () {
-  api('/admin/artisans/pending').then(function (d) {
-    if (!d.artisans.length) return setList('<div class="card muted">No artisans waiting for approval.</div>');
-    setList(d.artisans.map(function (a) {
-      return '<div class="card"><b>' + esc(a.user.name) + '</b> ' + tag(a.category) + '<div class="muted">' + esc(a.user.phone || a.user.email || '') + ' · applied ' + when(a.createdAt) + '</div>' +
-        '<div class="side">' + esc(a.bio || 'No bio') + '<br><span class="muted">' + esc(a.idType || '') + ' ' + esc(a.idNumber || '') + ' · ' + (a.yearsExp || 0) + ' yrs</span></div>' +
-        '<input id="ar-' + a.id + '" placeholder="Reason (needed to decline)"><div class="row" style="margin-top:8px">' + btn('Approve', 'aapprove', a.id, 'g') + btn('Decline', 'areject', a.id, 'r') + btn('View user', 'user', a.user.id) + '</div></div>';
+  api('/admin/artisans/all' + (artFilter ? '?status=' + artFilter : '')).then(function (d) {
+    var head = '<div class="row" style="margin-bottom:12px">' + [['', 'All'], ['PENDING', 'Awaiting approval'], ['APPROVED', 'Approved'], ['REJECTED', 'Declined']].map(function (f) { return btn(f[1], 'artfilter', f[0], artFilter === f[0] ? 'g' : 'l'); }).join('') + '</div>';
+    if (!d.artisans.length) return setList(head + '<div class="card muted">No artisans here.</div>');
+    setList(head + '<div class="muted" style="margin-bottom:8px">' + d.artisans.length + ' artisan' + (d.artisans.length > 1 ? 's' : '') + '</div>' + d.artisans.map(function (a) {
+      var st = a.kycStatus === 'APPROVED' ? tag('Approved', 'ok') : a.kycStatus === 'REJECTED' ? tag('Declined', 'bad') : tag('Awaiting approval');
+      var h = '<div class="card"><div class="row" style="justify-content:space-between"><b>' + esc(a.user.name) + '</b><span>' + tag(a.category) + ' ' + st + '</span></div>' +
+        '<div class="muted">' + esc(a.user.phone || a.user.email || '') + (a.user.state ? ' · ' + esc(a.user.state) : '') + ' · joined ' + when(a.createdAt) + '</div>' +
+        '<div class="muted">⭐ ' + (a.ratingCount ? Number(a.ratingAvg).toFixed(1) + ' (' + a.ratingCount + ')' : 'New') + ' · ' + (a.jobsDone || 0) + ' jobs · ' + (a.isAvailable ? '🟢 online' : 'offline') + (a.user.status !== 'ACTIVE' ? ' · ' + esc(a.user.status) : '') + '</div>' +
+        (a.bio ? '<div class="side">' + esc(a.bio) + '</div>' : '');
+      if (a.kycStatus === 'PENDING') h += '<div class="side"><span class="muted">' + esc(a.idType || '') + ' ' + esc(a.idNumber || '') + ' · ' + (a.yearsExp || 0) + ' yrs</span></div><input id="ar-' + a.id + '" placeholder="Reason (needed to decline)"><div class="row" style="margin-top:8px">' + btn('Approve', 'aapprove', a.id, 'g') + btn('Decline', 'areject', a.id, 'r') + btn('View user', 'user', a.user.id) + '</div>';
+      else h += '<div class="row" style="margin-top:8px">' + btn('View user', 'user', a.user.id) + btn('💬 Message', 'umsg', a.user.id, 'l') + '</div>';
+      return h + '</div>';
     }).join(''));
   }).catch(fail);
 };
@@ -274,10 +281,8 @@ LOAD.bookings = function () {
 var disputesOpen = true;
 function photos(urls, who) { return String(urls || '').split('\n').filter(Boolean).map(function (u) { return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="' + who + ' evidence"></a>'; }).join(''); }
 LOAD.disputes = function () {
-  api('/admin/disputes' + (disputesOpen ? '' : '?open=false')).then(function (d) {
-    var head = '<div class="row" style="margin-bottom:12px">' + btn('Open disputes', 'dopen', '1', disputesOpen ? 'g' : 'l') + btn('All disputes', 'dopen', '0', disputesOpen ? 'l' : 'g') + '</div>';
-    if (!d.disputes.length) return setList(head + '<div class="card muted">No ' + (disputesOpen ? 'open ' : '') + 'disputes.</div>');
-    setList(head + d.disputes.map(function (t) {
+  api('/admin/disputes').then(function (d) {
+    var card = function (t) {
       var b = t.booking || {};
       var held = (b.escrowHolds || []).filter(function (h) { return h.status === 'DISPUTED'; }).reduce(function (n, h) { return n + h.amountKobo; }, 0);
       var art = b.artisan ? b.artisan.user.name + ' (' + (b.artisan.user.phone || '') + ')' : '—';
@@ -286,11 +291,16 @@ LOAD.disputes = function () {
         '<div class="side"><b>Customer — ' + esc(t.user.name) + ' (' + esc(t.user.phone || t.user.email || '') + ')</b><div>' + esc(t.message) + '</div>' + (t.requestedRefundKobo ? '<div class="muted">Asks for ' + naira(t.requestedRefundKobo) + ' back</div>' : '') + photos(t.evidenceUrl, 'Customer') + '</div>' +
         '<div class="side"><b>Artisan — ' + esc(art) + '</b><div>' + (t.secondPartyResponse ? esc(t.secondPartyResponse) : '<span class="muted">No response yet</span>') + '</div>' + photos(t.secondPartyEvidenceUrl, 'Artisan') + '</div>' +
         '<div class="muted">Job: ' + esc(b.category) + ' — ' + esc(b.issue) + '</div>';
+      if (t.resolvedAt) h += '<div class="side"><b>Decision</b> · ' + when(t.resolvedAt) + '<div>' + esc(t.resolution || '') + '</div><div class="muted">Refunded to the customer: ' + naira(t.refundAmountKobo || 0) + ' · Paid to the artisan (after FixMi\'s fee): ' + naira(Math.round(Math.max(0, (b.agreedPriceKobo || 0) - (t.refundAmountKobo || 0)) * 0.9)) + '</div></div>' +
+        '<div class="row" style="margin-top:8px">' + btn('💬 Chat with customer', 'dchat', t.id, 'l', ' data-v="CUSTOMER"') + btn('💬 Chat with artisan', 'dchat', t.id, 'l', ' data-v="ARTISAN"') + btn('View job', 'booking', t.bookingId, 'l') + '</div>';
       if (!t.resolvedAt) h += '<label>Note to both sides (optional)</label><textarea id="dn-' + t.id + '"></textarea><label>Refund to customer for a split (₦)</label><input id="da-' + t.id + '" type="number" min="1" placeholder="e.g. ' + Math.round(held / 200) + '"><div class="err" id="de-' + t.id + '"></div>' +
         '<div class="row">' + btn('Pay artisan', 'dres', t.id, 'g', ' data-v="RELEASE"') + btn('Refund customer', 'dres', t.id, 'r', ' data-v="REFUND"') + btn('Split', 'dres', t.id, 'n', ' data-v="SPLIT"') + '</div>' +
         '<div class="row" style="margin-top:8px">' + btn('💬 Chat with customer', 'dchat', t.id, 'l', ' data-v="CUSTOMER"') + btn('💬 Chat with artisan', 'dchat', t.id, 'l', ' data-v="ARTISAN"') + '</div>';
       return h + '</div>';
-    }).join(''));
+    };
+    var open = d.disputes.filter(function (t) { return !t.resolvedAt; }), done = d.disputes.filter(function (t) { return t.resolvedAt; });
+    setList('<h3 style="margin:0 0 10px">Open disputes (' + open.length + ')</h3>' + (open.length ? open.map(card).join('') : '<div class="card muted">No open disputes.</div>') +
+      '<h3 style="margin:22px 0 10px">Resolved disputes — kept as records (' + done.length + ')</h3>' + (done.length ? done.map(card).join('') : '<div class="card muted">None resolved yet.</div>'));
   }).catch(fail);
 };
 
@@ -614,7 +624,11 @@ function acBind(sock) {
       c.pc.createOffer().then(function (offer) { return c.pc.setLocalDescription(offer).then(function () { sock.emit('call:offer', { toSocketId: c.remote, sdp: offer }); }); }).catch(function () {});
     });
   });
-  sock.on('call:declined', function (p) { if (ac && ac.role === 'caller' && p.reason !== 'busy') { alert((ac.name || 'The user') + ' declined the call.'); acTeardown(); } else if (ac && ac.role === 'caller') { alert((ac.name || 'The user') + ' is on another call.'); } });
+  sock.on('call:declined', function (p) {
+    if (!ac || ac.role !== 'caller' || ac.status !== 'ringing' || ac.userId !== p.fromUserId) return;
+    if (p.reason !== 'busy') { alert((ac.name || 'The user') + ' declined the call.'); acTeardown(); }
+    else if (!ac.busyShown) { ac.busyShown = true; alert((ac.name || 'The user') + ' is on another call right now.'); }
+  });
   sock.on('call:offer', function (p) {
     var c = ac; if (!c || c.role !== 'callee' || !c.pc || p.fromSocketId !== c.remote) return;
     c.pc.setRemoteDescription(new RTCSessionDescription(p.sdp)).then(function () { return c.pc.createAnswer(); }).then(function (a) { return c.pc.setLocalDescription(a).then(function () { sock.emit('call:answer', { toSocketId: p.fromSocketId, sdp: a }); }); }).catch(function () {});
@@ -636,7 +650,7 @@ function openChat(id) {
         return '<div class="side"><b>' + esc(names[m.senderId] || 'Support') + '</b> <span class="muted">' + when(m.createdAt) + '</span><br>' + esc(m.body) +
           (m.attachmentUrl ? '<br><img src="' + esc(m.attachmentUrl) + '" alt="Photo" style="max-width:220px;border-radius:8px;margin-top:4px;cursor:zoom-in" onclick="window.open(this.src)">' : '') + '</div>';
       }).join('') : '<div class="muted">No messages yet.</div>') + '</div>' +
-      (closed ? '<div class="card muted">This chat has ended.</div>'
+      (closed ? '<div class="card muted">This chat has ended. ' + btn('💬 Start a new chat', 'chatreopen', id, 'g') + '</div>'
         : '<textarea id="chat-reply" placeholder="Write a message as FixMi support"></textarea><div class="err" id="chat-err"></div><div class="row">' + btn('Send', 'chatsend', id, 'g') +
           '<label class="l" style="cursor:pointer;display:inline-block;padding:10px 14px">📷 Send photo<input type="file" id="chat-photo" accept="image/*" hidden></label>' + btn('✖ Close chat', 'chatclose', id, 'n') + '</div>'));
     var log = $('chat-log'); if (log) log.scrollTop = log.scrollHeight;
@@ -818,7 +832,6 @@ function chatBanner(name, text, threadId) {
   el.querySelector('[data-o]').onclick = function () { el.remove(); openChat(threadId); };
   el.querySelector('[data-x]').onclick = function () { el.remove(); };
   document.body.appendChild(el);
-  setTimeout(function () { if (el.parentNode) el.remove(); }, 15000);
 }
 function startBell() {
   loadNotifs();
@@ -878,6 +891,7 @@ var ACT = {
   accpass: function () { if (val('acc-new').length < 8) { $('acc-perr').textContent = 'Use at least 8 characters.'; return; } api('/auth/change-password', { currentPassword: val('acc-cur'), newPassword: val('acc-new') }).then(function () { closeModal(); alert('Password changed.'); }).catch(function (e) { $('acc-perr').textContent = e.message; }); },
   umsg: function (id) { api('/admin/chat-threads/for-user/' + id, {}).then(function (d) { openChat(d.threadId); }).catch(function (e) { alert(e.message); }); },
   chatopen: openChat,
+  chatreopen: function (id) { api('/admin/chat-threads/' + id + '/reopen', {}).then(function () { openChat(id); }).catch(function (e) { alert(e.message); }); },
   chatcall: function (id, el) { acCall(id, el.dataset.name); },
   acanswer: function () {
     var c = ac; if (!c || c.status !== 'incoming') return;
@@ -917,6 +931,7 @@ var ACT = {
   ustatus: function (id, el) { if (!confirm((el.dataset.v === 'SUSPENDED' ? 'Suspend' : 'Reactivate') + ' this account?')) return; api('/admin/users/' + id + '/status', { status: el.dataset.v }, 'PATCH').then(function () { closeModal(); refresh(); }).catch(function (e) { alert(e.message); }); },
   udelete: function (id) { if (!confirm('Permanently delete this account? This cannot be undone.')) return; api('/admin/users/' + id, null, 'DELETE').then(function () { closeModal(); refresh(); }).catch(function (e) { alert(e.message); }); },
   uadjust: function (id) { var amt = Math.round(Number(val('adj-amt')) * 100); if (!amt) { $('adj-err').textContent = 'Enter an amount.'; return; } if (!confirm('Apply ' + naira(amt) + ' to this wallet?')) return; api('/admin/users/' + id + '/wallet-adjustment', { amountKobo: amt, reason: val('adj-why') }).then(function () { userDetail(id); }).catch(function (e) { $('adj-err').textContent = e.message; }); },
+  artfilter: function (id) { artFilter = id; LOAD.artisans(); },
   aapprove: function (id) { done(api('/admin/artisans/' + id + '/approve', {})); },
   areject: function (id) { done(api('/admin/artisans/' + id + '/reject', { reason: val('ar-' + id) })); },
   dopen: function (id) { disputesOpen = id === '1'; LOAD.disputes(); },

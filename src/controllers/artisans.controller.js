@@ -63,13 +63,13 @@ async function getArtisan(req, res, next) {
     if (!artisan) return res.status(404).json({ error: "Artisan not found." });
     const reviews = await prisma.rating.findMany({
       where: { rateeUserId: artisan.user.id, rateeRole: "ARTISAN", hidden: false },
-      select: { stars: true, comment: true, createdAt: true, rater: { select: { name: true } }, booking: { select: { category: true } } },
+      select: { stars: true, comment: true, response: true, createdAt: true, rater: { select: { name: true } }, booking: { select: { category: true } } },
       orderBy: { createdAt: "desc" },
       take: 5,
     });
     // Reviewers are shown by first name and initial only.
     const shortName = (n) => { const p = String(n || "").trim().split(/\s+/); return p[0] + (p[1] ? " " + p[1][0] + "." : ""); };
-    res.json({ artisan: { ...artisan, reviews: reviews.map((r) => ({ stars: r.stars, comment: r.comment, createdAt: r.createdAt, category: r.booking.category, by: shortName(r.rater.name) })) } });
+    res.json({ artisan: { ...artisan, reviews: reviews.map((r) => ({ stars: r.stars, comment: r.comment, response: r.response, createdAt: r.createdAt, category: r.booking.category, by: shortName(r.rater.name) })) } });
   } catch (err) {
     next(err);
   }

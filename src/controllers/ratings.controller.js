@@ -19,7 +19,8 @@ async function createRating(req, res, next) {
 
     const isCustomer = booking.customerId === req.user.id;
     const isArtisan = req.user.artisanProfile && booking.artisanId === req.user.artisanProfile.id;
-    if (!isCustomer && !isArtisan) return res.status(403).json({ error: "Not your booking." });
+    if (isArtisan) return res.status(403).json({ error: "Only the customer rates a job. You can reply to their review from your Reviews." });
+    if (!isCustomer) return res.status(403).json({ error: "Not your booking." });
 
     const rateeRole = isCustomer ? "ARTISAN" : "CUSTOMER";
     const rateeUserId = isCustomer ? booking.artisan.userId : booking.customerId;
@@ -55,10 +56,24 @@ async function myReviews(req, res, next) {
     });
     const count = rows.length;
     const average = count ? rows.reduce((n, r) => n + r.stars, 0) / count : 0;
-    res.json({ average, count, reviews: rows.map((r) => ({ id: r.id, stars: r.stars, comment: r.comment, createdAt: r.createdAt, from: r.rater?.name?.split(" ")[0] || "User", category: r.booking?.category || null })) });
+    res.json({ average, count, reviews: rows.map((r) => ({ id: r.id, stars: r.stars, comment: r.comment, response: r.response, respondedAt: r.respondedAt, createdAt: r.createdAt, from: r.rater?.name?.split(" ")[0] || "User", category: r.booking?.category || null })) });
   } catch (err) {
     next(err);
   }
 }
 
-module.exports = { createRating, myReviews };
+// The artisan answers a review left about them (shown under it on their public profile).
+async function respondToReview(req, res, next) {
+  try {
+    const response = String(req.body?.response || "").trim().slice(0, 600);
+    if (!response) return res.status(400).json({ error: "Write your reply first." });
+    const rating = await prisma.rating.findUnique({ where: { id: req.params.id } });
+    if (!rating || rating.rateeUserId !== req.user.id) return res.status(404).json({ error: "Review not found." });
+    const updated = await prisma.rating.update({ where: { id: rating.id }, data: { response, respondedAt: new Date() } });
+    res.json({ rating: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { createRating, myReviews, respondToReview };

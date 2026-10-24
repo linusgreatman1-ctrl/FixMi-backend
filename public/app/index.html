@@ -641,6 +641,23 @@ body{background:#fff}
 
 .co-hero .photo-strip{justify-content:center}
 .co-hero .photo-strip img{width:84px;height:84px;object-fit:cover}
+
+/* ===== round 4 ===== */
+@media (min-width:640px){
+  #chat.on{width:min(480px,100%) !important;left:50% !important;transform:translateX(-50%);border-left:1px solid var(--border);border-right:1px solid var(--border);animation:none}
+  #chat .msg{max-width:78%}
+}
+.notif-row.is-unread{background:#F8FFF9}
+.trk-wrap{position:relative;margin:12px 0}
+.trk-wrap #trk-map{margin:0}
+.trk-live{position:absolute;top:10px;right:10px;z-index:500;background:rgba(0,198,94,.15);border:1px solid rgba(0,198,94,.45);color:#00A34E;border-radius:100px;padding:3px 10px;font-size:11px;font-weight:800;backdrop-filter:blur(2px)}
+.trk-pin{display:flex;flex-direction:column;align-items:center}
+.trk-pin b{font-size:28px;line-height:28px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.trk-pin span{font-size:10px;font-weight:800;background:#fff;border-radius:6px;padding:1px 5px;box-shadow:0 1px 3px rgba(0,0,0,.25);white-space:nowrap;margin-top:2px;color:var(--navy)}
+.tb-bell{width:38px;height:38px;border-radius:11px;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;position:relative;flex-shrink:0}
+.topbar.dark .tb-bell{background:rgba(255,255,255,.12)}
+.rv-row{border-bottom:1px solid var(--border);padding:12px 0}
+.rv-reply{background:var(--gray);border-radius:10px;padding:8px 10px;font-size:13px;margin-top:6px}
 </style>
 <body>
 <div class="stage">
@@ -789,7 +806,7 @@ body{background:#fff}
 <div id="track-modal" class="trk-ov" style="display:none" onclick="if(event.target===this)closeTrackMap()">
   <div class="trk-card">
     <div class="trk-head"><span id="trk-title">Tracking</span><button type="button" class="trk-x" onclick="closeTrackMap()" aria-label="Close map">✕</button></div>
-    <div id="trk-map"></div>
+    <div class="trk-wrap"><div id="trk-map"></div><div class="trk-live">● LIVE</div></div>
     <div id="trk-status">Waiting for the location…</div>
     <div id="trk-sub"></div>
     <div id="trk-contact"></div>
@@ -1667,7 +1684,7 @@ body{background:#fff}
   <div class="msg-area" id="msg-area">
     <div style="text-align:center;color:var(--muted);font-size:12px;padding:6px">No messages yet</div>
   </div>
-  <div class="chat-closed" id="chat-closed" hidden>This chat has ended.</div>
+  <div class="chat-closed" id="chat-closed" hidden>This chat has ended. <button type="button" class="btn btn-g" style="margin-top:10px" onclick="startNewChatRound()">💬 Start a new chat</button></div>
   <div class="chat-input-row" id="chat-input-row">
     <label class="chat-attach" for="chat-photo" aria-label="Send a photo">📷</label><input type="file" id="chat-photo" accept="image/*" hidden onchange="sendChatPhoto(this)">
     <input class="chat-inp" type="text" placeholder="Type a message..." id="chat-inp" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMsg();}">
@@ -1706,10 +1723,10 @@ body{background:#fff}
 <div class="s" id="notifications">
   <div class="topbar"><button class="back" onclick="go('home')">←</button><div class="tb-title">Notifications</div><span style="color:var(--g);font-size:13px;font-weight:600;cursor:pointer" onclick="markAllNotifsRead()">Mark all read</span></div>
   <div id="notif-real"></div>
-  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('match')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔧</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Artisan is on the way!</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Emeka Okafor accepted your job and is 12 minutes away.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 minutes ago</div></div></div>
-  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openSupportChat()"><div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New message from Emeka</div><div style="font-size:13px;color:var(--muted);line-height:1.4">"I'm 5 minutes away, please open the gate"</div><div style="font-size:11px;color:var(--muted);margin-top:3px">5 minutes ago</div></div></div>
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('✅ Job receipt opened')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✅</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Job Completed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">Pipe repair with Taiwo Adeleke is complete. Tap to pay.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Yesterday</div></div></div>
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toast('💰 Payment confirmed')"><div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div><div><div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Confirmed</div><div style="font-size:13px;color:var(--muted);line-height:1.4">₦7,000 payment for pipe repair was successful.</div><div style="font-size:11px;color:var(--muted);margin-top:3px">2 days ago</div></div></div>
+  
+  
+  
+  
   
 </div>
 
@@ -1754,7 +1771,6 @@ body{background:#fff}
       <button onclick="openWithdraw()" style="flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:11px;font-weight:700;font-size:13px;color:#fff;cursor:pointer;font-family:inherit">Withdraw</button>
     </div>
   </div>
-  <div id="my-reviews-cust" style="margin:16px 16px 0"></div>
   <div class="menu">
     <div class="mi" onclick="go('edit-profile')"><div class="mi-ico">✏️</div><div class="mi-txt">Edit Profile</div><div class="mi-arr">›</div></div>
     <div class="mi" onclick="go('artisan-settings')"><div class="mi-ico">⚙️</div><div class="mi-txt">Settings</div><div class="mi-arr">›</div></div>
@@ -2112,7 +2128,7 @@ body{background:#fff}
       <div class="e-lbl">Payment Balance</div>
     </div>
     <div class="earn-card"><div class="e-ico">✅</div><div class="e-val" id="ad-jobs-done">0</div><div class="e-lbl">Total Jobs Done</div></div>
-    <div class="earn-card"><div class="e-ico">⭐</div><div class="e-val" id="ad-rating">–</div><div class="e-lbl">Your Rating</div></div>
+    <div class="earn-card" onclick="openMyReviews()" style="cursor:pointer" title="See who rated you"><div class="e-ico">⭐</div><div class="e-val" id="ad-rating" style="text-decoration:underline dotted">–</div><div class="e-lbl">Your Rating · tap to see reviews</div></div>
   </div>
 
   <!-- WITHDRAWAL -->
@@ -2171,51 +2187,16 @@ body{background:#fff}
   </div>
   <div id="art-notif-real"></div>
   <!-- New job request -->
-  <div data-demo style="background:#F8FFF9;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-job-request')">
-    <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔔</div>
-    <div>
-      <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New Job Request</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.4">Chukwuemeka Obi needs an electrician · 0.8km away · ₦6,000 offered</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">2 minutes ago</div>
-    </div>
-  </div>
+  
   <!-- Payment received -->
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-payment-received')">
-    <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💰</div>
-    <div>
-      <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Payment Received</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.4">₦4,250 for Fan Installation credited to your wallet. Tap to withdraw.</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">1 hour ago</div>
-    </div>
-  </div>
+  
   <!-- New message -->
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-new-message')">
-    <div style="width:42px;height:42px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div>
-    <div>
-      <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New Message</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.4">Blessing O: "Are you available tomorrow morning?"</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">3 hours ago</div>
-    </div>
-  </div>
+  
   <!-- Commission due -->
   <!-- Rating received -->
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('notif-rating-received')">
-    <div style="width:42px;height:42px;background:#FFFBEB;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⭐</div>
-    <div>
-      <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">New Rating Received</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.4">Blessing O gave you 5 stars for Fan Installation. View in Job History.</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">2 days ago</div>
-    </div>
-  </div>
+  
   <!-- Promote reminder -->
-  <div data-demo style="display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('artisan-promote')">
-    <div style="width:42px;height:42px;background:var(--g3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🚀</div>
-    <div>
-      <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:2px">Boost Your Profile</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.4">Promoted artisans get 3x more requests. Try Standard Boost for ₦4,500/month.</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">3 days ago</div>
-    </div>
-  </div>
+  
   <div style="height:78px"></div>
   <div class="bnav">
     <div class="bn" onclick="go('artisan-dash')"><div class="bn-ico">📊</div><div class="bn-lbl">Dashboard</div></div>
@@ -5094,11 +5075,13 @@ function initSocket() {
       appendChatMessage(msg, mine);
       if (!mine && _socket) _socket.emit('chat:join', { threadId: msg.threadId });
     } else if (!mine) {
+      showChatBanner(msg.senderRole === 'ADMIN' ? 'FixMi Support' : (msg.senderName || 'New message'), msg.body || '📷 Photo', msg.threadId);
       // Not looking at this conversation: keep the Messages list fresh.
       if (onScreen === 'messages') loadChatThreads('chat-thread-list');
       if (onScreen === 'artisan-messages') loadChatThreads('artisan-chat-thread-list');
     }
   });
+  _socket.on('chat:reopened', function (p) { if (p && p.threadId === window._activeChatThreadId) setChatClosed(false); });
   _socket.on('chat:closed', function (p) {
     if (!p) return;
     var onScreen = (document.querySelector('.s.on') || {}).id;
@@ -5111,6 +5094,7 @@ function initSocket() {
     }
   });
   _socket.on('notification:new', function (n) {
+    if (_seenNotifs && n && n.id) _seenNotifs[n.id] = 1;
     _unreadNotifs++;
     renderNotifBadges();
     window._notifs = [n].concat((window._notifs || []).filter(function (x) { return x.id !== n.id; }));
@@ -5128,7 +5112,7 @@ function initSocket() {
 
 // Safety net next to the live connection: every few seconds ask the server for the current job, so the steps on
 // both screens keep moving even when a phone puts the connection to sleep or a proxy drops it.
-function liveSig(b) { return b ? [b.id, b.status, b.updatedAt, b.arrivedAt, b.onsitePriceKobo, b.agreedPriceKobo, b.escrowKobo, (b.offers || []).length].join('|') : ''; }
+function liveSig(b) { return b ? [b.id, b.status, b.updatedAt, b.arrivedAt, b.onsitePriceKobo, b.agreedPriceKobo, b.escrowKobo, (b.offers || []).length, b.disputeInfo ? b.disputeInfo.resolvedAt : ''].join('|') : ''; }
 var _pollTick = 0;
 async function pollLive() {
   if (!getAccess() || !window.currentUser || document.hidden) return;
@@ -5138,16 +5122,32 @@ async function pollLive() {
     var d = await apiFetch('/bookings/active');
     if (isArtisanUser()) {
       if (d.booking && liveSig(d.booking) !== liveSig(_job)) onJobUpdated(d.booking);
-      else if (!d.booking && _job && bookingIsLive(_job)) { var f = await apiFetch('/bookings/' + _job.id); if (f.booking) onJobUpdated(f.booking); }
+      else if (!d.booking && _job && bookingIsLive(_job)) { var f = await apiFetch('/bookings/' + _job.id); if (f.booking && liveSig(f.booking) !== liveSig(_job)) onJobUpdated(f.booking); }
       if (avail && _pollTick % 2 === 0) refreshArtisanRequests();
     } else {
       if (d.booking && liveSig(d.booking) !== liveSig(_booking)) onCustomerBookingUpdate(d.booking);
-      else if (!d.booking && _booking && bookingIsLive(_booking)) { var g = await apiFetch('/bookings/' + _booking.id); if (g.booking) onCustomerBookingUpdate(g.booking); }
+      else if (!d.booking && _booking && bookingIsLive(_booking)) { var g = await apiFetch('/bookings/' + _booking.id); if (g.booking && liveSig(g.booking) !== liveSig(_booking)) onCustomerBookingUpdate(g.booking); }
     }
   } catch (e) {}
 }
 setInterval(pollLive, 5000);
 document.addEventListener('visibilitychange', function () { if (!document.hidden) { pollLive(); loadNotificationCount(); } });
+
+// The notification bell sits on every signed-in screen (in place of the empty right-hand spot of each top bar).
+function addBellsEverywhere() {
+  document.querySelectorAll('.s .topbar').forEach(function (bar) {
+    var scr = bar.closest('.s');
+    if (!scr || AUTH_SCREENS.indexOf(scr.id) !== -1 || ['notifications', 'artisan-notifications', 'splash'].indexOf(scr.id) !== -1) return;
+    if (bar.querySelector('.notif-count')) return;
+    var spot = bar.querySelector(':scope > .tb-space');
+    var bell = document.createElement('div');
+    bell.className = 'tb-bell'; bell.setAttribute('role', 'button'); bell.setAttribute('aria-label', 'Notifications');
+    bell.innerHTML = '🔔<span class="notif-count" hidden></span>';
+    bell.onclick = function () { openNotifications(); };
+    if (spot) spot.replaceWith(bell); else bar.appendChild(bell);
+  });
+  renderNotifBadges();
+}
 
 // "X is chatting with you": shows over any screen with a button straight into that conversation.
 function showChatBanner(name, text, threadId) {
@@ -5158,10 +5158,43 @@ function showChatBanner(name, text, threadId) {
     '<button type="button" style="background:#3B82F6;color:#fff" data-open>Open chat</button><button type="button" style="background:transparent;color:#9CA3AF;font-size:16px" data-x aria-label="Dismiss">✕</button>';
   el.querySelector('[data-open]').onclick = function () { el.remove(); openChatById(threadId); };
   el.querySelector('[data-x]').onclick = function () { el.remove(); };
-  document.body.appendChild(el);
-  clearTimeout(window._chatBannerT);
-  window._chatBannerT = setTimeout(function () { if (el.parentNode) el.remove(); }, 15000);
+  document.body.appendChild(el); // stays until the person opens the chat or taps ✕
 }
+// Safety net for chat pop-ups and the bell: new notifications are fetched every few seconds too,
+// so a message always reaches the other person even if the live connection is asleep.
+var _seenNotifs = null;
+async function pollNotifs() {
+  if (!getAccess() || !window.currentUser || document.hidden) return;
+  try {
+    var list = (await apiFetch('/notifications')).notifications || [];
+    var first = _seenNotifs === null;
+    if (first) _seenNotifs = {};
+    var onScreen = (document.querySelector('.s.on') || {}).id;
+    list.slice().reverse().forEach(function (n) {
+      if (_seenNotifs[n.id]) return;
+      _seenNotifs[n.id] = 1;
+      if (first || n.readAt) return;
+      var d = n.data || {};
+      if (n.type === 'CHAT' && d.threadId && !(onScreen === 'chat' && window._activeChatThreadId === d.threadId)) showChatBanner(d.senderName || n.title, n.body, d.threadId);
+    });
+    window._notifs = list;
+    _unreadNotifs = list.filter(function (n) { return !n.readAt; }).length;
+    renderNotifBadges();
+    if (onScreen === 'notifications' || onScreen === 'artisan-notifications') drawNotifs(false);
+  } catch (e) {}
+}
+setInterval(pollNotifs, 6000);
+// The open conversation also refreshes itself every few seconds (messages already shown are skipped).
+setInterval(async function () {
+  var on = (document.querySelector('.s.on') || {}).id, id = window._activeChatThreadId;
+  if (on !== 'chat' || !id || document.hidden || !getAccess()) return;
+  try {
+    var d = await apiFetch('/chat/threads/' + id + '/messages');
+    if (window._activeChatThreadId !== id) return;
+    (d.messages || []).forEach(function (m) { appendChatMessage(m, window.currentUser && m.senderId === window.currentUser.id); });
+    setChatClosed(!!(d.thread && d.thread.closedAt));
+  } catch (e) {}
+}, 4000);
 async function openChatById(threadId) {
   try {
     var data = await apiFetch('/chat/threads');
@@ -5655,7 +5688,7 @@ function onCustomerBookingUpdate(b) {
   window._activeBookingId = b.id;
   rerenderCustomerBooking();
   updateActiveBanner();
-  if (b.status === 'CONFIRMED' && !ratingShown(b.id)) openRating(b);
+  if (b.status === 'CONFIRMED' && !b.disputeInfo && !ratingShown(b.id)) openRating(b);
 }
 
 function updateActiveBanner() {
@@ -5838,8 +5871,8 @@ function renderCustJob(b) {
       '<button class="btn btn-gray" style="margin-top:10px" onclick="go(\'home\')">Back to Home</button>';
     setTimeout(function () { fillDisputeBox('cj-dispute', b, false); }, 0);
   } else if (b.status === 'CONFIRMED') {
-    tag = 'Completed'; title = 'Job complete';
-    panel = '<div class="job-panel green">This job is closed and payment has been settled.</div><button class="btn btn-g" onclick="openRating(_booking)">⭐ Rate &amp; Review ' + escapeHtml(fn) + '</button><button class="btn btn-gray" style="margin-top:10px" onclick="openReportIssue(_booking.id)">⚠️ Report an Issue</button><button class="btn btn-gray" style="margin-top:10px" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
+    tag = 'Completed'; title = b.disputeInfo ? disputeLabel(b).replace(/^\S+\s/, '') : 'Job complete';
+    panel = '<div class="job-panel green">' + (b.disputeInfo ? escapeHtml(disputeMoneyText(b, false)) + '.' : 'This job is closed and payment has been settled.') + '</div><button class="btn btn-g" onclick="openRating(_booking)">⭐ Rate &amp; Review ' + escapeHtml(fn) + '</button><button class="btn btn-gray" style="margin-top:10px" onclick="openReportIssue(_booking.id)">⚠️ Report an Issue</button><button class="btn btn-gray" style="margin-top:10px" onclick="_booking=null;updateActiveBanner();go(\'home\')">Back to Home</button>';
   } else if (b.agreedPriceKobo == null) {
     cancel = true;
     if (b.onsitePriceKobo != null) {
@@ -5951,6 +5984,21 @@ async function realSubmitRating() {
 }
 
 /* ---------------- Disputes & issue reports ---------------- */
+// What a resolved dispute did with the money, from this person's side.
+function disputeMoneyText(b, asArtisan) {
+  var d = b && b.disputeInfo;
+  if (!d || !d.resolvedAt) return '';
+  var r = String(d.resolution || ''), agreed = b.agreedPriceKobo || b.priceKobo || 0, refund = d.refundKobo || 0;
+  if (/^REFUND/.test(r)) return asArtisan ? 'Dispute resolved: refunded to the customer — nothing was paid to you' : 'Dispute resolved: ' + fmtNaira(agreed) + ' refunded to you';
+  if (/^SPLIT/.test(r)) return asArtisan ? 'Dispute resolved: split — ' + fmtNaira(takeHomeKobo(agreed - refund)) + ' paid to you (after FixMi’s ' + APP_CFG.commissionPercent + '%), ' + fmtNaira(refund) + ' refunded to the customer' : 'Dispute resolved: split — ' + fmtNaira(refund) + ' refunded to you, ' + fmtNaira(agreed - refund) + ' paid to the artisan';
+  if (/^RELEASE/.test(r)) return asArtisan ? 'Dispute resolved: ' + fmtNaira(takeHomeKobo(agreed)) + ' paid to you (after FixMi’s ' + APP_CFG.commissionPercent + '%)' : 'Dispute resolved: ' + fmtNaira(agreed) + ' paid to the artisan';
+  return 'Dispute resolved';
+}
+function disputeLabel(b) {
+  var d = b && b.disputeInfo, r = d && d.resolvedAt ? String(d.resolution || '') : '';
+  if (!r) return '';
+  return /^REFUND/.test(r) ? '↩ Dispute resolved · refunded' : /^SPLIT/.test(r) ? '⚖️ Dispute resolved · split' : '✓ Dispute resolved · artisan paid';
+}
 // Platform cut and the confirm window, from the server so the text always matches.
 var APP_CFG = { commissionPercent: 10, autoReleaseSeconds: 90 };
 function loadAppConfig() {
@@ -6050,6 +6098,8 @@ async function submitDisputeForm(btn) {
 
 // Fills a dispute status box (job screens and job details) from the server.
 async function fillDisputeBox(elId, booking, asArtisan) {
+  var cacheKey = elId + '|' + liveSig(booking);
+  if (window._dbCache && window._dbCache.key === cacheKey) { var el0 = document.getElementById(elId); if (el0) el0.innerHTML = window._dbCache.html; return; }
   try {
     var d = await apiFetch('/bookings/' + booking.id + '/dispute');
     var t = d.dispute, el = document.getElementById(elId);
@@ -6070,6 +6120,7 @@ async function fillDisputeBox(elId, booking, asArtisan) {
       h += '<button class="btn" style="background:var(--orange);color:#fff;margin-top:10px" onclick="openDisputeForm(\'respond\',' + attrJson({ id: booking.id, agreedPriceKobo: booking.agreedPriceKobo }) + ')">Add Your Side</button>';
     }
     el.innerHTML = h + '</div>';
+    window._dbCache = { key: cacheKey, html: el.innerHTML };
   } catch (e) {}
 }
 function disputeOutcomeText(t) {
@@ -6247,6 +6298,8 @@ function bcallBindListeners(sock) {
     var bc = window._bcall, inc = window._bcallIncoming;
     // The caller resends the invite every 3s while ringing: same caller, same call.
     if (inc && inc.fromUserId === p.fromUserId && inc.fromSocketId === p.fromSocketId) { inc._ts = Date.now(); return; }
+    // Already on a call with this same person (their repeat ring arrived after you answered): not "busy".
+    if (bc && (bc.remoteSocketId === p.fromSocketId || bc.otherUserId === p.fromUserId)) return;
     var bcStale = bc && bc.status !== 'connected' && bc._ts && (Date.now() - bc._ts) > 40000;
     var incStale = inc && inc._ts && (Date.now() - inc._ts) > 40000;
     if ((bc && !bcStale) || (inc && !incStale)) { sock.emit('call:decline', { toSocketId: p.fromSocketId, bookingId: p.bookingId, reason: 'busy' }); return; }
@@ -6466,6 +6519,21 @@ function setChatClosed(closed) {
   if (note) note.hidden = !closed;
   if (btn) btn.style.display = closed ? 'none' : '';
   if (closed && call) call.hidden = true;
+}
+// After a chat ends, either side can start a new round (a job's chat while the job is still on; support any time).
+async function startNewChatRound() {
+  var id = window._activeChatThreadId, c = window._chatCtx || {};
+  if (!id) return;
+  try {
+    await apiFetch('/chat/threads/' + id + '/reopen', { method: 'POST', body: {} });
+    setChatClosed(false);
+    if (c.other && c.booking) document.getElementById('chat-call-btn').hidden = false;
+    if (c.support) document.getElementById('chat-call-btn').hidden = false;
+    toast('New chat started');
+  } catch (e) {
+    if (c.support) { openSupportChat(); return; }
+    toast('❌ ' + e.message);
+  }
 }
 async function closeActiveChat() {
   var id = window._activeChatThreadId;
@@ -6815,8 +6883,8 @@ function renderArtJob() {
     tag = 'Cancelled'; title = 'This job was cancelled';
     panel = '<div class="job-panel grey">The customer’s escrow was refunded.</div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');renderRequests()">Back to Dashboard</button>';
   } else if (b.status === 'CONFIRMED') {
-    tag = 'Paid'; title = '🎉 Payment released to your wallet';
-    panel = '<div class="job-panel green">' + fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' is in your wallet (' + fmtNaira(b.agreedPriceKobo) + ' less FixMi’s ' + APP_CFG.commissionPercent + '%).</div><div id="aj-dispute"></div>' + artRateBox(b) + '<button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
+    tag = b.disputeInfo ? 'Dispute resolved' : 'Paid'; title = b.disputeInfo ? '⚖️ ' + disputeLabel(b).replace(/^\S+\s/, '') : '🎉 Payment released to your wallet';
+    panel = '<div class="job-panel green">' + (b.disputeInfo ? escapeHtml(disputeMoneyText(b, true)) + '.' : fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' is in your wallet (' + fmtNaira(b.agreedPriceKobo) + ' less FixMi’s ' + APP_CFG.commissionPercent + '%).') + '</div><div id="aj-dispute"></div><button class="btn btn-g" onclick="_job=null;go(\'artisan-dash\');loadArtisanDash()">Back to Dashboard</button>';
     setTimeout(function () { fillDisputeBox('aj-dispute', b, true); }, 0);
   } else if (b.status === 'DISPUTED') {
     tag = 'Payment on Hold'; title = 'The customer reported a problem';
@@ -6858,7 +6926,7 @@ function renderArtJob() {
   setHTML('aj-steps', b.status === 'CANCELLED' ? '' : stepsHtml(b));
   setHTML('aj-person',
     '<div class="feat-ava" style="background:linear-gradient(135deg,#1E4FC4,#2D6FE0);margin:0;width:52px;height:52px;font-size:26px">👤</div>' +
-    '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div>' + photoStrip(b.photos) + '</div>' +
+    '<div style="flex:1;min-width:0"><div class="oc-name">' + escapeHtml(c.name || 'Customer') + '</div><div class="oc-meta">📍 ' + escapeHtml(b.address) + '</div><div class="oc-meta">"' + escapeHtml(b.issue) + '"</div>' + (['ACCEPTED', 'PAID', 'IN_PROGRESS'].indexOf(b.status) !== -1 ? photoStrip(b.photos) : '') + '</div>' +
     (workOn ? contactButtons(c.name, c.phone, c.id, b.id, '👤') : ''));
   setHTML('aj-money',
     '<div><small>Agreed price</small><b>' + (b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : 'On hold') + '</b></div>' +
@@ -6921,7 +6989,7 @@ function drawNotifs(markRead) {
   var list = window._notifs || [];
   box.innerHTML = list.length ? list.map(function (n) {
     var ic = NOTIF_ICON[n.type] || NOTIF_ICON.SYSTEM;
-    return '<div class="notif-row' + (n.readAt ? '' : ' unread') + '" onclick="openNotifTarget(' + attrJson(n.id) + ')" style="cursor:pointer"><div class="notif-ico" style="background:' + ic[1] + '">' + ic[0] + '</div>' +
+    return '<div class="notif-row' + (n.readAt ? '' : ' is-unread') + '" onclick="openNotifTarget(' + attrJson(n.id) + ')" style="cursor:pointer"><div class="notif-ico" style="background:' + ic[1] + '">' + ic[0] + '</div>' +
       '<div style="min-width:0"><div class="notif-title">' + escapeHtml(n.title) + '</div><div class="notif-body">' + escapeHtml(n.body || '') + '</div><div class="notif-time">' + timeAgo(n.createdAt) + '</div></div></div>';
   }).join('') : '<div class="empty-state"><b>No notifications yet</b>Updates about your bookings, chats and payments will show up here.</div>';
 }
@@ -6953,7 +7021,7 @@ async function markAllNotifsRead() {
   try { await apiFetch('/notifications/read-all', { method: 'PATCH' }); } catch (e) {}
   _unreadNotifs = 0;
   renderNotifBadges();
-  document.querySelectorAll('.notif-row.unread').forEach(function (r) { r.classList.remove('unread'); });
+  document.querySelectorAll('.notif-row.is-unread').forEach(function (r) { r.classList.remove('is-unread'); });
   toast('✓ All marked read');
 }
 function openBookingFromNotif(id) {
@@ -7065,7 +7133,7 @@ async function loadBookingHistory(containerId, asArtisan) {
     var empty = '<div class="empty-state hist-empty"' + (list.length || !fresh ? ' hidden' : '') + '><b>No jobs here</b>' + (asArtisan ? 'Jobs you take will show up here.' : 'Book an artisan from the home page and your jobs will show up here.') + '</div>';
     box.innerHTML = empty + list.map(function (b) {
       var look = categoryLook(b.category), colors = statusColors(b.status);
-      var label = (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
+      var label = disputeLabel(b) || (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
       var other = asArtisan ? (b.customer && b.customer.name) : (b.artisan && b.artisan.user && b.artisan.user.name);
       var when = new Date(b.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
       return '<div class="card hist-card" data-status="' + b.status + '" onclick="openBookingDetail(' + attrJson(b.id) + ')">' +
@@ -7086,7 +7154,7 @@ async function openBookingDetail(id) {
   var b = _historyCache[id];
   try { b = (await apiFetch('/bookings/' + id)).booking; } catch (e) { if (!b) { toast('❌ ' + e.message); return; } }
   var asArtisan = isArtisanUser(), look = categoryLook(b.category), colors = statusColors(b.status);
-  var label = (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
+  var label = disputeLabel(b) || (asArtisan ? ARTISAN_STATUS : CUSTOMER_STATUS)[b.status] || b.status;
   var other = asArtisan ? b.customer : (b.artisan && b.artisan.user);
   var rows = [
     ['Description', escapeHtml(b.issue) + photoStrip(b.photos)],
@@ -7096,6 +7164,7 @@ async function openBookingDetail(id) {
     ['Agreed price', b.agreedPriceKobo != null ? fmtNaira(b.agreedPriceKobo) : (b.priceOnHold ? 'Price on Hold' : '—')],
     ['Payment', { PENDING_PAYMENT: 'Payment pending (not charged yet)', CONFIRMED: asArtisan ? fmtNaira(takeHomeKobo(b.agreedPriceKobo)) + ' paid to you (after ' + APP_CFG.commissionPercent + '% fee)' : 'Released to artisan', COMPLETED: asArtisan ? 'Waiting for the customer to confirm' : 'Pending your confirmation', CANCELLED: 'Escrow refunded', DISPUTED: 'Held in escrow — under review' }[b.status] || (b.escrowKobo ? fmtNaira(b.escrowKobo) + ' held in escrow' : '—')]
   ];
+  if (disputeMoneyText(b, asArtisan)) rows[5] = ['Payment', escapeHtml(disputeMoneyText(b, asArtisan))];
   if (b.cancelReason) rows.push(['Reason', escapeHtml(b.cancelReason)]);
   var actions = '';
   if (!asArtisan && bookingIsLive(b) && b.status !== 'DISPUTED') actions += '<button class="btn btn-g" style="margin-bottom:10px" onclick="showCustomerBooking(_historyCache[' + attrJson(b.id) + '] || _booking)">Open Live Booking →</button>';
@@ -7168,6 +7237,7 @@ async function openArtisanProfile(id) {
     setHTML('ap-reviews', '<h3 class="sec-title" style="margin-bottom:10px">Reviews</h3>' + (revs.length ? revs.map(function (r) {
       return '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b style="font-size:14px">' + escapeHtml(r.by) + '</b><span style="color:var(--yellow);font-weight:700;font-size:13px">' + '⭐'.repeat(r.stars) + '</span></div>' +
         (r.comment ? '<p style="font-size:13px;color:var(--muted);line-height:1.5">' + escapeHtml(r.comment) + '</p>' : '') +
+        (r.response ? '<div class="rv-reply"><b>' + escapeHtml(fn) + ' replied:</b> ' + escapeHtml(r.response) + '</div>' : '') +
         '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + escapeHtml(r.category) + ' · ' + new Date(r.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) + '</div></div>';
     }).join('') : '<div class="empty-note" style="margin-bottom:16px">No reviews yet.</div>'));
     go('artisan-profile');
@@ -7553,6 +7623,7 @@ async function confirmPromoPayment() {
 /* ---------------- Boot ---------------- */
 (function boot() {
   addPasswordEyes();
+  addBellsEverywhere();
   setTimeout(handlePayReturn, 900);
   loadAppConfig();
   // Resume a stored session only if the server still accepts it, so an
@@ -7580,7 +7651,7 @@ async function confirmPromoPayment() {
     if (id === 'artisan-history') loadBookingHistory('artisan-history-real', true);
     if (id === 'corp-plan') renderCorpChips();
     if (id === 'artisan-settings') loadSettings();
-    if (id === 'profile') { loadProfileWallet(); loadMyReviews('my-reviews-cust'); }
+    if (id === 'profile') loadProfileWallet();
     if (id === 'artisan-profile-self') loadMyReviews('my-reviews-art');
     if (id === 'artisan-promote') loadPromoStatus();
     if (id === 'edit-profile') fillProfileForms();
@@ -8341,7 +8412,70 @@ function loadLeaflet(cb) {
   sc.onload = function () { cb(); }; sc.onerror = function () { cb(new Error('The map could not load. Check your connection.')); };
   document.head.appendChild(sc);
 }
-function trkIcon(emoji) { return L.divIcon({ html: '<div style="font-size:28px;line-height:28px;text-shadow:0 1px 3px rgba(0,0,0,.4)">' + emoji + '</div>', className: '', iconSize: [30, 30], iconAnchor: [15, 15] }); }
+function trkIcon(emoji, label) { return L.divIcon({ html: '<div class="trk-pin"><b>' + emoji + '</b>' + (label ? '<span>' + escapeHtml(label) + '</span>' : '') + '</div>', className: '', iconSize: [60, 46], iconAnchor: [30, 16] }); }
+// Map provider: Google Maps with real road routes and ETAs once GOOGLE_MAPS_API_KEY is set on the server,
+// OpenStreetMap until then. Everything else (pins, live position, route line, ETA text) works the same.
+function mapsCfg() { return (APP_CFG && APP_CFG.maps) || { provider: 'osm' }; }
+function loadMapLib(cb) {
+  var m = mapsCfg();
+  if (m.provider === 'google' && m.googleKey) {
+    if (window.google && google.maps) return cb();
+    window._gmReady = function () { cb(); };
+    var sc = document.createElement('script');
+    sc.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(m.googleKey) + '&callback=_gmReady';
+    sc.onerror = function () { m.provider = 'osm'; loadLeaflet(cb); };
+    document.head.appendChild(sc);
+    return;
+  }
+  loadLeaflet(cb);
+}
+function leafletAdapter(el, center) {
+  var map = L.map(el).setView(center, 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+  var a = { dest: null, me: null, line: null };
+  a.destPos = function () { var p = a.dest && a.dest.getLatLng(); return p ? { lat: p.lat, lng: p.lng } : null; };
+  a.setDest = function (lat, lng, label) { if (a.dest) a.dest.setLatLng([lat, lng]); else a.dest = L.marker([lat, lng], { icon: trkIcon('🏠', label) }).addTo(map); };
+  a.setMe = function (lat, lng, label) { if (a.me) a.me.setLatLng([lat, lng]); else a.me = L.marker([lat, lng], { icon: trkIcon('🧑‍🔧', label) }).addTo(map); };
+  a.draw = function () {
+    if (a.me && a.dest) {
+      var pts = [a.me.getLatLng(), a.dest.getLatLng()];
+      if (a.line) a.line.setLatLngs(pts); else a.line = L.polyline(pts, { color: '#00C65E', weight: 4, dashArray: '8 8' }).addTo(map);
+      map.fitBounds(L.latLngBounds(pts), { padding: [46, 46], maxZoom: 16 });
+    } else if (a.me) map.setView(a.me.getLatLng(), 15);
+  };
+  a.resize = function () { map.invalidateSize(); };
+  a.remove = function () { try { map.remove(); } catch (e) {} };
+  a.geocode = function () {};
+  return a;
+}
+function googleAdapter(el, center) {
+  var map = new google.maps.Map(el, { center: { lat: center[0], lng: center[1] }, zoom: 14, disableDefaultUI: true, zoomControl: true });
+  var ds = new google.maps.DirectionsService(), dr = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true, polylineOptions: { strokeColor: '#00C65E', strokeWeight: 5 } });
+  var a = { dest: null, me: null, eta: null, _routed: 0 };
+  var pin = function (lat, lng, emoji, label) { return new google.maps.Marker({ position: { lat: lat, lng: lng }, map: map, label: { text: emoji, fontSize: '24px' }, title: label || '' }); };
+  a.destPos = function () { var p = a.dest && a.dest.getPosition(); return p ? { lat: p.lat(), lng: p.lng() } : null; };
+  a.setDest = function (lat, lng, label) { if (a.dest) a.dest.setPosition({ lat: lat, lng: lng }); else a.dest = pin(lat, lng, '🏠', label); };
+  a.setMe = function (lat, lng, label) { if (a.me) a.me.setPosition({ lat: lat, lng: lng }); else a.me = pin(lat, lng, '🧑‍🔧', label); };
+  a.draw = function () {
+    if (a.me && a.dest) {
+      var bnds = new google.maps.LatLngBounds(); bnds.extend(a.me.getPosition()); bnds.extend(a.dest.getPosition()); map.fitBounds(bnds, 60);
+      if (Date.now() - a._routed > 30000) {
+        a._routed = Date.now();
+        ds.route({ origin: a.me.getPosition(), destination: a.dest.getPosition(), travelMode: google.maps.TravelMode.DRIVING }, function (r, st) {
+          if (st !== 'OK' || !r.routes[0]) return;
+          dr.setDirections(r);
+          var leg = r.routes[0].legs[0];
+          a.eta = { text: leg.duration.text, dist: leg.distance.text };
+          updateTrackInfo();
+        });
+      }
+    } else if (a.me) map.setCenter(a.me.getPosition());
+  };
+  a.resize = function () { google.maps.event.trigger(map, 'resize'); };
+  a.remove = function () { el.innerHTML = ''; };
+  a.geocode = function (address, cb) { new google.maps.Geocoder().geocode({ address: address, region: 'ng' }, function (res, st) { if (st === 'OK' && res[0]) { var l = res[0].geometry.location; cb(l.lat(), l.lng()); } }); };
+  return a;
+}
 function showTrackModal(o) {
   setText('trk-title', o.title);
   setHTML('trk-contact', o.contactHtml || '');
@@ -8349,31 +8483,31 @@ function showTrackModal(o) {
   document.querySelectorAll('#trk-contact button').forEach(function (btn) { btn.addEventListener('click', function () { closeTrackMap(); }); }); // chat or call opens on top of a clear screen
   setText('trk-status', o.waiting); setText('trk-sub', o.address ? '📍 ' + o.address : '');
   document.getElementById('track-modal').style.display = 'flex';
-  loadLeaflet(function (err) {
+  loadMapLib(function (err) {
     if (err) { setText('trk-status', err.message); return; }
     initTrackMap(o);
   });
 }
-// The customer follows the artisan on the way, inside the app.
+// The customer follows the artisan on the way, inside the app (like Handa's rider tracking).
 function openTrackMap() {
   var b = _booking;
   if (!b || !b.artisan) { toast('No artisan to track yet'); return; }
   var u = b.artisan.user || {};
   if (_socket) _socket.emit('booking:join', { bookingId: b.id });
   showTrackModal({
-    mode: 'customer', bookingId: b.id, name: firstName(u.name), title: '📍 ' + firstName(u.name) + '’s journey',
-    waiting: 'Waiting for ' + firstName(u.name) + '’s location…', contactHtml: contactButtons(u.name, u.phone, u.id, b.id, '👷'),
+    mode: 'customer', bookingId: b.id, name: firstName(u.name), title: '🧑‍🔧 ' + firstName(u.name) + ' is on the way', meLabel: firstName(u.name), destLabel: 'You',
+    waiting: 'Waiting for ' + firstName(u.name) + '’s location…', contactHtml: contactButtons(u.name, u.phone, u.id, b.id, '👷'), address: b.address,
     dest: b.lat != null ? [b.lat, b.lng] : (window._reqPos ? [window._reqPos.lat, window._reqPos.lng] : null),
     art: b.artisan.lat != null ? [b.artisan.lat, b.artisan.lng] : null
   });
 }
-// The artisan sees the customer's place on the same kind of map, without leaving the app.
+// The artisan's live navigation to the customer (like Handa's rider map), without leaving the app.
 function openJobMap() {
   var b = _job;
   if (!b) return;
   var c = b.customer || {};
   showTrackModal({
-    mode: 'artisan', bookingId: b.id, name: firstName(c.name), title: '📍 ' + firstName(c.name) + '’s place',
+    mode: 'artisan', bookingId: b.id, name: firstName(c.name), title: '🧭 Heading to ' + firstName(c.name) + '’s location', meLabel: 'You', destLabel: firstName(c.name),
     waiting: 'Finding your position…', address: b.address, contactHtml: contactButtons(c.name, c.phone, c.id, b.id, '👤'),
     dest: b.lat != null ? [b.lat, b.lng] : null, art: window._myCoords ? [window._myCoords.lat, window._myCoords.lng] : null,
     actionsHtml: ['ACCEPTED', 'PAID'].indexOf(b.status) !== -1 && !b.arrivedAt ? '<button type="button" class="btn" style="background:var(--orange);color:#fff;margin-top:10px" onclick="arriveFromMap()">📍 I Have Arrived</button>' : ''
@@ -8385,37 +8519,40 @@ function arriveFromMap() {
   closeTrackMap();
   artisanJobStep(b.id, 'arrive');
 }
-window.addEventListener('resize', function () { if (_trk && _trk.map) _trk.map.invalidateSize(); });
+window.addEventListener('resize', function () { if (_trk && _trk.api) _trk.api.resize(); });
 function initTrackMap(o) {
   var el = document.getElementById('trk-map');
-  if (_trk && _trk.map) { try { _trk.map.remove(); } catch (e) {} }
-  var map = L.map(el).setView(o.art || o.dest || [6.5244, 3.3792], 14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-  _trk = { map: map, bookingId: o.bookingId, mode: o.mode, name: o.name, art: null, dest: null, last: null };
-  if (o.dest) _trk.dest = L.marker(o.dest, { icon: trkIcon('📍') }).addTo(map);
-  else if (o.mode === 'customer') getPosition().then(function (p) { if (p && p.lat != null && _trk && _trk.map === map) { _trk.dest = L.marker([p.lat, p.lng], { icon: trkIcon('📍') }).addTo(map); updateTrackInfo(); } });
+  if (_trk && _trk.api) _trk.api.remove();
+  var center = o.art || o.dest || [6.5244, 3.3792];
+  var api = mapsCfg().provider === 'google' && window.google && google.maps ? googleAdapter(el, center) : leafletAdapter(el, center);
+  _trk = { api: api, bookingId: o.bookingId, mode: o.mode, name: o.name, meLabel: o.meLabel, destLabel: o.destLabel, last: null };
+  var t = _trk;
+  if (o.dest) api.setDest(o.dest[0], o.dest[1], o.destLabel);
+  else if (o.address) api.geocode(o.address, function (lat, lng) { if (_trk === t) { api.setDest(lat, lng, o.destLabel); api.draw(); updateTrackInfo(); } });
+  if (!o.dest && o.mode === 'customer') getPosition().then(function (p) { if (p && p.lat != null && _trk === t && !api.destPos()) { api.setDest(p.lat, p.lng, o.destLabel); api.draw(); updateTrackInfo(); } });
   if (o.art) setArtisanPoint(o.art[0], o.art[1]);
-  else if (o.mode === 'artisan') getPosition().then(function (p) { if (p && p.lat != null && _trk && _trk.map === map) setArtisanPoint(p.lat, p.lng); });
-  [300, 900, 1800].forEach(function (ms) { setTimeout(function () { if (_trk && _trk.map === map) { map.invalidateSize(); if (_trk.last && _trk.dest) map.fitBounds(L.latLngBounds([[_trk.last.lat, _trk.last.lng], _trk.dest.getLatLng()]), { padding: [40, 40], maxZoom: 16 }); } }, ms); });
+  else if (o.mode === 'artisan') getPosition().then(function (p) { if (p && p.lat != null && _trk === t) setArtisanPoint(p.lat, p.lng); });
+  [300, 900, 1800].forEach(function (ms) { setTimeout(function () { if (_trk === t) { api.resize(); api.draw(); } }, ms); });
 }
 function setArtisanPoint(lat, lng) {
-  if (!_trk || !window.L) return;
-  if (_trk.art) _trk.art.setLatLng([lat, lng]); else _trk.art = L.marker([lat, lng], { icon: trkIcon('🧑‍🔧') }).addTo(_trk.map);
+  if (!_trk || !_trk.api) return;
+  _trk.api.setMe(lat, lng, _trk.meLabel);
   _trk.last = { lat: lat, lng: lng };
-  if (_trk.dest) _trk.map.fitBounds(L.latLngBounds([[lat, lng], _trk.dest.getLatLng()]), { padding: [40, 40], maxZoom: 16 }); else _trk.map.setView([lat, lng], 15);
+  _trk.api.draw();
   updateTrackInfo();
 }
 function updateTrackInfo() {
   if (!_trk || !_trk.last) return;
-  var fn = _trk.name || 'The artisan', mine = _trk.mode === 'artisan';
-  if (!_trk.dest) { setText('trk-status', mine ? 'This is where you are' : fn + ' is on the way'); return; }
-  var d = _trk.dest.getLatLng(), km = kmBetween(_trk.last.lat, _trk.last.lng, d.lat, d.lng);
-  var mins = Math.max(1, Math.round(km / 25 * 60));
-  setText('trk-status', km < 0.15 ? (mine ? 'You are almost there' : fn + ' is almost there') : (mine ? 'About ' + mins + ' min to ' + fn + '’s place' : fn + ' is about ' + mins + ' min away'));
-  setText('trk-sub', (km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km') + (mine ? ' to go' : ' from you') + ' · updates live');
+  var fn = _trk.name || 'The artisan', mine = _trk.mode === 'artisan', d = _trk.api.destPos();
+  if (!d) { setText('trk-status', mine ? 'This is where you are' : fn + ' is on the way'); return; }
+  var km = kmBetween(_trk.last.lat, _trk.last.lng, d.lat, d.lng);
+  var eta = _trk.api.eta, mins = Math.max(1, Math.round(km / 25 * 60));
+  var etaText = eta ? eta.text : mins + ' min', distText = eta ? eta.dist : (km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km');
+  setText('trk-status', km < 0.15 ? (mine ? 'You are almost there' : fn + ' is almost there') : (mine ? 'About ' + etaText + ' to ' + fn + '’s place' : fn + ' is about ' + etaText + ' away'));
+  setText('trk-sub', distText + (mine ? ' to go' : ' from you') + ' · updates live');
 }
 function closeTrackMap() {
-  if (_trk && _trk.map) { try { _trk.map.remove(); } catch (e) {} }
+  if (_trk && _trk.api) _trk.api.remove();
   _trk = null;
   var m = document.getElementById('track-modal'); if (m) m.style.display = 'none';
 }
@@ -8427,26 +8564,31 @@ async function openDisputeChatFor(bookingId) {
   } catch (e) { toast('❌ ' + e.message); }
 }
 
-var _artRate = 0;
-function artRateBox(b) {
-  if (ratingShown('c' + b.id)) return '';
-  return '<div class="card" id="art-rate-box" style="margin:12px 0"><div style="font-weight:700;margin-bottom:8px">Rate ' + escapeHtml(firstName((b.customer || {}).name)) + '</div>' +
-    '<div style="display:flex;gap:8px;justify-content:center;font-size:28px;margin-bottom:8px">' + [1, 2, 3, 4, 5].map(function (n) { return '<span class="art-star" onclick="artRateStar(' + n + ')" style="cursor:pointer">☆</span>'; }).join('') + '</div>' +
-    '<textarea class="input" id="art-rate-comment" placeholder="How was the customer? (optional)" style="width:100%;min-height:60px"></textarea>' +
-    '<button class="btn btn-g" style="margin-top:8px" onclick="submitArtRating(' + attrJson(b.id) + ')">Submit Review</button></div>';
-}
-function artRateStar(n) {
-  _artRate = n;
-  document.querySelectorAll('.art-star').forEach(function (el, i) { el.textContent = i < n ? '⭐' : '☆'; });
-}
-async function submitArtRating(bookingId) {
-  if (!_artRate) { toast('Tap a star to rate'); return; }
+// "Your Rating": who rated the artisan, what they said, and the artisan's reply.
+async function openMyReviews() {
+  var old = document.getElementById('rv-modal'); if (old) old.remove();
+  var ov = document.createElement('div');
+  ov.id = 'rv-modal'; ov.className = 'rate-ov'; ov.style.display = 'flex';
+  ov.onclick = function (e) { if (e.target === ov) ov.remove(); };
+  ov.innerHTML = '<div class="rate-card" style="text-align:left"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:17px">⭐ Your reviews</b><button type="button" class="trk-x" onclick="document.getElementById(\'rv-modal\').remove()" aria-label="Close">✕</button></div><div id="rv-list"><div class="empty-note">Loading…</div></div></div>';
+  document.body.appendChild(ov);
   try {
-    await apiFetch('/ratings', { method: 'POST', body: { bookingId: bookingId, stars: _artRate, comment: (document.getElementById('art-rate-comment') || {}).value || undefined } });
-    try { sessionStorage.setItem('fixmi_rate_c' + bookingId, '1'); } catch (e) {}
-    var box = document.getElementById('art-rate-box'); if (box) box.remove();
-    toast('🎉 Thanks for your review!');
-  } catch (e) { toast('❌ ' + e.message); }
+    var d = await apiFetch('/ratings/mine');
+    setHTML('rv-list', (d.count ? '<div style="margin-bottom:6px"><b style="font-size:20px">' + d.average.toFixed(1) + '★</b> <span class="muted">from ' + d.count + ' review' + (d.count > 1 ? 's' : '') + '</span></div>' : '') +
+      (d.reviews.length ? d.reviews.map(function (r) {
+        return '<div class="rv-row"><div style="display:flex;justify-content:space-between"><b>' + escapeHtml(r.from) + '</b><span style="color:var(--yellow)">' + '⭐'.repeat(r.stars) + '</span></div>' +
+          (r.comment ? '<div style="font-size:13px;margin-top:4px">“' + escapeHtml(r.comment) + '”</div>' : '<div class="muted" style="font-size:12px;margin-top:4px">No comment</div>') +
+          '<div class="muted" style="font-size:11px;margin-top:3px">' + escapeHtml(r.category || '') + ' · ' + new Date(r.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }) + '</div>' +
+          (r.response ? '<div class="rv-reply"><b>Your reply:</b> ' + escapeHtml(r.response) + '</div>' : '') +
+          '<div style="display:flex;gap:6px;margin-top:8px"><input class="input" id="rv-in-' + r.id + '" placeholder="' + (r.response ? 'Change your reply' : 'Reply to ' + escapeHtml(r.from)) + '" style="flex:1;padding:9px 12px"><button type="button" class="oc-btn green" onclick="replyToReview(' + attrJson(r.id) + ')">Reply</button></div></div>';
+      }).join('') : '<div class="empty-note">No reviews yet. Customers rate you after each job.</div>'));
+  } catch (e) { setHTML('rv-list', '<div class="empty-note">' + escapeHtml(e.message) + '</div>'); }
+}
+async function replyToReview(id) {
+  var v = (document.getElementById('rv-in-' + id) || {}).value || '';
+  if (!v.trim()) { toast('Write your reply first'); return; }
+  try { await apiFetch('/ratings/' + id + '/respond', { method: 'POST', body: { response: v.trim() } }); toast('✅ Reply posted'); openMyReviews(); }
+  catch (e) { toast('❌ ' + e.message); }
 }
 async function loadMyReviews(boxId) {
   var box = document.getElementById(boxId);

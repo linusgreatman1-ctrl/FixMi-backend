@@ -1,0 +1,2 @@
+ALTER TABLE "Rating" ADD COLUMN "response" TEXT;
+ALTER TABLE "Rating" ADD COLUMN "respondedAt" TIMESTAMP(3);
