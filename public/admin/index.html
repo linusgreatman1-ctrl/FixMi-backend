@@ -47,6 +47,11 @@ button{border:0;border-radius:10px;padding:9px 13px;font:inherit;font-weight:700
 .muted{color:var(--muted);font-size:13px}
 .tag{display:inline-block;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--amberbg);color:var(--amber)}
 .tag.ok{background:#DCFCE7;color:#166534}.tag.bad{background:#FEE2E2;color:var(--red)}
+.bub{max-width:75%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;word-wrap:break-word}
+.bub.me{align-self:flex-end;background:var(--g);color:#fff;border-bottom-right-radius:4px}
+.bub.them{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bub .who{font-size:11px;font-weight:700;opacity:.8;margin-bottom:2px}
+.bub .t{font-size:10px;opacity:.7;margin-top:3px;text-align:right}
 .side{border-left:3px solid var(--line);padding:6px 0 6px 12px;margin:10px 0}
 .side img{max-width:160px;border-radius:8px;display:inline-block;margin:6px 6px 0 0}
 .err{color:var(--red);font-size:13px;min-height:18px}
@@ -642,13 +647,16 @@ function openChat(id) {
   api('/admin/chat-threads/' + id + '/messages').then(function (d) {
     chatOpenId = id;
     var names = {};
-    d.thread.participants.forEach(function (p) { names[p.user.id] = p.user.name; });
+    var roles = {};
+    d.thread.participants.forEach(function (p) { names[p.user.id] = p.user.name; roles[p.user.id] = p.user.role; });
     var closed = !!d.thread.closedAt;
     var callee = d.thread.participants.filter(function (p) { return p.user.role !== 'ADMIN'; })[0];
     openModal('<div class="row" style="justify-content:space-between"><h3 style="margin:0">' + d.thread.participants.map(function (p) { return esc(p.user.name); }).join(' & ') + '</h3><span class="row">' + (callee ? btn('📞 Call', 'chatcall', callee.user.id, 'g', ' data-name="' + esc(callee.user.name) + '"') : '') + '<button class="l" data-act="close">Close window</button></span></div>' +
-      '<div id="chat-log" style="max-height:50vh;overflow:auto;margin:12px 0">' + (d.messages.length ? d.messages.map(function (m) {
-        return '<div class="side"><b>' + esc(names[m.senderId] || 'Support') + '</b> <span class="muted">' + when(m.createdAt) + '</span><br>' + esc(m.body) +
-          (m.attachmentUrl ? '<br><img src="' + esc(m.attachmentUrl) + '" alt="Photo" style="max-width:220px;border-radius:8px;margin-top:4px;cursor:zoom-in" onclick="window.open(this.src)">' : '') + '</div>';
+      '<div id="chat-log" style="max-height:50vh;overflow:auto;margin:12px 0;display:flex;flex-direction:column;gap:8px;padding:4px">' + (d.messages.length ? d.messages.map(function (m) {
+        // FixMi Support on the right, the customer or artisan on the left, like any chat app.
+        var mine = roles[m.senderId] === 'ADMIN';
+        return '<div class="bub ' + (mine ? 'me' : 'them') + '"><div class="who">' + esc(mine ? 'FixMi Support' + (names[m.senderId] ? ' (' + names[m.senderId] + ')' : '') : (names[m.senderId] || 'User')) + '</div>' + (m.body ? esc(m.body) : '') +
+          (m.attachmentUrl ? '<img src="' + esc(m.attachmentUrl) + '" alt="Photo" style="display:block;max-width:220px;border-radius:8px;margin-top:4px;cursor:zoom-in" onclick="window.open(this.src)">' : '') + '<div class="t">' + when(m.createdAt) + '</div></div>';
       }).join('') : '<div class="muted">No messages yet.</div>') + '</div>' +
       (closed ? '<div class="card muted">This chat has ended. ' + btn('💬 Start a new chat', 'chatreopen', id, 'g') + '</div>'
         : '<textarea id="chat-reply" placeholder="Write a message as FixMi support"></textarea><div class="err" id="chat-err"></div><div class="row">' + btn('Send', 'chatsend', id, 'g') +
