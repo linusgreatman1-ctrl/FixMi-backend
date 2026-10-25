@@ -6197,6 +6197,7 @@ function bcallStart() {
   var t = _callTarget;
   if (!t.userId || !t.bookingId) { toast('In-app calls work between you and the artisan or customer on a job.'); return; }
   if (!_socket || !_socket.connected) { toast('You’re offline — check your connection and try again.'); return; }
+  bcallClearStale();
   if (window._bcall || window._bcallIncoming) { toast('You are already on a call.'); return; }
   window._bcall = { role: 'caller', bookingId: t.bookingId, otherUserId: t.userId, otherName: t.name, otherAvatar: t.avatar || '👤', pc: null, localStream: null, remoteSocketId: null, status: 'ringing', startedAt: null, micMuted: false, _ts: Date.now() };
   renderBcallOverlay();
@@ -6219,6 +6220,7 @@ function bcallStart() {
 // A call to FixMi Support: rings every online admin; the first to answer takes it.
 function bcallStartSupport() {
   if (!_socket || !_socket.connected) { toast('You’re offline — check your connection and try again.'); return; }
+  bcallClearStale();
   if (window._bcall || window._bcallIncoming) { toast('You are already on a call.'); return; }
   window._bcall = { role: 'caller', support: true, bookingId: null, otherUserId: null, otherName: 'FixMi Support', otherAvatar: '🛡️', pc: null, localStream: null, remoteSocketId: null, status: 'ringing', startedAt: null, micMuted: false, _ts: Date.now() };
   renderBcallOverlay();
@@ -6235,6 +6237,18 @@ function bcallStartSupport() {
   _bcallRingTimer = setTimeout(function () {
     if (window._bcall && window._bcall.status === 'ringing') { toast('FixMi Support did not answer. Leave a message in the chat and we will reply.'); bcallEnd(); }
   }, 45000);
+}
+// A call left behind (connection dropped, the other side vanished) must never block the next call.
+function bcallIsStale(c) {
+  if (!c) return false;
+  var st = c.pc && c.pc.connectionState;
+  if (st === 'failed' || st === 'closed') return true;
+  return c.status !== 'connected' && c._ts && Date.now() - c._ts > 45000;
+}
+function bcallClearStale() {
+  if (window._bcall && bcallIsStale(window._bcall)) bcallTeardown();
+  var inc = window._bcallIncoming;
+  if (inc && inc._ts && Date.now() - inc._ts > 45000) { window._bcallIncoming = null; renderBcallOverlay(); }
 }
 function bcallAccept() {
   var inc = window._bcallIncoming; if (!inc) return;
@@ -6300,8 +6314,11 @@ function bcallBindListeners(sock) {
     var bc = window._bcall, inc = window._bcallIncoming;
     // The caller resends the invite every 3s while ringing: same caller, same call.
     if (inc && inc.fromUserId === p.fromUserId && inc.fromSocketId === p.fromSocketId) { inc._ts = Date.now(); return; }
-    // Already on a call with this same person (their repeat ring arrived after you answered): not "busy".
-    if (bc && (bc.remoteSocketId === p.fromSocketId || bc.otherUserId === p.fromUserId)) return;
+    // The caller's repeat ring arriving after you answered this same call: ignore it, it is not "busy".
+    if (bc && bc.remoteSocketId === p.fromSocketId && bc.status !== 'ringing') return;
+    // A new ring from the person you think you are still talking to: that old call is over, take the new one.
+    if (bc && bc.otherUserId === p.fromUserId) { bcallTeardown(); bc = null; }
+    if (bc && bcallIsStale(bc)) { bcallTeardown(); bc = null; }
     var bcStale = bc && bc.status !== 'connected' && bc._ts && (Date.now() - bc._ts) > 40000;
     var incStale = inc && inc._ts && (Date.now() - inc._ts) > 40000;
     if ((bc && !bcStale) || (inc && !incStale)) { sock.emit('call:decline', { toSocketId: p.fromSocketId, bookingId: p.bookingId, reason: 'busy' }); return; }

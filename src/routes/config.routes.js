@@ -11,9 +11,11 @@ const router = express.Router();
 // vars means a TURN server can be added later without a frontend redeploy.
 router.get("/ice-servers", (req, res) => {
   const iceServers = [{ urls: "stun:stun.l.google.com:19302" }];
+  // TURN relays the voice when the two phones are on different networks (mobile data vs Wi-Fi), where a
+  // direct connection is often impossible. TURN_URL may list several addresses separated by commas.
   if (process.env.TURN_URL) {
     iceServers.push({
-      urls: process.env.TURN_URL,
+      urls: process.env.TURN_URL.split(",").map((u) => u.trim()).filter(Boolean),
       username: process.env.TURN_USERNAME,
       credential: process.env.TURN_CREDENTIAL,
     });
