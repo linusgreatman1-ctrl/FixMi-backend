@@ -106,7 +106,11 @@ for (const route of ["/favicon.svg", "/favicon.ico"]) {
 
 app.get("/pay-done.html", (req, res) => res.sendFile(path.join(__dirname, "..", "public", "pay-done.html")));
 app.get("/health", (req, res) => res.json({ status: "ok", service: "fixmi-backend" }));
-app.get("/", (req, res) => res.json({ service: "fixmi-backend", status: "ok", app: "/app", health: "/health", api: "/api" }));
+// A person opening the bare address lands on the app (not on JSON, and never on the admin panel).
+app.get("/", (req, res) => {
+  if (req.accepts(["html", "json"]) === "html") return res.redirect(302, "/app/");
+  res.json({ service: "fixmi-backend", status: "ok", app: "/app", health: "/health", api: "/api" });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
