@@ -5,10 +5,10 @@ const { generateReference } = require("../utils/reference");
 
 // How long the customer has to confirm (or report "Job not completed")
 // after the artisan marks a job done before the money is released anyway.
-// 90 seconds by default; ESCROW_AUTO_RELEASE_SECONDS changes it.
+// 5 minutes by default; ESCROW_AUTO_RELEASE_SECONDS changes it.
 function autoReleaseSeconds() {
   const n = Number(process.env.ESCROW_AUTO_RELEASE_SECONDS);
-  return Number.isFinite(n) && n > 0 ? n : 90;
+  return Number.isFinite(n) && n > 0 ? n : 300;
 }
 
 // A booking is paid into escrow up front (real money already collected from
