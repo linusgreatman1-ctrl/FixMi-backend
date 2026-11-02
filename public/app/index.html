@@ -6022,15 +6022,30 @@ function applyCommissionText() {
 function releaseCountdown(b) {
   if (!b.completedAt) return '';
   var left = new Date(b.completedAt).getTime() + (APP_CFG.autoReleaseSeconds || 300) * 1000 - Date.now();
-  if (left <= 0) return 'Releasing now…';
+  if (left <= 0) return 'Releases automatically in 0:00 · releasing payment…';
   var s = Math.ceil(left / 1000);
   return 'Releases automatically in ' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+}
+// When the countdown reaches 00:00 the server releases the money; both screens fetch the result straight away.
+var _releaseAsked = {};
+function afterCountdown(b, isArtisan) {
+  if (!b || b.status !== 'COMPLETED' || !b.completedAt) return;
+  var left = new Date(b.completedAt).getTime() + (APP_CFG.autoReleaseSeconds || 300) * 1000 - Date.now();
+  if (left > -1000) return;
+  var key = b.id + '|' + Math.floor(-left / 3000); // ask again every 3 seconds until it shows as paid
+  if (_releaseAsked[key]) return;
+  _releaseAsked[key] = 1;
+  apiFetch('/bookings/' + b.id).then(function (d) {
+    if (!d.booking || d.booking.status === 'COMPLETED') return;
+    if (isArtisan) onJobUpdated(d.booking); else onCustomerBookingUpdate(d.booking);
+  }).catch(function () {});
 }
 setInterval(function () {
   var el = document.getElementById('cj-countdown');
   if (el && _booking && _booking.status === 'COMPLETED') el.textContent = releaseCountdown(_booking);
   var el2 = document.getElementById('aj-countdown');
   if (el2 && _job && _job.status === 'COMPLETED') el2.textContent = releaseCountdown(_job);
+  if (!isArtisanUser()) afterCountdown(_booking, false); else afterCountdown(_job, true);
 }, 1000);
 
 var DISPUTE_REASONS = ['Job not completed', 'Poor quality work', 'Artisan didn\'t show up', 'Damage to property', 'Overcharged', 'Other'];

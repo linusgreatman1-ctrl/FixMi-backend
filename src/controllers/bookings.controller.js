@@ -696,6 +696,7 @@ async function completeBooking(req, res, next) {
       await tx.booking.update({ where: { id: booking.id }, data: { status: "COMPLETED", completedAt: new Date(), escrowKobo: 0 } });
     });
     closeBookingThread(io(req), booking.id);
+    scheduleAutoRelease(io(req), booking.id);
     notify(io(req), booking.customerId, "BOOKING", "Job marked done", "Check the work and confirm to release payment to your artisan.", { bookingId: booking.id }).catch(() => {});
     res.json({ booking: await publishJob(req, booking.id) });
   } catch (err) {
@@ -737,14 +738,34 @@ async function finalizeAutoReleasedBookings(sock) {
     include: JOB_VIEW,
   });
   for (const booking of candidates) {
+    // The timer below and the sweep can both get here; only the first one closes the booking.
+    const { count } = await prisma.booking.updateMany({ where: { id: booking.id, status: "COMPLETED" }, data: { status: "CONFIRMED", confirmedAt: new Date() } });
+    if (!count) continue;
     if (booking.artisanId) {
       await prisma.artisanProfile.update({ where: { id: booking.artisanId }, data: { jobsDone: { increment: 1 } } });
     }
-    await prisma.booking.update({ where: { id: booking.id }, data: { status: "CONFIRMED", confirmedAt: new Date() } });
     pushToCustomer(sock, await customerView(booking.id));
-    pushJobToArtisan(sock, { ...booking, status: "CONFIRMED" });
+    pushJobToArtisan(sock, { ...booking, status: "CONFIRMED", confirmedAt: new Date() });
+    notify(sock, booking.customerId, "PAYMENT", "Payment released", `The time ran out, so ${naira(booking.agreedPriceKobo)} was released to your artisan.`, { bookingId: booking.id }).catch(() => {});
+    if (booking.artisan) notify(sock, booking.artisan.userId, "PAYMENT", "Payment released", `You've been paid for the ${booking.category} job.`, { bookingId: booking.id }).catch(() => {});
   }
   return candidates.length;
+}
+
+// Releases the payment the moment the countdown reaches zero. The 5-second sweep in live.js
+// is the backup (for example after a server restart).
+function scheduleAutoRelease(sock, bookingId) {
+  setTimeout(async () => {
+    try {
+      const due = await prisma.escrowHold.findMany({ where: { bookingId, status: "HELD", autoReleaseAt: { lte: new Date() } } });
+      for (const h of due) {
+        await escrow.releaseHold(h.id, { description: "Auto-released after the escrow window elapsed." }).catch((err) => { if (err.status !== 409) throw err; });
+      }
+      await finalizeAutoReleasedBookings(sock);
+    } catch (err) {
+      console.error("[escrow] timed release failed:", err.message);
+    }
+  }, escrow.autoReleaseSeconds() * 1000 + 300);
 }
 
 // ---------------------------------------------------------------- disputes
