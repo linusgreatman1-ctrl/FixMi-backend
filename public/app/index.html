@@ -3069,7 +3069,11 @@ body{background:#fff}
       <div style="font-size:13px;color:#92400E;line-height:1.5;margin-bottom:10px">Your balance is running low. Top up to continue raising jobs.</div>
       <button onclick="goTo('corp-topup')" style="width:100%;background:#FF6B2B;color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">Top Up Escrow →</button>
     </div>
-    <button class="btn btn-gray" style="margin-top:16px" onclick="cancelCorpPlan(this)">End Plan &amp; Refund Unused Escrow</button>
+    <div style="border:1.5px solid #FECACA;background:#FEF2F2;border-radius:14px;padding:15px;margin-top:18px">
+      <div style="font-size:14px;font-weight:800;color:#B91C1C;margin-bottom:5px">End Plan &amp; Refund Unused Escrow</div>
+      <div style="font-size:13px;color:#7F1D1D;line-height:1.55;margin-bottom:12px">Ending the plan returns what’s left in your corporate escrow (<b id="dash-refundable">₦0</b>) to your FixMi wallet. You can then withdraw it to your bank account. Money already set aside for jobs still in progress stays with those jobs.</div>
+      <button class="btn" style="background:#DC2626;color:#fff" onclick="cancelCorpPlan(this)">End Plan &amp; Refund Unused Escrow</button>
+    </div>
     <div style="height:20px"></div>
   </div>
   <div style="height:78px"></div>
@@ -7365,6 +7369,7 @@ function renderCorpDash() {
   setText('dash-plan', p.label + ' Plan');
   setText('dash-period', p.daysLeft + ' day' + (p.daysLeft === 1 ? '' : 's') + ' remaining');
   setText('dash-bal', fmtNaira(p.escrowKobo));
+  setText('dash-refundable', fmtNaira(p.escrowKobo));
   var bar = document.getElementById('dash-bar'); if (bar) bar.style.width = pct + '%';
   setText('dash-used', 'Used: ' + fmtNaira(c.spentKobo) + (c.reservedKobo ? ' · Reserved: ' + fmtNaira(c.reservedKobo) : ''));
   setText('dash-total', 'Funded: ' + fmtNaira(total));
@@ -7449,14 +7454,34 @@ function confirmTopUp(btn) {
     }
   });
 }
-async function cancelCorpPlan(btn) {
-  if (btn.dataset.sure !== '1') { btn.dataset.sure = '1'; btn.textContent = 'Tap again to end the plan'; return; }
+// End Plan & Refund Unused Escrow: what is left goes back to the wallet, from where it can be withdrawn to the bank.
+function closeCorpEnd() { var m = document.getElementById('corp-end-modal'); if (m) m.remove(); }
+function corpEndSheet(html) {
+  var old = document.getElementById('corp-end-modal'); if (old) old.remove();
+  var ov = document.createElement('div');
+  ov.id = 'corp-end-modal'; ov.className = 'rate-ov'; ov.style.display = 'flex';
+  ov.onclick = function (e) { if (e.target === ov) ov.remove(); };
+  ov.innerHTML = '<div class="rate-card">' + html + '</div>';
+  document.body.appendChild(ov);
+}
+function cancelCorpPlan() {
+  var p = _corp && _corp.plan; if (!p) { openCorporate(); return; }
+  corpEndSheet('<div style="font-size:44px;margin-bottom:6px">🏢</div><div style="font-weight:800;font-size:19px;color:var(--navy);margin-bottom:6px">End your ' + escapeHtml(p.label) + ' plan?</div>' +
+    '<p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:14px"><b style="color:var(--navy)">' + fmtNaira(p.escrowKobo) + '</b> unused escrow goes back to your FixMi wallet right away. You can withdraw it to your bank account from the wallet.' +
+    (_corp.reservedKobo ? ' ' + fmtNaira(_corp.reservedKobo) + ' set aside for jobs still in progress stays with those jobs.' : '') + '</p>' +
+    '<button class="btn" style="background:#DC2626;color:#fff" onclick="confirmEndCorpPlan(this)">Yes, end plan &amp; refund ' + fmtNaira(p.escrowKobo) + '</button>' +
+    '<button class="btn btn-gray" style="margin-top:10px" onclick="closeCorpEnd()">Keep my plan</button>');
+}
+async function confirmEndCorpPlan(btn) {
+  btn.disabled = true; btn.textContent = 'Ending plan…';
   try {
     var d = await apiFetch('/corporate/cancel', { method: 'POST', body: {} });
-    toast('Plan ended — ' + fmtNaira(d.refundedKobo) + ' returned to your wallet');
-    _corp = null; go('home');
-  } catch (e) { toast('❌ ' + e.message); }
-  btn.dataset.sure = ''; btn.innerHTML = 'End Plan &amp; Refund Unused Escrow';
+    _corp = null;
+    corpEndSheet('<div style="font-size:48px;margin-bottom:6px">✅</div><div style="font-weight:800;font-size:19px;color:var(--navy);margin-bottom:6px">Plan ended</div>' +
+      '<p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:14px"><b style="color:var(--g2)">' + fmtNaira(d.refundedKobo) + '</b> is back in your FixMi wallet. Withdraw it to your bank account whenever you like.</p>' +
+      '<button class="btn btn-g" onclick="closeCorpEnd();openWithdraw()">🏦 Withdraw to my bank account</button>' +
+      '<button class="btn btn-gray" style="margin-top:10px" onclick="closeCorpEnd();openWallet()">View wallet</button>');
+  } catch (e) { btn.disabled = false; btn.textContent = 'Try again'; toast('❌ ' + e.message); }
 }
 
 
