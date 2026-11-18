@@ -18,16 +18,17 @@ const { generateReference } = require("../utils/reference");
 
 const PURPOSES = ["WALLET_DEPOSIT", "BOOKING_PAYMENT", "FEATURE_BOOST_PAYMENT", "CORPORATE_PLAN", "CORPORATE_TOPUP"];
 const PREFIX = { WALLET_DEPOSIT: "DEP", BOOKING_PAYMENT: "ESC", FEATURE_BOOST_PAYMENT: "BST", CORPORATE_PLAN: "CRP", CORPORATE_TOPUP: "CRT" };
-const TEST_BANK = { bankName: "Test Bank (testing only)", accountNumber: "0000000000", accountName: "FixMi test account" };
 
 const naira = (k) => `₦${Math.round((k || 0) / 100).toLocaleString("en-NG")}`;
 const fail = (status, message) => Object.assign(new Error(message), { status });
 const testMode = () => wallet.devBypassEnabled();
 
+// FixMi's bank account for transfers: what an admin saved, otherwise the built-in company account.
+const DEFAULT_BANK = { bankName: "Zenith Bank", accountNumber: "8909876543", accountName: "Ledon Technology Ltd" };
 async function companyBank() {
   const bank = await settings.get("bank.company");
   if (bank && bank.accountNumber) return bank;
-  return testMode() ? TEST_BANK : null;
+  return DEFAULT_BANK;
 }
 
 // What the payment screen can offer right now.

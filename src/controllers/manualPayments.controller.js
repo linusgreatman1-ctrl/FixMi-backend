@@ -9,7 +9,7 @@ const MAX_KOBO = 500000000; // ₦5,000,000
 // The company account the user transfers to, plus the reference to quote.
 async function info(req, res, next) {
   try {
-    res.json({ bank: await settings.get("bank.company"), minKobo: MIN_KOBO });
+    res.json({ bank: await require("../services/paymentApply.service").companyBank(), minKobo: MIN_KOBO });
   } catch (err) {
     next(err);
   }
@@ -21,7 +21,7 @@ async function create(req, res, next) {
     const amountKobo = Math.round(Number(req.body.amountKobo));
     if (!Number.isFinite(amountKobo) || amountKobo < MIN_KOBO) return res.status(400).json({ error: "The minimum bank transfer is ₦1,000." });
     if (amountKobo > MAX_KOBO) return res.status(400).json({ error: "That amount is too large. Contact support." });
-    const bank = await settings.get("bank.company");
+    const bank = await require("../services/paymentApply.service").companyBank();
     if (!bank || !bank.accountNumber) return res.status(503).json({ error: "Bank transfer is not set up yet. Please try again later." });
     const pending = await prisma.manualPaymentRequest.count({ where: { userId: req.user.id, status: "PENDING" } });
     if (pending >= 3) return res.status(429).json({ error: "You already have transfers waiting to be confirmed." });

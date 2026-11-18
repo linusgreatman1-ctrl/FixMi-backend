@@ -783,9 +783,9 @@ body{background:#fff}
     <div style="text-align:center;margin-bottom:14px"><div style="font-size:12px;color:var(--muted)">Amount</div><div id="xf-amount" style="font-family:'AppFont',sans-serif;font-weight:800;font-size:32px;color:var(--navy)">₦0</div></div>
     <div id="xf-account" class="card" style="margin-bottom:12px"></div>
     <div class="card" style="margin-bottom:12px"><div style="font-size:12px;color:var(--muted)">Put this reference in your transfer narration</div><div style="display:flex;justify-content:space-between;align-items:center"><b id="xf-ref" style="font-size:18px;letter-spacing:.5px"></b><button class="btn" style="width:auto;padding:8px 14px;font-size:13px;background:var(--gray);color:var(--navy)" onclick="copyText(document.getElementById('xf-ref').textContent)">Copy</button></div></div>
-    <div class="info blue center" style="margin-bottom:14px"><span>🔒</span><span>Your money is held in FixMi escrow once we confirm the transfer. Nothing is released to the artisan until you confirm the job.</span></div>
+    <div class="info blue center" style="margin-bottom:14px"><span>🔒</span><span id="xf-note">Your money is held in FixMi escrow once we confirm the transfer. Nothing is released to the artisan until you confirm the job.</span></div>
     <div id="xf-status" class="job-hint" style="margin-bottom:12px;text-align:center"></div>
-    <button class="btn btn-g" onclick="iMadeTheTransfer(this)">I’ve made the transfer</button>
+    <button class="btn btn-g" onclick="iMadeTheTransfer(this)">I’ve made the payment</button>
     <button id="xf-cancel" class="btn" style="margin-top:10px;background:#FEE2E2;color:#DC2626" onclick="cancelTransferBooking(this)">Cancel this request</button>
   </div>
 </div>
@@ -8268,6 +8268,11 @@ function showTransferScreen(p, ctx) {
     '<div style="font-family:\'AppFont\',sans-serif;font-weight:800;font-size:26px;letter-spacing:1px;color:var(--navy);margin:2px 0">' + escapeHtml(b.accountNumber || '') + '</div><div style="font-size:13px;color:var(--muted)">' + escapeHtml(b.accountName || '') + '</div>' +
     '<button class="btn" style="margin-top:10px;padding:10px;font-size:13px;background:var(--gray);color:var(--navy)" onclick="copyText(' + attrJson(b.accountNumber || '') + ')">Copy account number</button>');
   setText('xf-status', '⏳ Waiting for your transfer');
+  var purpose = (ctx && ctx.purpose) || '';
+  setText('xf-note', purpose === 'CORPORATE_TOPUP' ? 'Send the transfer, then tap “I’ve made the payment”. Your corporate escrow is topped up as soon as we confirm it.'
+    : purpose === 'CORPORATE_PLAN' ? 'Send the transfer, then tap “I’ve made the payment”. Your corporate plan starts as soon as we confirm it.'
+    : purpose === 'BOOKING_PAYMENT' ? 'Your money is held in FixMi escrow once we confirm the transfer. Nothing is released to the artisan until you confirm the job.'
+    : 'Send the transfer, then tap “I’ve made the payment”. Your wallet is credited as soon as we confirm it.');
   document.getElementById('xf-cancel').style.display = ctx && ctx.purpose === 'BOOKING_PAYMENT' ? 'block' : 'none';
   go('pay-transfer');
   clearInterval(_xferTimer);
