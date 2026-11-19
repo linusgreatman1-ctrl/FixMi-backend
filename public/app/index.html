@@ -2864,6 +2864,7 @@ body{background:#fff}
     <div style="font-size:13px;color:rgba(255,255,255,.45);line-height:1.5">Dedicated verified artisans for your office or business</div>
   </div>
 
+  <div id="corp-pending-plan" style="padding:14px 18px 0"></div>
   <div style="padding:18px">
 
     <!-- Step 1: Services -->
@@ -3058,6 +3059,7 @@ body{background:#fff}
       </div>
     </div>
 
+    <div id="corp-pending-dash"></div>
     <button onclick="openCorpRaise()" style="width:100%;background:#00C65E;color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:14px">+ Raise a New Job</button>
 
     <div style="font-size:14px;font-weight:700;color:#0B1A2E;margin-bottom:10px">Recent Jobs</div>
@@ -7312,9 +7314,19 @@ async function openCorporate() {
   if (!requireLogin()) return;
   try {
     _corp = await apiFetch('/corporate');
+    renderCorpPending();
     if (_corp.plan) { renderCorpDash(); go('corp-dash'); }
     else { renderCorpChips(); renderCorpPlans(); go('corp-plan'); }
   } catch (e) { toast('❌ ' + e.message); }
+}
+// A bank transfer for the plan that FixMi hasn't confirmed yet stays visible (it doesn't vanish on refresh).
+function renderCorpPending() {
+  var list = (_corp && _corp.pending) || [];
+  var html = list.map(function (x) {
+    return '<div style="background:#FFF8E7;border:1.5px solid #FCD34D;border-radius:13px;padding:13px;margin-bottom:12px;font-size:13px;color:#92400E;line-height:1.5">⏳ <b>Your bank transfer of ' + fmtNaira(x.amountKobo) + '</b> (ref ' + escapeHtml(x.reference) + ') is waiting to be confirmed. Your ' + (x.purpose === 'CORPORATE_PLAN' ? 'plan starts' : 'escrow is topped up') + ' as soon as FixMi confirms it.</div>';
+  }).join('');
+  setHTML('corp-pending-dash', html);
+  setHTML('corp-pending-plan', html);
 }
 function renderCorpChips() {
   var box = document.getElementById('corp-svc-chips'); if (!box) return;
@@ -7367,7 +7379,7 @@ function renderCorpDash() {
   var c = _corp, p = c && c.plan; if (!p) return;
   var total = p.escrowKobo + c.spentKobo + c.reservedKobo, pct = total ? Math.round(p.escrowKobo / total * 100) : 0;
   setText('dash-plan', p.label + ' Plan');
-  setText('dash-period', p.daysLeft + ' day' + (p.daysLeft === 1 ? '' : 's') + ' remaining');
+  setText('dash-period', p.daysLeft + ' day' + (p.daysLeft === 1 ? '' : 's') + ' left in this period · your balance stays until it is used up');
   setText('dash-bal', fmtNaira(p.escrowKobo));
   setText('dash-refundable', fmtNaira(p.escrowKobo));
   var bar = document.getElementById('dash-bar'); if (bar) bar.style.width = pct + '%';

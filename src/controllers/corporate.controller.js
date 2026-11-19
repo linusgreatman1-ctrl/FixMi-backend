@@ -24,7 +24,13 @@ async function getCorporate(req, res, next) {
       : [];
     const spentKobo = jobs.filter((j) => ["COMPLETED", "CONFIRMED", "DISPUTED"].includes(j.status)).reduce((n, j) => n + (j.agreedPriceKobo || 0), 0);
     const reservedKobo = jobs.filter((j) => !["COMPLETED", "CONFIRMED", "DISPUTED", "CANCELLED", "DECLINED"].includes(j.status)).reduce((n, j) => n + (j.escrowKobo || 0), 0);
-    res.json({ plans: await settings.get("corporate.plans"), plan: view(plan), jobs, spentKobo, reservedKobo });
+    // Bank transfers for the plan that FixMi hasn't confirmed yet, so the customer can see their money is on its way.
+    const pending = await prisma.manualPaymentRequest.findMany({
+      where: { userId: req.user.id, status: "PENDING", purpose: { in: ["CORPORATE_PLAN", "CORPORATE_TOPUP"] } },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, amountKobo: true, reference: true, purpose: true, createdAt: true },
+    });
+    res.json({ plans: await settings.get("corporate.plans"), plan: view(plan), jobs, spentKobo, reservedKobo, pending });
   } catch (err) {
     next(err);
   }

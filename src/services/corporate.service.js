@@ -9,8 +9,21 @@ const PLANS = {
   vip: { label: "VIP Annual", priceKobo: 75000000, period: "year", days: 365, callsTotal: 0, maxCategories: 0 },
 };
 
-function activePlanFor(userId, tx = prisma) {
-  return tx.corporatePlan.findFirst({ where: { userId, endsAt: { gt: new Date() } }, orderBy: { createdAt: "desc" } });
+const PERIOD_DAYS = { week: 7, month: 30, year: 365 };
+
+// A funded plan stays active until its escrow is used up or the customer ends it. When a period runs out
+// with money still in the escrow, the plan rolls into a new period: the balance is kept and the calls renew.
+async function activePlanFor(userId, tx = prisma) {
+  const now = new Date();
+  const plan = await tx.corporatePlan.findFirst({
+    where: { userId, OR: [{ endsAt: { gt: now } }, { escrowKobo: { gt: 0 } }] },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!plan || plan.endsAt > now) return plan;
+  const days = PERIOD_DAYS[plan.period] || 30;
+  let ends = new Date(plan.endsAt);
+  while (ends <= now) ends = new Date(ends.getTime() + days * 86400000);
+  return tx.corporatePlan.update({ where: { id: plan.id }, data: { endsAt: ends, callsUsed: 0 } });
 }
 
 function callsLeft(plan) {
